@@ -10,7 +10,6 @@ st.set_page_config(
 # Streamlit Secrets에서 API 키 안전하게 가져오기
 api_key = st.secrets.get("GEMINI_API_KEY", "")
 
-# 자바스크립트 문법 오류 방지를 위해 raw text 파싱
 html_code = """<!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -434,7 +433,7 @@ html_code = """<!DOCTYPE html>
         <p>초등 5학년 맞춤 주간 일정표 & AI 스마트 루틴 대시보드 • 데이터는 브라우저에 안전하게 저장됩니다.</p>
     </footer>
 
-    <!-- JS Application Logic -->
+    <!-- JS Application Logic (Streamlit iframe 보안 예외 완벽 가드) -->
     <script>
         var apiKey = "__API_KEY__";
 
@@ -518,15 +517,16 @@ html_code = """<!DOCTYPE html>
             currentWeekendKey: 'sat'
         };
 
+        // 안전한 storage 접근 가드 함수
         function loadData() {
-            var stored = localStorage.getItem('elem5_routine_data_v2');
-            if (stored) {
-                try {
+            try {
+                var stored = localStorage.getItem('elem5_routine_data_v2');
+                if (stored) {
                     var parsed = JSON.parse(stored);
                     appData = Object.assign({}, appData, parsed);
-                } catch (e) {
-                    console.error("Storage load error:", e);
                 }
+            } catch (e) {
+                console.warn("localStorage storage restriction warning:", e);
             }
             if (!appData.stickers) appData.stickers = [];
             if (!appData.rewardGoal) appData.rewardGoal = "아빠와 프로야구 직관 가기 & 갖고 싶던 선물!";
@@ -534,7 +534,11 @@ html_code = """<!DOCTYPE html>
         }
 
         function saveData() {
-            localStorage.setItem('elem5_routine_data_v2', JSON.stringify(appData));
+            try {
+                localStorage.setItem('elem5_routine_data_v2', JSON.stringify(appData));
+            } catch (e) {
+                console.warn("localStorage save error:", e);
+            }
         }
 
         function getTodayString() {
@@ -1295,28 +1299,40 @@ html_code = """<!DOCTYPE html>
         }
 
         function initCharts() {
-            var pieCanvas = document.getElementById('timePieChart');
-            if (pieCanvas) {
-                new Chart(pieCanvas.getContext('2d'), {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['수면 (8.5시간)', '학교/학원 (8시간)', '여유/이동/식사 (6.3시간)', '저녁몰입학습 (1.1시간)'],
-                        datasets: [{ data: [35, 33, 27, 5], backgroundColor: ['#6366f1', '#3b82f6', '#f59e0b', '#10b981'], borderWidth: 2, borderColor: '#ffffff' }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } } }
-                });
+            if (typeof Chart === 'undefined') {
+                console.warn("Chart.js missing");
+                return;
+            }
+            try {
+                var pieCanvas = document.getElementById('timePieChart');
+                if (pieCanvas) {
+                    new Chart(pieCanvas.getContext('2d'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['수면 (8.5시간)', '학교/학원 (8시간)', '여유/이동/식사 (6.3시간)', '저녁몰입학습 (1.1시간)'],
+                            datasets: [{ data: [35, 33, 27, 5], backgroundColor: ['#6366f1', '#3b82f6', '#f59e0b', '#10b981'], borderWidth: 2, borderColor: '#ffffff' }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } } }
+                    });
+                }
+            } catch (e) {
+                console.warn("Pie chart error:", e);
             }
 
-            var barCanvas = document.getElementById('studyBarChart');
-            if (barCanvas) {
-                new Chart(barCanvas.getContext('2d'), {
-                    type: 'bar',
-                    data: {
-                        labels: ['수학 (학원숙제)', '영어 (단어+학습지)', '국어 (어휘/독해)', '마무리 (가방/책상)'],
-                        datasets: [{ label: '분(Min)', data: [30, 15, 15, 10], backgroundColor: ['#3b82f6', '#8b5cf6', '#ec4899', '#64748b'], borderRadius: 8 }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 35, ticks: { stepSize: 10 } } } }
-                });
+            try {
+                var barCanvas = document.getElementById('studyBarChart');
+                if (barCanvas) {
+                    new Chart(barCanvas.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: ['수학 (학원숙제)', '영어 (단어+학습지)', '국어 (어휘/독해)', '마무리 (가방/책상)'],
+                            datasets: [{ label: '분(Min)', data: [30, 15, 15, 10], backgroundColor: ['#3b82f6', '#8b5cf6', '#ec4899', '#64748b'], borderRadius: 8 }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 35, ticks: { stepSize: 10 } } } }
+                    });
+                }
+            } catch (e) {
+                console.warn("Bar chart error:", e);
             }
         }
 
@@ -1325,22 +1341,29 @@ html_code = """<!DOCTYPE html>
             return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
 
-        // 초기화 함수 직접 실행
-        window.onload = function() {
-            loadData();
-            renderDaySchedule('mon');
-            setEveningPlan('A');
-            setWeekendDay('sat');
-            renderChecklists();
-            renderStickerGallery();
-            updateStreakBadge();
-            initCharts();
-        };
+        // 전체 초기화 안전 실행기 (하나가 터져도 다른 기능은 멈추지 않음)
+        function startApp() {
+            try { loadData(); } catch(e) {}
+            try { renderDaySchedule('mon'); } catch(e) {}
+            try { setEveningPlan('A'); } catch(e) {}
+            try { setWeekendDay('sat'); } catch(e) {}
+            try { renderChecklists(); } catch(e) {}
+            try { renderStickerGallery(); } catch(e) {}
+            try { updateStreakBadge(); } catch(e) {}
+            setTimeout(function() {
+                try { initCharts(); } catch(e) {}
+            }, 300);
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', startApp);
+        } else {
+            startApp();
+        }
     </script>
 </body>
 </html>"""
 
-# API 키를 안전하게 치환하여 Streamlit 컴포넌트로 렌더링
 final_html = html_code.replace("__API_KEY__", api_key)
 
 st.components.v1.html(
