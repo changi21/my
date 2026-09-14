@@ -10,9 +10,8 @@ st.set_page_config(
 # Streamlit Secrets에서 API 키 안전하게 가져오기
 api_key = st.secrets.get("GEMINI_API_KEY", "")
 
-# f-string 대신 일반 문자열을 사용하여 CSS/JS 중괄호 충돌 원천 차단
-html_code = """
-<!DOCTYPE html>
+# 자바스크립트 문법 오류 방지를 위해 raw text 파싱
+html_code = """<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -47,16 +46,16 @@ html_code = """
             }
         }
         .tab-btn.active {
-            background-color: #3b82f6;
-            color: #ffffff;
-            font-weight: 700;
-            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+            background-color: #3b82f6 !important;
+            color: #ffffff !important;
+            font-weight: 700 !important;
+            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3) !important;
         }
         .day-btn.active {
-            border-color: #3b82f6;
-            background-color: #eff6ff;
-            color: #1d4ed8;
-            font-weight: 700;
+            border-color: #3b82f6 !important;
+            background-color: #eff6ff !important;
+            color: #1d4ed8 !important;
+            font-weight: 700 !important;
         }
         .editable-input {
             border: 1px dashed #cbd5e1;
@@ -194,7 +193,7 @@ html_code = """
                 </div>
             </div>
 
-            <!-- Quick Summary Timeline Cards (5.py에서 복구됨) -->
+            <!-- Quick Summary Timeline Cards -->
             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                 <h3 class="text-base font-bold text-slate-800 mb-3 flex items-center gap-2">
                     <span>⚡</span> 하루 핵심 타임라인 한눈에 보기
@@ -315,7 +314,7 @@ html_code = """
                     <div>
                         <span class="bg-white/20 text-white text-xs px-3 py-1 rounded-full font-extrabold uppercase tracking-wider backdrop-blur-sm">Gemini AI Engine Powered</span>
                         <h2 class="text-2xl font-black mt-2 tracking-tight">✨ 초등 5학년 Gemini AI 스마트 학습 코치</h2>
-                        <p class="text-xs text-indigo-100 mt-1 max-w-xl">AI가 퀴즈 생성, 음성 응원 칭찬, 칭찬 스티커 생성, 그리고 역사/과학 궁금증 답변까지 돕습니다! (패밀리 링크 태블릿 완벽 대응)</p>
+                        <p class="text-xs text-indigo-100 mt-1 max-w-xl">AI가 퀴즈 생성, 음성 응원 칭찬, 칭찬 스티커 생성, 그리고 역사/과학 궁금증 답변까지 돕습니다!</p>
                     </div>
                     <span class="text-3xl">🤖</span>
                 </div>
@@ -435,11 +434,11 @@ html_code = """
         <p>초등 5학년 맞춤 주간 일정표 & AI 스마트 루틴 대시보드 • 데이터는 브라우저에 안전하게 저장됩니다.</p>
     </footer>
 
-    <!-- JS Application Logic (5.py 100% 원본 유지) -->
+    <!-- JS Application Logic -->
     <script>
-        const apiKey = "__API_KEY__";
+        var apiKey = "__API_KEY__";
 
-        const DEFAULT_WEEKDAY_SCHEDULES = {
+        var DEFAULT_WEEKDAY_SCHEDULES = {
             mon: {
                 title: "월요일 일정 (수학 데이)",
                 items: [
@@ -489,7 +488,7 @@ html_code = """
             }
         };
 
-        const DEFAULT_CHECKLIST_WEEKDAY = [
+        var DEFAULT_CHECKLIST_WEEKDAY = [
             { id: "w1", text: "아침 뇌 깨우기: 06:50 최태성 한국사 시청 또는 스트레칭", checked: false },
             { id: "w2", text: "학원 미션: 학원 수강 및 안전한 이동 (도보/차량)", checked: false },
             { id: "w3", text: "70분 몰입 학습: 수학(30분)+영어(15분)+국어 어휘(15분) 완수", checked: false },
@@ -497,7 +496,7 @@ html_code = """
             { id: "w5", text: "취침 골든타임: 21:20 샤워 ➡️ 22:00~22:10 소등 및 눕기", checked: false }
         ];
 
-        const DEFAULT_CHECKLIST_WEEKEND = [
+        var DEFAULT_CHECKLIST_WEEKEND = [
             { id: "wk1", text: "주말 모닝 공부: 기상 직후 90분 학습 (수학+영어+독서) 완수하기", checked: false },
             { id: "wk2", text: "아빠와 야구: 13:00~15:30 햇빛 쬐며 신체활동 다녀오기", checked: false },
             { id: "wk3", text: "게임 약속 준수: 3시간 쪼개기 규칙 (1.5시간 × 2회) 지키기", checked: false },
@@ -505,7 +504,7 @@ html_code = """
             { id: "wk5", text: "주말 취침 리듬 유지: 22:00~22:10 이전에 제자리에 눕기", checked: false }
         ];
 
-        let appData = {
+        var appData = {
             schedules: JSON.parse(JSON.stringify(DEFAULT_WEEKDAY_SCHEDULES)),
             checklistWeekday: JSON.parse(JSON.stringify(DEFAULT_CHECKLIST_WEEKDAY)),
             checklistWeekend: JSON.parse(JSON.stringify(DEFAULT_CHECKLIST_WEEKEND)),
@@ -520,11 +519,11 @@ html_code = """
         };
 
         function loadData() {
-            const stored = localStorage.getItem('elem5_routine_data_v2');
+            var stored = localStorage.getItem('elem5_routine_data_v2');
             if (stored) {
                 try {
-                    const parsed = JSON.parse(stored);
-                    appData = { ...appData, ...parsed };
+                    var parsed = JSON.parse(stored);
+                    appData = Object.assign({}, appData, parsed);
                 } catch (e) {
                     console.error("Storage load error:", e);
                 }
@@ -539,22 +538,22 @@ html_code = """
         }
 
         function getTodayString() {
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = String(today.getMonth() + 1).padStart(2, '0');
-            const day = String(today.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
+            var today = new Date();
+            var year = today.getFullYear();
+            var month = String(today.getMonth() + 1).padStart(2, '0');
+            var day = String(today.getDate()).padStart(2, '0');
+            return year + '-' + month + '-' + day;
         }
 
         function checkAndResetDailyData() {
-            const todayStr = getTodayString();
-            const dateBadge = document.getElementById('current-date-badge');
-            if (dateBadge) dateBadge.innerText = `오늘: ${todayStr}`;
+            var todayStr = getTodayString();
+            var dateBadge = document.getElementById('current-date-badge');
+            if (dateBadge) dateBadge.innerText = '오늘: ' + todayStr;
 
             if (appData.lastDate !== todayStr) {
-                const prevWeekdayDone = appData.checklistWeekday.filter(i => i.checked).length;
-                const prevWeekendDone = appData.checklistWeekend.filter(i => i.checked).length;
-                const totalDone = Math.max(prevWeekdayDone, prevWeekendDone);
+                var prevWeekdayDone = appData.checklistWeekday.filter(function(i) { return i.checked; }).length;
+                var prevWeekendDone = appData.checklistWeekend.filter(function(i) { return i.checked; }).length;
+                var totalDone = Math.max(prevWeekdayDone, prevWeekendDone);
 
                 if (appData.lastDate) {
                     appData.historyLog.unshift({
@@ -565,8 +564,8 @@ html_code = """
                     if (appData.historyLog.length > 14) appData.historyLog.pop();
                 }
 
-                appData.checklistWeekday.forEach(item => item.checked = false);
-                appData.checklistWeekend.forEach(item => item.checked = false);
+                appData.checklistWeekday.forEach(function(item) { item.checked = false; });
+                appData.checklistWeekend.forEach(function(item) { item.checked = false; });
                 appData.lastDate = todayStr;
                 saveData();
             }
@@ -574,8 +573,8 @@ html_code = """
 
         function forceDailyReset() {
             if (window.confirm("오늘 완료한 체크리스트를 정말 초기화하시겠습니까?")) {
-                appData.checklistWeekday.forEach(item => item.checked = false);
-                appData.checklistWeekend.forEach(item => item.checked = false);
+                appData.checklistWeekday.forEach(function(item) { item.checked = false; });
+                appData.checklistWeekend.forEach(function(item) { item.checked = false; });
                 saveData();
                 renderChecklists();
                 updateStreakBadge();
@@ -584,7 +583,7 @@ html_code = """
 
         function toggleEditMode() {
             appData.isEditMode = !appData.isEditMode;
-            const btn = document.getElementById('btn-edit-mode');
+            var btn = document.getElementById('btn-edit-mode');
             if (appData.isEditMode) {
                 btn.className = "text-xs px-3 py-1.5 bg-amber-500 text-white font-bold rounded-xl transition-all shadow-sm shrink-0 whitespace-nowrap";
                 btn.innerText = "💾 수정 완료 및 저장";
@@ -598,10 +597,10 @@ html_code = """
         }
 
         function switchTab(tabId) {
-            const tabs = ['dashboard', 'weekday', 'evening', 'weekend', 'checklist', 'ai'];
-            tabs.forEach(t => {
-                const sec = document.getElementById(`sec-${t}`);
-                const nav = document.getElementById(`nav-${t}`);
+            var tabs = ['dashboard', 'weekday', 'evening', 'weekend', 'checklist', 'ai'];
+            tabs.forEach(function(t) {
+                var sec = document.getElementById('sec-' + t);
+                var nav = document.getElementById('nav-' + t);
                 if (sec) sec.classList.add('hidden');
                 if (nav) {
                     nav.classList.remove('active');
@@ -609,8 +608,8 @@ html_code = """
                 }
             });
 
-            const activeSec = document.getElementById(`sec-${tabId}`);
-            const activeNav = document.getElementById(`nav-${tabId}`);
+            var activeSec = document.getElementById('sec-' + tabId);
+            var activeNav = document.getElementById('nav-' + tabId);
             if (activeSec) activeSec.classList.remove('hidden');
             if (activeNav) {
                 activeNav.classList.add('active');
@@ -623,68 +622,62 @@ html_code = """
 
         function renderDaySchedule(dayKey) {
             appData.currentDayKey = dayKey;
-            ['mon', 'tue', 'wed', 'thu', 'fri'].forEach(d => {
-                const btn = document.getElementById(`day-${d}`);
+            ['mon', 'tue', 'wed', 'thu', 'fri'].forEach(function(d) {
+                var btn = document.getElementById('day-' + d);
                 if (btn) {
                     btn.className = (d === dayKey) ? "day-btn active px-4 py-2 rounded-xl border border-slate-200 bg-white text-sm transition-all" : "day-btn px-4 py-2 rounded-xl border border-slate-200 bg-white text-sm transition-all";
                 }
             });
 
-            const data = appData.schedules[dayKey];
-            const container = document.getElementById('day-schedule-card');
+            var data = appData.schedules[dayKey];
+            var container = document.getElementById('day-schedule-card');
             if (!container || !data) return;
 
-            let html = `
-                <div class="flex items-center justify-between border-b pb-3">
-                    <h3 class="text-lg font-bold text-slate-800">
-                        ${appData.isEditMode 
-                            ? `<input type="text" value="${escapeHtml(data.title)}" onchange="updateDayTitle('${dayKey}', this.value)" class="editable-input font-bold text-lg w-full">`
-                            : escapeHtml(data.title)}
-                    </h3>
-                    <span class="text-xs text-slate-500 font-medium">하교/차량 픽업 동선</span>
-                </div>
-                <div class="space-y-3">
-            `;
+            var html = '<div class="flex items-center justify-between border-b pb-3">' +
+                '<h3 class="text-lg font-bold text-slate-800">' +
+                    (appData.isEditMode 
+                        ? '<input type="text" value="' + escapeHtml(data.title) + '" onchange="updateDayTitle(\'' + dayKey + '\', this.value)" class="editable-input font-bold text-lg w-full">'
+                        : escapeHtml(data.title)) +
+                '</h3>' +
+                '<span class="text-xs text-slate-500 font-medium">하교/차량 픽업 동선</span>' +
+            '</div>' +
+            '<div class="space-y-3">';
 
-            data.items.forEach((item, index) => {
-                let badgeColor = "bg-slate-100 text-slate-700";
+            data.items.forEach(function(item, index) {
+                var badgeColor = "bg-slate-100 text-slate-700";
                 if (item.badge === "학원") badgeColor = "bg-indigo-100 text-indigo-800";
                 if (item.badge === "운동") badgeColor = "bg-red-100 text-red-800";
                 if (item.badge === "여유시간") badgeColor = "bg-emerald-100 text-emerald-800 font-bold";
                 if (item.badge === "바로연결") badgeColor = "bg-amber-100 text-amber-800 font-bold";
 
                 if (appData.isEditMode) {
-                    html += `
-                        <div class="p-3.5 bg-amber-50/50 rounded-xl border border-amber-200 flex flex-col gap-2 text-xs">
-                            <div class="flex items-center gap-2">
-                                <span class="font-bold">시간:</span>
-                                <input type="text" value="${escapeHtml(item.time)}" onchange="updateScheduleItem('${dayKey}', ${index}, 'time', this.value)" class="editable-input w-36">
-                                <span class="font-bold ml-2">활동명:</span>
-                                <input type="text" value="${escapeHtml(item.name)}" onchange="updateScheduleItem('${dayKey}', ${index}, 'name', this.value)" class="editable-input font-bold flex-grow">
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="font-bold">상세:</span>
-                                <input type="text" value="${escapeHtml(item.detail)}" onchange="updateScheduleItem('${dayKey}', ${index}, 'detail', this.value)" class="editable-input flex-grow">
-                            </div>
-                        </div>
-                    `;
+                    html += '<div class="p-3.5 bg-amber-50/50 rounded-xl border border-amber-200 flex flex-col gap-2 text-xs">' +
+                        '<div class="flex items-center gap-2">' +
+                            '<span class="font-bold">시간:</span>' +
+                            '<input type="text" value="' + escapeHtml(item.time) + '" onchange="updateScheduleItem(\'' + dayKey + '\', ' + index + ', \'time\', this.value)" class="editable-input w-36">' +
+                            '<span class="font-bold ml-2">활동명:</span>' +
+                            '<input type="text" value="' + escapeHtml(item.name) + '" onchange="updateScheduleItem(\'' + dayKey + '\', ' + index + ', \'name\', this.value)" class="editable-input font-bold flex-grow">' +
+                        '</div>' +
+                        '<div class="flex items-center gap-2">' +
+                            '<span class="font-bold">상세:</span>' +
+                            '<input type="text" value="' + escapeHtml(item.detail) + '" onchange="updateScheduleItem(\'' + dayKey + '\', ' + index + ', \'detail\', this.value)" class="editable-input flex-grow">' +
+                        '</div>' +
+                    '</div>';
                 } else {
-                    html += `
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 bg-slate-50 rounded-xl hover:bg-slate-100 transition-all border border-slate-100 gap-2">
-                            <div class="flex items-center gap-3">
-                                <span class="text-xs font-bold text-slate-500 w-28 shrink-0">🕒 ${escapeHtml(item.time)}</span>
-                                <span class="text-sm font-bold text-slate-800">${escapeHtml(item.name)}</span>
-                            </div>
-                            <div class="flex items-center gap-2 justify-between sm:justify-end">
-                                <span class="text-xs text-slate-500">${escapeHtml(item.detail)}</span>
-                                <span class="text-[11px] px-2 py-0.5 rounded-md ${badgeColor}">${escapeHtml(item.badge)}</span>
-                            </div>
-                        </div>
-                    `;
+                    html += '<div class="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 bg-slate-50 rounded-xl hover:bg-slate-100 transition-all border border-slate-100 gap-2">' +
+                        '<div class="flex items-center gap-3">' +
+                            '<span class="text-xs font-bold text-slate-500 w-28 shrink-0">🕒 ' + escapeHtml(item.time) + '</span>' +
+                            '<span class="text-sm font-bold text-slate-800">' + escapeHtml(item.name) + '</span>' +
+                        '</div>' +
+                        '<div class="flex items-center gap-2 justify-between sm:justify-end">' +
+                            '<span class="text-xs text-slate-500">' + escapeHtml(item.detail) + '</span>' +
+                            '<span class="text-[11px] px-2 py-0.5 rounded-md ' + badgeColor + '">' + escapeHtml(item.badge) + '</span>' +
+                        '</div>' +
+                    '</div>';
                 }
             });
 
-            html += `</div>`;
+            html += '</div>';
             container.innerHTML = html;
         }
 
@@ -698,7 +691,7 @@ html_code = """
             saveData();
         }
 
-        const eveningPlans = {
+        var eveningPlans = {
             A: {
                 title: "🟢 Plan A: 평소 루틴 (저녁 준비가 바로 되는 날)",
                 items: [
@@ -724,8 +717,8 @@ html_code = """
 
         function setEveningPlan(planKey) {
             appData.currentPlanKey = planKey;
-            const btnA = document.getElementById('btn-planA');
-            const btnB = document.getElementById('btn-planB');
+            var btnA = document.getElementById('btn-planA');
+            var btnB = document.getElementById('btn-planB');
 
             if (planKey === 'A') {
                 if (btnA) btnA.className = "px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-600 text-white";
@@ -735,34 +728,25 @@ html_code = """
                 if (btnA) btnA.className = "px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200";
             }
 
-            const plan = eveningPlans[planKey];
-            const container = document.getElementById('evening-plan-container');
+            var plan = eveningPlans[planKey];
+            var container = document.getElementById('evening-plan-container');
             if (!container) return;
 
-            let html = `
-                <div class="border-b pb-3">
-                    <h3 class="text-lg font-bold text-slate-800">${plan.title}</h3>
-                </div>
-                <div class="space-y-3">
-            `;
-
-            plan.items.forEach(item => {
-                html += `
-                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-2">
-                        <div class="w-36 text-xs font-bold text-indigo-600 shrink-0">⏰ ${item.time}</div>
-                        <div class="flex-grow">
-                            <h4 class="text-sm font-bold text-slate-800 mb-0.5">${item.title}</h4>
-                            <p class="text-xs text-slate-600">${item.detail}</p>
-                        </div>
-                    </div>
-                `;
+            var html = '<div class="border-b pb-3"><h3 class="text-lg font-bold text-slate-800">' + plan.title + '</h3></div><div class="space-y-3">';
+            plan.items.forEach(function(item) {
+                html += '<div class="p-4 bg-slate-50 rounded-xl border border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-2">' +
+                    '<div class="w-36 text-xs font-bold text-indigo-600 shrink-0">⏰ ' + item.time + '</div>' +
+                    '<div class="flex-grow">' +
+                        '<h4 class="text-sm font-bold text-slate-800 mb-0.5">' + item.title + '</h4>' +
+                        '<p class="text-xs text-slate-600">' + item.detail + '</p>' +
+                    '</div>' +
+                '</div>';
             });
-
-            html += `</div>`;
+            html += '</div>';
             container.innerHTML = html;
         }
 
-        const weekendData = {
+        var weekendData = {
             sat: {
                 title: "🗓️ 토요일 알찬 타임라인",
                 items: [
@@ -805,8 +789,8 @@ html_code = """
 
         function setWeekendDay(dayKey) {
             appData.currentWeekendKey = dayKey;
-            const btnSat = document.getElementById('btn-sat');
-            const btnSun = document.getElementById('btn-sun');
+            var btnSat = document.getElementById('btn-sat');
+            var btnSun = document.getElementById('btn-sun');
 
             if (dayKey === 'sat') {
                 if (btnSat) btnSat.className = "px-3 py-1 rounded-lg text-xs font-bold bg-emerald-600 text-white";
@@ -816,77 +800,71 @@ html_code = """
                 if (btnSat) btnSat.className = "px-3 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200";
             }
 
-            const data = weekendData[dayKey];
-            const titleEl = document.getElementById('weekend-title');
+            var data = weekendData[dayKey];
+            var titleEl = document.getElementById('weekend-title');
             if (titleEl) titleEl.innerText = data.title;
-            const container = document.getElementById('weekend-timeline-list');
+            var container = document.getElementById('weekend-timeline-list');
             if (!container) return;
 
-            let html = "";
-            data.items.forEach(item => {
-                const isHighlight = item.task.includes("야구") || item.task.includes("독서") || item.task.includes("모닝 학습");
-                const bgClass = isHighlight ? "bg-emerald-50/70 border-emerald-200" : "bg-slate-50 border-slate-100";
+            var html = "";
+            data.items.forEach(function(item) {
+                var isHighlight = item.task.indexOf("야구") !== -1 || item.task.indexOf("독서") !== -1 || item.task.indexOf("모닝 학습") !== -1;
+                var bgClass = isHighlight ? "bg-emerald-50/70 border-emerald-200" : "bg-slate-50 border-slate-100";
 
-                html += `
-                    <div class="p-3.5 rounded-xl border ${bgClass} flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                        <div class="flex items-center gap-3">
-                            <span class="text-xs font-bold text-slate-500 w-32 shrink-0">⏰ ${escapeHtml(item.time)}</span>
-                            <span class="text-sm font-bold text-slate-800">${escapeHtml(item.task)}</span>
-                        </div>
-                        <span class="text-xs text-slate-600">${escapeHtml(item.note)}</span>
-                    </div>
-                `;
+                html += '<div class="p-3.5 rounded-xl border ' + bgClass + ' flex flex-col sm:flex-row sm:items-center justify-between gap-2">' +
+                    '<div class="flex items-center gap-3">' +
+                        '<span class="text-xs font-bold text-slate-500 w-32 shrink-0">⏰ ' + escapeHtml(item.time) + '</span>' +
+                        '<span class="text-sm font-bold text-slate-800">' + escapeHtml(item.task) + '</span>' +
+                    '</div>' +
+                    '<span class="text-xs text-slate-600">' + escapeHtml(item.note) + '</span>' +
+                '</div>';
             });
 
             container.innerHTML = html;
         }
 
         function renderChecklists() {
-            const wContainer = document.getElementById('weekday-checklist-container');
-            const wCount = document.getElementById('weekday-count');
-            let wCheckedCount = 0;
+            var wContainer = document.getElementById('weekday-checklist-container');
+            var wCount = document.getElementById('weekday-count');
+            var wCheckedCount = 0;
 
             if (wContainer) {
-                let wHtml = "";
-                appData.checklistWeekday.forEach((item, idx) => {
+                var wHtml = "";
+                appData.checklistWeekday.forEach(function(item, idx) {
                     if (item.checked) wCheckedCount++;
-                    wHtml += `
-                        <label class="flex items-center gap-3 p-2.5 bg-slate-50 rounded-xl hover:bg-slate-100 cursor-pointer border border-slate-100">
-                            <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleCheckItem('w', ${idx})" class="w-4 h-4 text-blue-600 rounded">
-                            <span class="${item.checked ? 'line-through text-slate-400 font-medium' : 'text-slate-700 font-medium'} flex-grow">
-                                ${appData.isEditMode 
-                                    ? `<input type="text" value="${escapeHtml(item.text)}" onchange="updateCheckItemText('w', ${idx}, this.value)" class="editable-input text-xs w-full">`
-                                    : escapeHtml(item.text)}
-                            </span>
-                        </label>
-                    `;
+                    wHtml += '<label class="flex items-center gap-3 p-2.5 bg-slate-50 rounded-xl hover:bg-slate-100 cursor-pointer border border-slate-100">' +
+                        '<input type="checkbox" ' + (item.checked ? 'checked' : '') + ' onchange="toggleCheckItem(\'w\', ' + idx + ')" class="w-4 h-4 text-blue-600 rounded">' +
+                        '<span class="' + (item.checked ? 'line-through text-slate-400 font-medium' : 'text-slate-700 font-medium') + ' flex-grow">' +
+                            (appData.isEditMode 
+                                ? '<input type="text" value="' + escapeHtml(item.text) + '" onchange="updateCheckItemText(\'w\', ' + idx + ', this.value)" class="editable-input text-xs w-full">'
+                                : escapeHtml(item.text)) +
+                        '</span>' +
+                    '</label>';
                 });
                 wContainer.innerHTML = wHtml;
             }
-            if (wCount) wCount.innerText = `${wCheckedCount} / ${appData.checklistWeekday.length} 완료`;
+            if (wCount) wCount.innerText = wCheckedCount + ' / ' + appData.checklistWeekday.length + ' 완료';
 
-            const wkContainer = document.getElementById('weekend-checklist-container');
-            const wkCount = document.getElementById('weekend-count');
-            let wkCheckedCount = 0;
+            var wkContainer = document.getElementById('weekend-checklist-container');
+            var wkCount = document.getElementById('weekend-count');
+            var wkCheckedCount = 0;
 
             if (wkContainer) {
-                let wkHtml = "";
-                appData.checklistWeekend.forEach((item, idx) => {
+                var wkHtml = "";
+                appData.checklistWeekend.forEach(function(item, idx) {
                     if (item.checked) wkCheckedCount++;
-                    wkHtml += `
-                        <label class="flex items-center gap-3 p-2.5 bg-slate-50 rounded-xl hover:bg-slate-100 cursor-pointer border border-slate-100">
-                            <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleCheckItem('wk', ${idx})" class="w-4 h-4 text-emerald-600 rounded">
-                            <span class="${item.checked ? 'line-through text-slate-400 font-medium' : 'text-slate-700 font-medium'} flex-grow">
-                                ${appData.isEditMode 
-                                    ? `<input type="text" value="${escapeHtml(item.text)}" onchange="updateCheckItemText('wk', ${idx}, this.value)" class="editable-input text-xs w-full">`
-                                    : escapeHtml(item.text)}
-                            </span>
-                        </label>
-                    `;
+                    wkHtml += '<label class="flex items-center gap-3 p-2.5 bg-slate-50 rounded-xl hover:bg-slate-100 cursor-pointer border border-slate-100">' +
+                        '<input type="checkbox" ' + (item.checked ? 'checked' : '') + ' onchange="toggleCheckItem(\'wk\', ' + idx + ')" class="w-4 h-4 text-emerald-600 rounded">' +
+                        '<span class="' + (item.checked ? 'line-through text-slate-400 font-medium' : 'text-slate-700 font-medium') + ' flex-grow">' +
+                            (appData.isEditMode 
+                                ? '<input type="text" value="' + escapeHtml(item.text) + '" onchange="updateCheckItemText(\'wk\', ' + idx + ', this.value)" class="editable-input text-xs w-full">'
+                                : escapeHtml(item.text)) +
+                        '</span>' +
+                    '</label>';
                 });
                 wkContainer.innerHTML = wkHtml;
             }
-            if (wkCount) wkCount.innerText = `${wkCheckedCount} / ${appData.checklistWeekend.length} 완료`;
+            if (wkCount) wkCount.innerText = wkCheckedCount + ' / ' + appData.checklistWeekend.length + ' 완료';
 
             updateStreakBadge();
         }
@@ -911,56 +889,55 @@ html_code = """
         }
 
         function updateStreakBadge() {
-            const streakBadge = document.getElementById('streak-badge');
+            var streakBadge = document.getElementById('streak-badge');
             if (!streakBadge) return;
 
-            let streak = 0;
-            const wDone = appData.checklistWeekday.filter(i => i.checked).length;
-            const wkDone = appData.checklistWeekend.filter(i => i.checked).length;
+            var streak = 0;
+            var wDone = appData.checklistWeekday.filter(function(i) { return i.checked; }).length;
+            var wkDone = appData.checklistWeekend.filter(function(i) { return i.checked; }).length;
 
             if (wDone === 5 || wkDone === 5) streak++;
 
-            for (let i = 0; i < appData.historyLog.length; i++) {
+            for (var i = 0; i < appData.historyLog.length; i++) {
                 if (appData.historyLog[i].count >= 4) streak++;
                 else break;
             }
 
-            streakBadge.innerHTML = `🔥 ${streak}일 연속 미션 완료 중!`;
+            streakBadge.innerHTML = '🔥 ' + streak + '일 연속 미션 완료 중!';
         }
 
         function renderHistoryLog() {
-            const container = document.getElementById('history-cards-container');
-            const summary = document.getElementById('history-total-summary');
+            var container = document.getElementById('history-cards-container');
+            var summary = document.getElementById('history-total-summary');
             if (!container) return;
 
-            let html = "";
-            const logs = appData.historyLog.slice(0, 7);
+            var html = "";
+            var logs = appData.historyLog.slice(0, 7);
 
             if (logs.length === 0) {
-                html = `<div class="col-span-full text-center py-6 text-xs text-slate-400">아직 저장된 과거 기록이 없습니다. 오늘 미션을 시작해보세요!</div>`;
+                html = '<div class="col-span-full text-center py-6 text-xs text-slate-400">아직 저장된 과거 기록이 없습니다. 오늘 미션을 시작해보세요!</div>';
             } else {
-                logs.forEach(log => {
-                    const isSuccess = log.count >= 4;
-                    const cardBg = isSuccess ? "bg-indigo-50 border-indigo-200 text-indigo-900" : "bg-slate-50 border-slate-200 text-slate-700";
-                    html += `
-                        <div class="p-3 rounded-xl border ${cardBg} text-center flex flex-col items-center justify-center">
-                            <span class="text-[10px] font-semibold text-slate-500">${log.date.slice(5)}</span>
-                            <span class="text-base font-black my-1">${log.count} / ${log.total}</span>
-                            <span class="text-[10px] font-bold ${isSuccess ? 'text-indigo-600' : 'text-slate-400'}">${isSuccess ? '🎉 완수' : '수고했어요'}</span>
-                        </div>
-                    `;
+                logs.forEach(function(log) {
+                    var isSuccess = log.count >= 4;
+                    var cardBg = isSuccess ? "bg-indigo-50 border-indigo-200 text-indigo-900" : "bg-slate-50 border-slate-200 text-slate-700";
+                    html += '<div class="p-3 rounded-xl border ' + cardBg + ' text-center flex flex-col items-center justify-center">' +
+                        '<span class="text-[10px] font-semibold text-slate-500">' + log.date.slice(5) + '</span>' +
+                        '<span class="text-base font-black my-1">' + log.count + ' / ' + log.total + '</span>' +
+                        '<span class="text-[10px] font-bold ' + (isSuccess ? 'text-indigo-600' : 'text-slate-400') + '">' + (isSuccess ? '🎉 완수' : '수고했어요') + '</span>' +
+                    '</div>';
                 });
             }
             container.innerHTML = html;
-            if (summary) summary.innerText = `최근 ${logs.length}일 기록 저장됨`;
+            if (summary) summary.innerText = '최근 ' + logs.length + '일 기록 저장됨';
         }
 
-        // --- GEMINI API HELPERS ---
-        async function fetchGeminiWithRetry(apiUrl, payload, retries = 2, delay = 800) {
+        async function fetchGeminiWithRetry(apiUrl, payload, retries, delay) {
+            retries = retries || 2;
+            delay = delay || 800;
             if (!apiKey) throw new Error("API Key missing");
-            for (let i = 0; i < retries; i++) {
+            for (var i = 0; i < retries; i++) {
                 try {
-                    const response = await fetch(apiUrl, {
+                    var response = await fetch(apiUrl, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
@@ -971,51 +948,45 @@ html_code = """
                 } catch (err) {
                     if (i === retries - 1) throw err;
                 }
-                await new Promise(res => setTimeout(res, delay * Math.pow(2, i)));
+                await new Promise(function(res) { setTimeout(res, delay * Math.pow(2, i)); });
             }
             throw new Error("API call failed");
         }
 
-        // 1. AI Quiz Generator
         async function generateAIQuiz() {
-            const subject = document.getElementById('ai-quiz-subject').value;
-            const resultBox = document.getElementById('ai-quiz-result');
-            const btn = document.getElementById('btn-gen-quiz');
+            var subject = document.getElementById('ai-quiz-subject').value;
+            var resultBox = document.getElementById('ai-quiz-result');
+            var btn = document.getElementById('btn-gen-quiz');
 
             resultBox.classList.remove('hidden');
-            resultBox.innerHTML = `
-                <div class="flex items-center gap-2 text-indigo-600 font-bold">
-                    <div class="spinner-dark"></div>
-                    <span>한국사능력검정시험 유형 AI 퀴즈를 생성하는 중입니다...</span>
-                </div>
-            `;
+            resultBox.innerHTML = '<div class="flex items-center gap-2 text-indigo-600 font-bold">' +
+                '<div class="spinner-dark"></div>' +
+                '<span>한국사능력검정시험 유형 AI 퀴즈를 생성하는 중입니다...</span>' +
+            '</div>';
             btn.disabled = true;
 
-            const systemPrompt = "당신은 한국사능력검정시험(한능검) 출제위원입니다. 초등학교 5학년(한능검 기본 수준)에 맞추어 인물, 유물, 사료 힌트를 바탕으로 한 4지선다형 객관식 퀴즈 1개를 생성하세요. 퀴즈 본문 ➡️ 보기 4개 ➡️ 💡 힌트 및 탐구 해설 (중간 배치) ➡️ 🔒 [정답] 순서로 반환하세요.";
-            const userQuery = `${subject} 주제로 한국사능력검정시험(한능검 기본/초등) 스타일의 1분 퀴즈 1개를 만들어주세요.`;
+            var systemPrompt = "당신은 한국사능력검정시험(한능검) 출제위원입니다. 초등학교 5학년(한능검 기본 수준)에 맞추어 인물, 유물, 사료 힌트를 바탕으로 한 4지선다형 객관식 퀴즈 1개를 생성하세요.";
+            var userQuery = subject + " 주제로 한국사능력검정시험(한능검 기본/초등) 스타일의 1분 퀴즈 1개를 만들어주세요.";
 
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
-            const payload = {
+            var apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=' + apiKey;
+            var payload = {
                 contents: [{ parts: [{ text: userQuery }] }],
                 systemInstruction: { parts: [{ text: systemPrompt }] }
             };
 
             try {
-                const data = await fetchGeminiWithRetry(apiUrl, payload);
-                const quizText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                var data = await fetchGeminiWithRetry(apiUrl, payload);
+                var quizText = data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text;
                 if (!quizText) throw new Error("API response empty");
                 
-                resultBox.innerHTML = `
-                    <div class="bg-indigo-50/70 border border-indigo-200 p-3.5 rounded-xl space-y-2 text-slate-800">
-                        <div class="font-bold text-indigo-900 flex items-center justify-between border-b border-indigo-200 pb-2">
-                            <span>📜 한국사능력검정시험(한능검) 실전 퀴즈</span>
-                            <span class="text-[10px] bg-indigo-200 text-indigo-800 px-2 py-0.5 rounded-md font-bold">Gemini AI</span>
-                        </div>
-                        <div class="whitespace-pre-line text-xs font-medium text-slate-700 leading-relaxed">${escapeHtml(quizText)}</div>
-                    </div>
-                `;
+                resultBox.innerHTML = '<div class="bg-indigo-50/70 border border-indigo-200 p-3.5 rounded-xl space-y-2 text-slate-800">' +
+                    '<div class="font-bold text-indigo-900 flex items-center justify-between border-b border-indigo-200 pb-2">' +
+                        '<span>📜 한국사능력검정시험(한능검) 실전 퀴즈</span>' +
+                        '<span class="text-[10px] bg-indigo-200 text-indigo-800 px-2 py-0.5 rounded-md font-bold">Gemini AI</span>' +
+                    '</div>' +
+                    '<div class="whitespace-pre-line text-xs font-medium text-slate-700 leading-relaxed">' + escapeHtml(quizText) + '</div>' +
+                '</div>';
             } catch (err) {
-                console.warn("Gemini API call skipped, using Family Link 5th grade quiz bank:", err);
                 renderFallbackQuiz(subject);
             } finally {
                 btn.disabled = false;
@@ -1023,87 +994,76 @@ html_code = """
         }
 
         function renderFallbackQuiz(subject) {
-            const resultBox = document.getElementById('ai-quiz-result');
-            const fallbackBank = {
+            var resultBox = document.getElementById('ai-quiz-result');
+            var fallbackBank = {
                 "한국사": [
                     { 
-                        q: "Q. [한국사능력검정시험 대표 유형] 다음 설명에 해당하는 조선 시대의 문화유산은 무엇일까요?\n\n- 정조 임금이 아버지 사도세자의 묘를 옮기면서 건설함\n- 정약용이 거중기를 활용하여 과학적으로 축조함\n- 유네스코 세계문화유산으로 지정됨", 
+                        q: "Q. 다음 설명에 해당하는 조선 시대의 문화유산은 무엇일까요?\n- 정조 임금이 아버지 사도세자의 묘를 옮기면서 건설함\n- 정약용이 거중기를 활용하여 과학적으로 축조함", 
                         options: ["1. 수원 화성", "2. 남한산성", "3. 한양도성", "4. 북한산성"], 
-                        desc: "💡 힌트 & 해설: 정조는 정약용이 만든 거중기를 활용하여 공사 기간과 비용을 크게 줄이고 아름다움과 방어 기능을 모두 갖춘 '수원 화성'을 건축했습니다.",
+                        desc: "💡 힌트 & 해설: 정조는 정약용이 만든 거중기를 활용하여 수원 화성을 건축했습니다.",
                         a: "1번 수원 화성" 
-                    },
-                    { 
-                        q: "Q. [한국사능력검정시험 대표 유형] 1592년 임진왜란 당시 학익진 전법으로 일본 수군을 크게 무찌른 한산도 대첩을 이끈 장군은 누구일까요?", 
-                        options: ["1. 강감찬 장군", "2. 이순신 장군", "3. 김유신 장군", "4. 을지문덕 장군"], 
-                        desc: "💡 힌트 & 해설: 이순신 장군은 한산도 앞바다에서 학이 날개를 편 형태의 학익진 전법으로 거북선과 함께 승리를 이끌었습니다.",
-                        a: "2번 이순신 장군" 
                     }
                 ],
                 "과학": [
                     { 
                         q: "Q. 초등 5학년 과학 [용액의 성질]: 푸른색 리트머스 종이를 붉은색으로 변하게 하는 용액의 성질은 무엇일까요?", 
                         options: ["1. 염기성", "2. 산성", "3. 중성", "4. 점성"], 
-                        desc: "💡 힌트 & 해설: 식초, 레몬즙 같은 '산성 용액'은 푸른색 리트머스 종이를 붉게 변화시킵니다.",
+                        desc: "💡 힌트 & 해설: 식초, 레몬즙 같은 산성 용액은 푸른색 리트머스 종이를 붉게 바꿉니다.",
                         a: "2번 산성" 
                     }
                 ],
                 "영어": [
                     { 
-                        q: "Q. 다음 빈칸에 들어갈 가장 적절한 숙어 표현은? 'He is very ______ solving math puzzles.' (그는 수학 퀴즈 푸는 것을 잘해.)", 
+                        q: "Q. 'He is very ______ solving math puzzles.' (그는 수학 퀴즈 푸는 것을 잘해.)", 
                         options: ["1. good at", "2. interested on", "3. afraid of", "4. famous to"], 
-                        desc: "💡 힌트 & 해설: 'be good at ~'은 '~를 잘하다/능숙하다'라는 뜻입니다.",
+                        desc: "💡 힌트 & 해설: be good at ~은 ~를 잘한다는 뜻입니다.",
                         a: "1번 good at" 
                     }
                 ]
             };
 
-            const key = subject.includes("한국사") ? "한국사" : subject.includes("과학") ? "과학" : "영어";
-            const items = fallbackBank[key];
-            const selected = items[Math.floor(Math.random() * items.length)];
+            var key = subject.indexOf("한국사") !== -1 ? "한국사" : subject.indexOf("과학") !== -1 ? "과학" : "영어";
+            var items = fallbackBank[key] || fallbackBank["한국사"];
+            var selected = items[Math.floor(Math.random() * items.length)];
 
-            resultBox.innerHTML = `
-                <div class="bg-indigo-50/70 border border-indigo-200 p-4 rounded-xl space-y-3 text-slate-800">
-                    <div class="font-bold text-indigo-900 flex items-center justify-between border-b border-indigo-200 pb-2">
-                        <span>🎯 [초등 5학년 심화 퀴즈] ${key} 탐구</span>
-                        <span class="text-[10px] bg-indigo-200 text-indigo-800 px-2 py-0.5 rounded-md font-bold">도전 퀴즈</span>
-                    </div>
-                    <div class="text-xs font-extrabold text-slate-900 leading-relaxed">${selected.q}</div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs text-slate-700 font-semibold my-1">
-                        ${selected.options.map(o => `<div class="bg-white/80 p-2 rounded-lg border border-indigo-100">${o}</div>`).join('')}
-                    </div>
-                    <div class="text-[11px] text-indigo-900 bg-white/90 p-2.5 rounded-lg border border-indigo-200 leading-relaxed">${selected.desc}</div>
-                    <details class="mt-2 pt-2 border-t border-indigo-200/60">
-                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800">🔒 정답 확인하기 (클릭)</summary>
-                        <div class="mt-2 text-xs font-black text-emerald-700 bg-emerald-50 p-2 rounded-lg border border-emerald-200 inline-block">✅ 정답: ${selected.a}</div>
-                    </details>
-                </div>
-            `;
+            resultBox.innerHTML = '<div class="bg-indigo-50/70 border border-indigo-200 p-4 rounded-xl space-y-3 text-slate-800">' +
+                '<div class="font-bold text-indigo-900 flex items-center justify-between border-b border-indigo-200 pb-2">' +
+                    '<span>🎯 [초등 5학년 퀴즈] ' + key + ' 탐구</span>' +
+                    '<span class="text-[10px] bg-indigo-200 text-indigo-800 px-2 py-0.5 rounded-md font-bold">도전 퀴즈</span>' +
+                '</div>' +
+                '<div class="text-xs font-extrabold text-slate-900 leading-relaxed">' + selected.q + '</div>' +
+                '<div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs text-slate-700 font-semibold my-1">' +
+                    selected.options.map(function(o) { return '<div class="bg-white/80 p-2 rounded-lg border border-indigo-100">' + o + '</div>'; }).join('') +
+                '</div>' +
+                '<div class="text-[11px] text-indigo-900 bg-white/90 p-2.5 rounded-lg border border-indigo-200 leading-relaxed">' + selected.desc + '</div>' +
+                '<details class="mt-2 pt-2 border-t border-indigo-200/60">' +
+                    '<summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800">🔒 정답 확인하기 (클릭)</summary>' +
+                    '<div class="mt-2 text-xs font-black text-emerald-700 bg-emerald-50 p-2 rounded-lg border border-emerald-200 inline-block">✅ 정답: ' + selected.a + '</div>' +
+                '</details>' +
+            '</div>';
         }
 
-        // 2. AI Voice Encouragement Generator
         async function generateAIVoice() {
-            const sitKey = document.getElementById('tts-situation').value;
-            const voiceName = document.getElementById('tts-voice').value;
-            const btn = document.getElementById('btn-gen-tts');
-            const statusBox = document.getElementById('tts-status');
+            var sitKey = document.getElementById('tts-situation').value;
+            var voiceName = document.getElementById('tts-voice').value;
+            var btn = document.getElementById('btn-gen-tts');
+            var statusBox = document.getElementById('tts-status');
 
             statusBox.classList.remove('hidden');
             btn.disabled = true;
 
-            const cleanText = getDynamicCheerPhrase(sitKey);
+            var cleanText = getDynamicCheerPhrase(sitKey);
 
-            statusBox.innerHTML = `
-                <div class="p-3.5 bg-purple-50/80 border border-purple-200 rounded-xl text-left space-y-2">
-                    <div class="font-bold text-purple-900 text-xs flex items-center justify-between border-b border-purple-200 pb-1.5">
-                        <span class="flex items-center gap-1.5">💬 AI 멘토의 응원 메시지</span>
-                        <span id="tts-audio-status" class="text-[10px] bg-purple-200 text-purple-800 px-2 py-0.5 rounded-full font-bold">🎙️ 음성 준비 중...</span>
-                    </div>
-                    <div class="text-xs text-slate-800 font-medium leading-relaxed whitespace-pre-line">${escapeHtml(cleanText)}</div>
-                </div>
-            `;
+            statusBox.innerHTML = '<div class="p-3.5 bg-purple-50/80 border border-purple-200 rounded-xl text-left space-y-2">' +
+                '<div class="font-bold text-purple-900 text-xs flex items-center justify-between border-b border-purple-200 pb-1.5">' +
+                    '<span class="flex items-center gap-1.5">💬 AI 멘토의 응원 메시지</span>' +
+                    '<span id="tts-audio-status" class="text-[10px] bg-purple-200 text-purple-800 px-2 py-0.5 rounded-full font-bold">🎙️ 음성 준비 중...</span>' +
+                '</div>' +
+                '<div class="text-xs text-slate-800 font-medium leading-relaxed whitespace-pre-line">' + escapeHtml(cleanText) + '</div>' +
+            '</div>';
 
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
-            const payload = {
+            var apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=' + apiKey;
+            var payload = {
                 contents: [{ parts: [{ text: cleanText }] }],
                 generationConfig: {
                     responseModalities: ["AUDIO"],
@@ -1112,33 +1072,32 @@ html_code = """
                 model: "gemini-2.5-flash-preview-tts"
             };
 
-            const statusEl = document.getElementById('tts-audio-status');
+            var statusEl = document.getElementById('tts-audio-status');
 
             try {
-                const data = await fetchGeminiWithRetry(apiUrl, payload);
-                const part = data.candidates?.[0]?.content?.parts?.[0];
-                const audioBase64 = part?.inlineData?.data;
-                const mimeType = part?.inlineData?.mimeType || "";
+                var data = await fetchGeminiWithRetry(apiUrl, payload);
+                var part = data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0];
+                var audioBase64 = part && part.inlineData && part.inlineData.data;
+                var mimeType = (part && part.inlineData && part.inlineData.mimeType) || "";
 
                 if (audioBase64) {
                     if (statusEl) statusEl.innerText = "🔊 음성 재생 중!";
-                    let sampleRate = 24000;
-                    const match = mimeType.match(/rate=(\d+)/);
+                    var sampleRate = 24000;
+                    var match = mimeType.match(/rate=(\d+)/);
                     if (match) sampleRate = parseInt(match[1], 10);
 
-                    const pcmBuffer = base64ToArrayBuffer(audioBase64);
-                    const pcm16 = new Int16Array(pcmBuffer);
-                    const wavBlob = pcm16ToWavBlob(pcm16, sampleRate);
-                    const audioUrl = URL.createObjectURL(wavBlob);
+                    var pcmBuffer = base64ToArrayBuffer(audioBase64);
+                    var pcm16 = new Int16Array(pcmBuffer);
+                    var wavBlob = pcm16ToWavBlob(pcm16, sampleRate);
+                    var audioUrl = URL.createObjectURL(wavBlob);
 
-                    const audio = new Audio(audioUrl);
+                    var audio = new Audio(audioUrl);
                     audio.play();
-                    audio.onended = () => { if (statusEl) statusEl.innerText = "✅ 재생 완료! 힘내서 파이팅!"; };
+                    audio.onended = function() { if (statusEl) statusEl.innerText = "✅ 재생 완료! 힘내서 파이팅!"; };
                 } else {
                     throw new Error("TTS base64 missing");
                 }
             } catch (err) {
-                console.warn("Gemini TTS API skipped, switching to Web Speech Synthesis:", err);
                 speakWithWebSpeech(cleanText, voiceName, statusEl);
             } finally {
                 btn.disabled = false;
@@ -1146,46 +1105,46 @@ html_code = """
         }
 
         function getDynamicCheerPhrase(sitKey) {
-            const greetings = ["멋진 5학년 대장님!", "오늘의 미션 영웅!", "파이팅 넘치는 우리 친구!", "최고의 탐구왕!"];
-            const greet = greetings[Math.floor(Math.random() * greetings.length)];
-            const phrases = {
-                morning: [`${greet} 좋은 아침이에요! 06시 30분 기상 완수! 오늘 최태성 한국사 시청하고 활기차게 등교해 봐요!`],
-                evening: [`${greet} 오늘 70분 저녁 몰입 학습 진짜 대단했어요! 수학, 영어, 국어까지 알차게 끝냈으니 이제 시원하게 샤워하고 편하게 쉬세요!`],
-                weekend: [`${greet} 아빠와 야구 신체활동 완수! 주말 모닝 90분 학습 완주까지 해내다니 정말 최고의 하루였어요!`],
-                together: [`${greet} 의샤의샤! 우리 함께 힘내요! 어려워 보이는 수학 문제도 한 걸음씩 차근차근 풀면 반드시 해결할 수 있어요!`],
-                happy: [`${greet} 우와! 기분이 최고라니 저도 너무 신나요! 이 신나는 기운으로 오늘 미션도 멋지게 다 섭렵해 볼까요?`],
-                comfort: [`${greet} 많이 피곤하거나 속상한 일이 있었나요? 괜찮아요. 오늘은 푹 쉬고 내일 다시 힘차게 일어나면 돼요!`],
-                confident: [`${greet} 너는 이미 멋진 능력을 가지고 있어요! 자신감을 갖고 도전하면 어떤 퀴즈와 문제도 멋지게 해결할 수 있습니다!`]
+            var greet = "멋진 5학년 친구!";
+            var phrases = {
+                morning: greet + " 좋은 아침이에요! 06시 30분 기상 완수! 오늘 아침 한국사 시청하고 활기차게 등교해 봐요!",
+                evening: greet + " 오늘 70분 저녁 몰입 학습 진짜 대단했어요! 샤워 후 편안히 쉬세요!",
+                weekend: greet + " 주말 모닝 학습 완주까지 해내다니 정말 최고의 하루였어요!",
+                together: greet + " 의샤의샤! 함께 힘내봐요!"
             };
-            const list = phrases[sitKey] || phrases.together;
-            return list[Math.floor(Math.random() * list.length)];
+            return phrases[sitKey] || phrases.together;
         }
 
         function speakWithWebSpeech(cleanText, voiceName, statusEl) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(cleanText);
+                var utterance = new SpeechSynthesisUtterance(cleanText);
                 utterance.lang = 'ko-KR';
                 utterance.pitch = voiceName === 'Puck' ? 1.35 : 1.0;
                 utterance.rate = 1.0;
-                if (statusEl) statusEl.innerText = `🔊 태블릿 음성 (${voiceName} 톤) 재생 중!`;
+                if (statusEl) statusEl.innerText = '🔊 음성 재생 중!';
                 window.speechSynthesis.speak(utterance);
-                utterance.onend = () => { if (statusEl) statusEl.innerText = "✅ 재생 완료! 오늘도 힘내자!"; };
+                utterance.onend = function() { if (statusEl) statusEl.innerText = "✅ 재생 완료! 오늘도 힘내자!"; };
             } else {
                 if (statusEl) statusEl.innerText = "👏 축하해요! 오늘 미션 완수!";
             }
         }
 
         function base64ToArrayBuffer(base64) {
-            const binaryString = window.atob(base64);
-            const bytes = new Uint8Array(binaryString.length);
-            for (let i = 0; i < binaryString.length; i++) bytes[i] = binaryString.charCodeAt(i);
+            var binaryString = window.atob(base64);
+            var len = binaryString.length;
+            var bytes = new Uint8Array(len);
+            for (var i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
             return bytes.buffer;
         }
 
-        function pcm16ToWavBlob(pcm16Data, sampleRate = 24000) {
-            const buffer = new ArrayBuffer(44 + pcm16Data.length * 2);
-            const view = new DataView(buffer);
+        function pcm16ToWavBlob(pcm16Data, sampleRate) {
+            sampleRate = sampleRate || 24000;
+            var buffer = new ArrayBuffer(44 + pcm16Data.length * 2);
+            var view = new DataView(buffer);
+
             writeString(view, 0, 'RIFF');
             view.setUint32(4, 36 + pcm16Data.length * 2, true);
             writeString(view, 8, 'WAVE');
@@ -1199,67 +1158,56 @@ html_code = """
             view.setUint16(34, 16, true);
             writeString(view, 36, 'data');
             view.setUint32(40, pcm16Data.length * 2, true);
-            for (let i = 0; i < pcm16Data.length; i++) view.setInt16(44 + i * 2, pcm16Data[i], true);
+
+            for (var i = 0; i < pcm16Data.length; i++) {
+                view.setInt16(44 + i * 2, pcm16Data[i], true);
+            }
+
             return new Blob([buffer], { type: 'audio/wav' });
         }
 
         function writeString(view, offset, string) {
-            for (let i = 0; i < string.length; i++) view.setUint8(offset + i, string.charCodeAt(i));
+            for (var i = 0; i < string.length; i++) {
+                view.setUint8(offset + i, string.charCodeAt(i));
+            }
         }
 
-        // 3. AI Reward Sticker Creator
         async function generateAISticker() {
-            const todayStr = getTodayString();
-            const existingTodaySticker = (appData.stickers || []).find(s => s.date === todayStr);
-            const resultContainer = document.getElementById('sticker-result');
-            const btn = document.getElementById('btn-gen-sticker');
+            var todayStr = getTodayString();
+            var existingTodaySticker = (appData.stickers || []).find(function(s) { return s.date === todayStr; });
+            var resultContainer = document.getElementById('sticker-result');
+            var btn = document.getElementById('btn-gen-sticker');
 
             if (existingTodaySticker) {
-                resultContainer.innerHTML = `
-                    <div class="p-3 bg-amber-50 border border-amber-200 rounded-2xl text-center space-y-1">
-                        <div class="text-xs font-bold text-amber-900">⚠️ 오늘의 칭찬 스티커는 이미 획득했습니다! (1일 1장)</div>
-                        <div class="text-[11px] text-amber-700">내일 미션을 완수하고 또 새로운 칭찬 스티커에 도전해보세요! 😊</div>
-                    </div>
-                `;
+                resultContainer.innerHTML = '<div class="p-3 bg-amber-50 border border-amber-200 rounded-2xl text-center space-y-1">' +
+                    '<div class="text-xs font-bold text-amber-900">⚠️ 오늘의 칭찬 스티커는 이미 획득했습니다! (1일 1장)</div>' +
+                '</div>';
                 return;
             }
 
-            const userPrompt = document.getElementById('sticker-prompt').value;
-            resultContainer.innerHTML = `<div class="flex flex-col items-center justify-center p-6 text-pink-600 gap-2"><div class="spinner-dark"></div><span class="text-xs font-bold">칭찬 스티커를 그리거나 생성하는 중입니다...</span></div>`;
+            var userPrompt = document.getElementById('sticker-prompt').value;
+            resultContainer.innerHTML = '<div class="flex flex-col items-center justify-center p-6 text-pink-600 gap-2"><div class="spinner-dark"></div><span class="text-xs font-bold">칭찬 스티커를 생성하는 중입니다...</span></div>';
             btn.disabled = true;
 
-            const fullPrompt = `Cute cartoon badge sticker icon for a 5th grade Korean student: ${userPrompt}. Vector art style, white background, vibrant colors.`;
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-image:generateContent?key=${apiKey}`;
-            const payload = { contents: [{ parts: [{ text: fullPrompt }] }], generationConfig: { responseModalities: ['TEXT', 'IMAGE'] } };
+            var fullPrompt = 'Cute cartoon badge sticker icon for a 5th grade Korean student: ' + userPrompt;
+            var apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-image:generateContent?key=' + apiKey;
+            var payload = { contents: [{ parts: [{ text: fullPrompt }] }], generationConfig: { responseModalities: ['TEXT', 'IMAGE'] } };
 
             try {
-                const data = await fetchGeminiWithRetry(apiUrl, payload);
-                const base64Data = data?.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
+                var data = await fetchGeminiWithRetry(apiUrl, payload);
+                var base64Data = data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts.find(function(p) { return p.inlineData; }) && data.candidates[0].content.parts.find(function(p) { return p.inlineData; }).inlineData.data;
 
                 if (base64Data) {
-                    const stickerObj = { id: Date.now(), date: getTodayString(), title: userPrompt, img: `data:image/png;base64,${base64Data}` };
+                    var stickerObj = { id: Date.now(), date: getTodayString(), title: userPrompt, img: 'data:image/png;base64,' + base64Data };
                     saveStickerToCollection(stickerObj);
-                    resultContainer.innerHTML = `<div class="flex flex-col items-center gap-2"><img src="${stickerObj.img}" class="w-28 h-28 object-contain rounded-2xl shadow-md border border-pink-100"><span class="text-xs font-bold text-pink-700">🎉 축하합니다! 칭찬 스티커가 내 스티커북에 저장되었습니다!</span></div>`;
+                    resultContainer.innerHTML = '<div class="flex flex-col items-center gap-2"><img src="' + stickerObj.img + '" class="w-28 h-28 object-contain rounded-2xl shadow-md border border-pink-100"><span class="text-xs font-bold text-pink-700">🎉 축하합니다! 칭찬 스티커가 내 스티커북에 저장되었습니다!</span></div>';
                 } else {
                     throw new Error("No image data");
                 }
             } catch (err) {
-                console.warn("Sticker Generation skipped, creating custom keyword badge:", err);
-                let selectedIcon = "🏆";
-                let bgGradient = "from-pink-400 to-purple-500";
-                if (userPrompt.includes("야구")) { selectedIcon = "⚾"; bgGradient = "from-amber-400 to-red-500"; }
-                else if (userPrompt.includes("로봇")) { selectedIcon = "🤖"; bgGradient = "from-blue-400 to-indigo-600"; }
-
-                const stickerObj = { id: Date.now(), date: getTodayString(), title: userPrompt, icon: selectedIcon, gradient: bgGradient };
-                saveStickerToCollection(stickerObj);
-
-                resultContainer.innerHTML = `
-                    <div class="flex flex-col items-center gap-2 p-3 bg-pink-50 rounded-2xl border border-pink-200 text-center">
-                        <div class="w-16 h-16 bg-gradient-to-tr ${bgGradient} rounded-full flex items-center justify-center text-3xl shadow-lg border-4 border-white animate-bounce">${selectedIcon}</div>
-                        <div class="text-xs font-bold text-pink-900 mt-1">✨ 초등 5학년 히어로 미션 완수 배지!</div>
-                        <span class="text-[11px] text-pink-600 font-semibold">"${escapeHtml(userPrompt)}" 스티커가 스티커북에 수집되었습니다!</span>
-                    </div>
-                `;
+                var stickerObjFallback = { id: Date.now(), date: getTodayString(), title: userPrompt, icon: '🏆', gradient: 'from-pink-400 to-purple-500' };
+                saveStickerToCollection(stickerObjFallback);
+                resultContainer.innerHTML = '<div class="text-xs font-bold text-pink-900">✨ 미션 완수 배지가 수집되었습니다!</div>';
             } finally {
                 btn.disabled = false;
             }
@@ -1278,31 +1226,31 @@ html_code = """
         }
 
         function renderStickerGallery() {
-            const container = document.getElementById('sticker-gallery');
-            const badge = document.getElementById('sticker-count-badge');
-            const goalInput = document.getElementById('reward-goal-input');
-            const progressText = document.getElementById('reward-progress-text');
+            var container = document.getElementById('sticker-gallery');
+            var badge = document.getElementById('sticker-count-badge');
+            var goalInput = document.getElementById('reward-goal-input');
+            var progressText = document.getElementById('reward-progress-text');
             if (!container) return;
 
-            const stickers = appData.stickers || [];
+            var stickers = appData.stickers || [];
             if (badge) badge.innerText = stickers.length;
             if (goalInput && appData.rewardGoal !== undefined) goalInput.value = appData.rewardGoal;
 
-            const count = stickers.length;
-            const percent = Math.min(100, Math.round((count / 30) * 100));
-            if (progressText) progressText.innerText = `${count} / 30개 (${percent}%)`;
+            var count = stickers.length;
+            var percent = Math.min(100, Math.round((count / 30) * 100));
+            if (progressText) progressText.innerText = count + ' / 30개 (' + percent + '%)';
 
-            let html = "";
-            for (let i = 0; i < 30; i++) {
+            var html = "";
+            for (var i = 0; i < 30; i++) {
                 if (stickers[i]) {
-                    const st = stickers[i];
+                    var st = stickers[i];
                     if (st.img) {
-                        html += `<div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg border-2 border-pink-400 bg-white overflow-hidden shadow-sm flex items-center justify-center"><img src="${st.img}" class="w-full h-full object-cover"></div>`;
+                        html += '<div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg border-2 border-pink-400 bg-white overflow-hidden shadow-sm flex items-center justify-center"><img src="' + st.img + '" class="w-full h-full object-cover"></div>';
                     } else {
-                        html += `<div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg border-2 border-pink-400 bg-gradient-to-tr ${st.gradient || 'from-pink-300 to-indigo-300'} flex items-center justify-center text-sm shadow-sm">${st.icon || '⭐'}</div>`;
+                        html += '<div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg border-2 border-pink-400 bg-gradient-to-tr ' + (st.gradient || 'from-pink-300 to-indigo-300') + ' flex items-center justify-center text-sm shadow-sm">' + (st.icon || '⭐') + '</div>';
                     }
                 } else {
-                    html += `<div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg border border-dashed border-pink-200 bg-white/60 flex items-center justify-center text-[9px] text-pink-300 font-bold">${i + 1}</div>`;
+                    html += '<div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg border border-dashed border-pink-200 bg-white/60 flex items-center justify-center text-[9px] text-pink-300 font-bold">' + (i + 1) + '</div>';
                 }
             }
             container.innerHTML = html;
@@ -1313,41 +1261,28 @@ html_code = """
                 appData.stickers = [];
                 saveData();
                 renderStickerGallery();
-                document.getElementById('sticker-result').innerHTML = `<span class="text-xs text-slate-400">새로운 30개 스티커판이 시작되었습니다!</span>`;
+                document.getElementById('sticker-result').innerHTML = '<span class="text-xs text-slate-400">새로운 30개 스티커판이 시작되었습니다!</span>';
             }
         }
 
-        // 4. AI Grounded Search Q&A
         async function searchAIQna() {
-            const query = document.getElementById('search-query').value;
-            const container = document.getElementById('search-result');
-            const btn = document.getElementById('btn-gen-search');
+            var query = document.getElementById('search-query').value;
+            var container = document.getElementById('search-result');
+            var btn = document.getElementById('btn-gen-search');
 
             container.classList.remove('hidden');
-            container.innerHTML = `<div class="flex items-center gap-2 text-emerald-600 font-bold text-xs"><div class="spinner-dark"></div><span>Google 검색 및 백과사전으로 탐색 중입니다...</span></div>`;
+            container.innerHTML = '<div class="flex items-center gap-2 text-emerald-600 font-bold text-xs"><div class="spinner-dark"></div><span>Google 검색으로 탐색 중입니다...</span></div>';
             btn.disabled = true;
 
-            const systemPrompt = "당신은 초등학교 5학년 학생을 위한 친절한 백과사전 튜터입니다. 실시간 구글 검색을 바탕으로 궁금증을 쉬운 언어로 명쾌하게 설명하세요.";
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
-            const payload = { contents: [{ parts: [{ text: query }] }], tools: [{ "google_search": {} }], systemInstruction: { parts: [{ text: systemPrompt }] } };
+            var systemPrompt = "당신은 초등학교 5학년 학생을 위한 백과사전 튜터입니다.";
+            var apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=' + apiKey;
+            var payload = { contents: [{ parts: [{ text: query }] }], tools: [{ "google_search": {} }], systemInstruction: { parts: [{ text: systemPrompt }] } };
 
             try {
-                const data = await fetchGeminiWithRetry(apiUrl, payload);
-                const candidate = data.candidates?.[0];
-                const text = candidate?.content?.parts?.[0]?.text || "답변을 가져올 수 없습니다.";
-
-                let sourcesHtml = "";
-                const groundingMetadata = candidate?.groundingMetadata;
-                if (groundingMetadata && groundingMetadata.groundingAttributions) {
-                    const sources = groundingMetadata.groundingAttributions.map(attr => ({ uri: attr.web?.uri, title: attr.web?.title })).filter(s => s.uri && s.title);
-                    if (sources.length > 0) {
-                        sourcesHtml = `<div class="mt-3 pt-2 border-t border-slate-200 text-[11px] text-slate-500"><span class="font-bold text-slate-600">📌 출처 참고:</span><ul class="list-disc list-inside mt-1 space-y-0.5">${sources.slice(0, 3).map(s => `<li><a href="${s.uri}" target="_blank" class="text-blue-600 hover:underline">${escapeHtml(s.title)}</a></li>`).join('')}</ul></div>`;
-                    }
-                }
-
-                container.innerHTML = `<div class="text-slate-800 space-y-2"><div class="font-bold text-emerald-900 flex items-center justify-between"><span>💡 AI 탐구 답변</span><span class="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">검색 검증 완료</span></div><div class="whitespace-pre-line text-xs leading-relaxed text-slate-700">${escapeHtml(text)}</div>${sourcesHtml}</div>`;
+                var data = await fetchGeminiWithRetry(apiUrl, payload);
+                var text = data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text;
+                container.innerHTML = '<div class="text-slate-800 space-y-2"><div class="font-bold text-emerald-900">💡 AI 탐구 답변</div><div class="whitespace-pre-line text-xs leading-relaxed text-slate-700">' + escapeHtml(text || "답변을 가져올 수 없습니다.") + '</div></div>';
             } catch (err) {
-                console.warn("Search API skipped, using fallback encyclopedia:", err);
                 renderFallbackQna(query, container);
             } finally {
                 btn.disabled = false;
@@ -1355,14 +1290,14 @@ html_code = """
         }
 
         function renderFallbackQna(query, container) {
-            let answerText = `💡 **초등 5학년 탐구 백과: '${escapeHtml(query)}'**\n\n이순신 장군님은 임진왜란 당시 학익진 전법과 거북선으로 나라를 구한 위대한 영웅입니다! 대표적인 3대 대첩은 한산도 대첩, 명량 대첩, 노량 대첩입니다.`;
-            container.innerHTML = `<div class="text-slate-800 space-y-2"><div class="font-bold text-emerald-900 flex items-center justify-between border-b border-emerald-200 pb-1.5"><span>💡 [5학년 추천 백과] 탐구 답변</span><span class="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">내장 지식 백과</span></div><div class="whitespace-pre-line text-xs leading-relaxed text-slate-700">${answerText}</div></div>`;
+            var answerText = "💡 초등 5학년 탐구 백과:\n\n이순신 장군님은 임진왜란 당시 학익진 전법과 거북선으로 나라를 구한 위대한 영웅입니다! 대표적인 3대 대첩은 한산도 대첩, 명량 대첩, 노량 대첩입니다.";
+            container.innerHTML = '<div class="text-slate-800 space-y-2"><div class="font-bold text-emerald-900">💡 [5학년 추천 백과] 탐구 답변</div><div class="whitespace-pre-line text-xs leading-relaxed text-slate-700">' + answerText + '</div></div>';
         }
 
         function initCharts() {
-            const pieCtx = document.getElementById('timePieChart')?.getContext('2d');
-            if (pieCtx) {
-                new Chart(pieCtx, {
+            var pieCanvas = document.getElementById('timePieChart');
+            if (pieCanvas) {
+                new Chart(pieCanvas.getContext('2d'), {
                     type: 'doughnut',
                     data: {
                         labels: ['수면 (8.5시간)', '학교/학원 (8시간)', '여유/이동/식사 (6.3시간)', '저녁몰입학습 (1.1시간)'],
@@ -1372,9 +1307,9 @@ html_code = """
                 });
             }
 
-            const barCtx = document.getElementById('studyBarChart')?.getContext('2d');
-            if (barCtx) {
-                new Chart(barCtx, {
+            var barCanvas = document.getElementById('studyBarChart');
+            if (barCanvas) {
+                new Chart(barCanvas.getContext('2d'), {
                     type: 'bar',
                     data: {
                         labels: ['수학 (학원숙제)', '영어 (단어+학습지)', '국어 (어휘/독해)', '마무리 (가방/책상)'],
@@ -1390,7 +1325,8 @@ html_code = """
             return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
+        // 초기화 함수 직접 실행
+        window.onload = function() {
             loadData();
             renderDaySchedule('mon');
             setEveningPlan('A');
@@ -1399,17 +1335,16 @@ html_code = """
             renderStickerGallery();
             updateStreakBadge();
             initCharts();
-        });
+        };
     </script>
 </body>
-</html>
-"""
+</html>"""
 
 # API 키를 안전하게 치환하여 Streamlit 컴포넌트로 렌더링
 final_html = html_code.replace("__API_KEY__", api_key)
 
 st.components.v1.html(
     final_html,
-    height=1200,
+    height=1300,
     scrolling=True,
 )
