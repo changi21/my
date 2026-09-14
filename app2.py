@@ -7,11 +7,11 @@ st.set_page_config(
     layout="wide",
 )
 
-# Streamlit Secrets에서 API 키 안전하게 가져오기 (코드 유출 0%)
+# Streamlit Secrets에서 API 키 안전하게 가져오기
 api_key = st.secrets.get("GEMINI_API_KEY", "")
 
-# 전체 대시보드 HTML/CSS/JS 코드를 Streamlit 컴포넌트에 안전하게 임베드
-html_code = f"""
+# f-string 대신 일반 문자열을 사용하여 CSS/JS 중괄호 충돌 원천 차단
+html_code = """
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -375,33 +375,33 @@ html_code = f"""
 
     <script>
         // Streamlit Secrets에서 안전하게 주입된 API 키 연동
-        const apiKey = "{api_key}";
+        const apiKey = "__API_KEY__";
 
-        const DEFAULT_WEEKDAY_SCHEDULES = {{
-            'mon': {{ title: "월요일 일정 (수학 데이)", items: [{{ time: "15:00 ~ 17:00", name: "📐 수학학원", detail: "픽업", badge: "학원" }}, {{ time: "17:30 ~ 18:30", name: "🥋 합기도 학원", detail: "운동", badge: "운동" }}] }},
-            'tue': {{ title: "화요일 일정", items: [{{ time: "14:00 ~ 15:00", name: "🎹 피아노 학원", detail: "학원", badge: "학원" }}, {{ time: "17:30 ~ 18:30", name: "🥋 합기도 학원", detail: "운동", badge: "운동" }}] }},
-            'wed': {{ title: "수요일 일정", items: [{{ time: "14:00 ~ 15:00", name: "🎹 피아노 학원", detail: "학원", badge: "학원" }}, {{ time: "15:00 ~ 17:00", name: "📐 수학 학원", detail: "연계", badge: "바로연결" }}, {{ time: "17:30 ~ 18:30", name: "🥋 합기도 학원", detail: "운동", badge: "운동" }}] }},
-            'thu': {{ title: "목요일 일정", items: [{{ time: "14:00 ~ 15:00", name: "🎹 피아노 학원", detail: "학원", badge: "학원" }}, {{ time: "17:30 ~ 18:30", name: "🥋 합기도 학원", detail: "운동", badge: "운동" }}] }},
-            'fri': {{ title: "금요일 일정", items: [{{ time: "14:00 ~ 16:00", name: "🎨 미술 학원", detail: "학원", badge: "학원" }}, {{ time: "17:30 ~ 18:30", name: "🥋 합기도 학원", detail: "운동", badge: "운동" }}] }}
-        }};
+        const DEFAULT_WEEKDAY_SCHEDULES = {
+            mon: { title: "월요일 일정 (수학 데이)", items: [{ time: "15:00 ~ 17:00", name: "📐 수학학원", detail: "픽업", badge: "학원" }, { time: "17:30 ~ 18:30", name: "🥋 합기도 학원", detail: "운동", badge: "운동" }] },
+            tue: { title: "화요일 일정", items: [{ time: "14:00 ~ 15:00", name: "🎹 피아노 학원", detail: "학원", badge: "학원" }, { time: "17:30 ~ 18:30", name: "🥋 합기도 학원", detail: "운동", badge: "운동" }] },
+            wed: { title: "수요일 일정", items: [{ time: "14:00 ~ 15:00", name: "🎹 피아노 학원", detail: "학원", badge: "학원" }, { time: "15:00 ~ 17:00", name: "📐 수학 학원", detail: "연계", badge: "바로연결" }, { time: "17:30 ~ 18:30", name: "🥋 합기도 학원", detail: "운동", badge: "운동" }] },
+            thu: { title: "목요일 일정", items: [{ time: "14:00 ~ 15:00", name: "🎹 피아노 학원", detail: "학원", badge: "학원" }, { time: "17:30 ~ 18:30", name: "🥋 합기도 학원", detail: "운동", badge: "운동" }] },
+            fri: { title: "금요일 일정", items: [{ time: "14:00 ~ 16:00", name: "🎨 미술 학원", detail: "학원", badge: "학원" }, { time: "17:30 ~ 18:30", name: "🥋 합기도 학원", detail: "운동", badge: "운동" }] }
+        };
 
         const DEFAULT_CHECKLIST_WEEKDAY = [
-            {{ id: "w1", text: "아침 뇌 깨우기: 한국사 시청", checked: false }},
-            {{ id: "w2", text: "학원 미션 및 안전 이동", checked: false }},
-            {{ id: "w3", text: "70분 몰입 학습 완수", checked: false }},
-            {{ id: "w4", text: "내일 가방 및 책상 정돈", checked: false }},
-            {{ id: "w5", text: "22:00 이전 취침 골든타임", checked: false }}
+            { id: "w1", text: "아침 뇌 깨우기: 한국사 시청", checked: false },
+            { id: "w2", text: "학원 미션 및 안전 이동", checked: false },
+            { id: "w3", text: "70분 몰입 학습 완수", checked: false },
+            { id: "w4", text: "내일 가방 및 책상 정돈", checked: false },
+            { id: "w5", text: "22:00 이전 취침 골든타임", checked: false }
         ];
 
         const DEFAULT_CHECKLIST_WEEKEND = [
-            {{ id: "wk1", text: "주말 모닝 공부 90분 완주", checked: false }},
-            {{ id: "wk2", text: "아빠와 야구 야외활동", checked: false }},
-            {{ id: "wk3", text: "게임 약속 준수 (3시간)", checked: false }},
-            {{ id: "wk4", text: "밤 몰입 독서 1시간", checked: false }},
-            {{ id: "wk5", text: "취침 리듬 유지", checked: false }}
+            { id: "wk1", text: "주말 모닝 공부 90분 완주", checked: false },
+            { id: "wk2", text: "아빠와 야구 야외활동", checked: false },
+            { id: "wk3", text: "게임 약속 준수 (3시간)", checked: false },
+            { id: "wk4", text: "밤 몰입 독서 1시간", checked: false },
+            { id: "wk5", text: "취침 리듬 유지", checked: false }
         ];
 
-        let appData = {{
+        let appData = {
             schedules: JSON.parse(JSON.stringify(DEFAULT_WEEKDAY_SCHEDULES)),
             checklistWeekday: JSON.parse(JSON.stringify(DEFAULT_CHECKLIST_WEEKDAY)),
             checklistWeekend: JSON.parse(JSON.stringify(DEFAULT_CHECKLIST_WEEKEND)),
@@ -413,11 +413,11 @@ html_code = f"""
             currentDayKey: 'mon',
             currentPlanKey: 'A',
             currentWeekendKey: 'sat'
-        }};
+        };
 
         function loadData() {
             const stored = localStorage.getItem('elem5_routine_data_v3');
-            if (stored) { try { appData = {{ ...appData, ...JSON.parse(stored) }}; } catch(e){}}
+            if (stored) { try { appData = { ...appData, ...JSON.parse(stored) }; } catch(e){}}
             if (!appData.stickers) appData.stickers = [];
             checkAndResetDailyData();
         }
@@ -428,13 +428,13 @@ html_code = f"""
 
         function getTodayString() {
             const today = new Date();
-            return `${{today.getFullYear()}}-${{String(today.getMonth() + 1).padStart(2, '0')}}-${{String(today.getDate()).padStart(2, '0')}}`;
+            return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
         }
 
         function checkAndResetDailyData() {
             const todayStr = getTodayString();
             const dateBadge = document.getElementById('current-date-badge');
-            if (dateBadge) dateBadge.innerText = `오늘: ${{todayStr}}`;
+            if (dateBadge) dateBadge.innerText = `오늘: ${todayStr}`;
             if (appData.lastDate !== todayStr) {
                 appData.lastDate = todayStr;
                 saveData();
@@ -452,12 +452,12 @@ html_code = f"""
 
         function switchTab(tabId) {
             ['dashboard', 'weekday', 'evening', 'weekend', 'checklist', 'ai'].forEach(t => {
-                document.getElementById(`sec-${{t}}`)?.classList.add('hidden');
-                const nav = document.getElementById(`nav-${{t}}`);
+                document.getElementById(`sec-${t}`)?.classList.add('hidden');
+                const nav = document.getElementById(`nav-${t}`);
                 if (nav) { nav.classList.remove('active'); nav.classList.add('text-slate-600'); }
             });
-            document.getElementById(`sec-${{tabId}}`)?.classList.remove('hidden');
-            const activeNav = document.getElementById(`nav-${{tabId}}`);
+            document.getElementById(`sec-${tabId}`)?.classList.remove('hidden');
+            const activeNav = document.getElementById(`nav-${tabId}`);
             if (activeNav) { activeNav.classList.add('active'); activeNav.classList.remove('text-slate-600'); }
             if (tabId === 'ai') renderStickerGallery();
         }
@@ -465,21 +465,21 @@ html_code = f"""
         function renderDaySchedule(dayKey) {
             appData.currentDayKey = dayKey;
             ['mon', 'tue', 'wed', 'thu', 'fri'].forEach(d => {
-                document.getElementById(`day-${{d}}`)?.className = (d === dayKey) ? "day-btn active px-4 py-2 rounded-xl border border-slate-200 bg-white text-sm transition-all" : "day-btn px-4 py-2 rounded-xl border border-slate-200 bg-white text-sm transition-all";
+                document.getElementById(`day-${d}`)?.className = (d === dayKey) ? "day-btn active px-4 py-2 rounded-xl border border-slate-200 bg-white text-sm transition-all" : "day-btn px-4 py-2 rounded-xl border border-slate-200 bg-white text-sm transition-all";
             });
             const data = appData.schedules[dayKey];
             const container = document.getElementById('day-schedule-card');
             if (!container || !data) return;
 
-            let html = `<div class="flex items-center justify-between border-b pb-3"><h3 class="text-lg font-bold text-slate-800">${{escapeHtml(data.title)}}</h3></div><div class="space-y-3">`;
+            let html = `<div class="flex items-center justify-between border-b pb-3"><h3 class="text-lg font-bold text-slate-800">${escapeHtml(data.title)}</h3></div><div class="space-y-3">`;
             data.items.forEach((item) => {
                 html += `
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 bg-slate-50 rounded-xl border border-slate-100 gap-2">
                         <div class="flex items-center gap-3">
-                            <span class="text-xs font-bold text-slate-500 w-28 shrink-0">🕒 ${{escapeHtml(item.time)}}</span>
-                            <span class="text-sm font-bold text-slate-800">${{escapeHtml(item.name)}}</span>
+                            <span class="text-xs font-bold text-slate-500 w-28 shrink-0">🕒 ${escapeHtml(item.time)}</span>
+                            <span class="text-sm font-bold text-slate-800">${escapeHtml(item.name)}</span>
                         </div>
-                        <span class="text-xs text-slate-500">${{escapeHtml(item.detail)}}</span>
+                        <span class="text-xs text-slate-500">${escapeHtml(item.detail)}</span>
                     </div>
                 `;
             });
@@ -491,11 +491,11 @@ html_code = f"""
             document.getElementById('btn-planA').className = planKey === 'A' ? "px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-600 text-white" : "px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-600";
             document.getElementById('btn-planB').className = planKey === 'B' ? "px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-600 text-white" : "px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-600";
             
-            const plans = {{
-                A: [{{ time: "20:10 ~ 21:20", title: "⚡ 자기주도 몰입 학습 (70분)", detail: "수학 ➡️ 영어 ➡️ 국어" }}],
-                B: [{{ time: "19:40 ~ 20:10", title: "📖 선(先) 집중 학습", detail: "영어 + 국어" }}, {{ time: "20:50 ~ 21:20", title: "📐 수학 마무리", detail: "수학 숙제" }}]
-            }};
-            document.getElementById('evening-plan-container').innerHTML = `<div class="space-y-3">` + plans[planKey].map(i => `<div class="p-4 bg-slate-50 rounded-xl border border-slate-100"><div class="text-xs font-bold text-indigo-600">${{i.time}}</div><div class="text-sm font-bold">${{i.title}}</div><div class="text-xs text-slate-600">${{i.detail}}</div></div>`).join('') + `</div>`;
+            const plans = {
+                A: [{ time: "20:10 ~ 21:20", title: "⚡ 자기주도 몰입 학습 (70분)", detail: "수학 ➡️ 영어 ➡️ 국어" }],
+                B: [{ time: "19:40 ~ 20:10", title: "📖 선(先) 집중 학습", detail: "영어 + 국어" }, { time: "20:50 ~ 21:20", title: "📐 수학 마무리", detail: "수학 숙제" }]
+            };
+            document.getElementById('evening-plan-container').innerHTML = `<div class="space-y-3">` + plans[planKey].map(i => `<div class="p-4 bg-slate-50 rounded-xl border border-slate-100"><div class="text-xs font-bold text-indigo-600">${i.time}</div><div class="text-sm font-bold">${i.title}</div><div class="text-xs text-slate-600">${i.detail}</div></div>`).join('') + `</div>`;
         }
 
         function setWeekendDay(dayKey) {
@@ -508,15 +508,15 @@ html_code = f"""
         function renderChecklists() {
             ['weekday', 'weekend'].forEach(type => {
                 const list = type === 'weekday' ? appData.checklistWeekday : appData.checklistWeekend;
-                const container = document.getElementById(`${{type}}-checklist-container`);
-                const countEl = document.getElementById(`${{type}}-count`);
+                const container = document.getElementById(`${type}-checklist-container`);
+                const countEl = document.getElementById(`${type}-count`);
                 if (!container) return;
                 let checkedCount = 0;
-                container.innerHTML = list.map((item, idx) => {{
+                container.innerHTML = list.map((item, idx) => {
                     if (item.checked) checkedCount++;
-                    return `<label class="flex items-center gap-3 p-2.5 bg-slate-50 rounded-xl cursor-pointer border border-slate-100"><input type="checkbox" ${{item.checked ? 'checked' : ''}} onchange="toggleCheckItem('${{type}}', ${{idx}})" class="w-4 h-4 rounded"><span class="${{item.checked ? 'line-through text-slate-400' : 'text-slate-700'}}">${{escapeHtml(item.text)}}</span></label>`;
-                }}).join('');
-                if (countEl) countEl.innerText = `${{checkedCount}} / ${{list.length}} 완료`;
+                    return `<label class="flex items-center gap-3 p-2.5 bg-slate-50 rounded-xl cursor-pointer border border-slate-100"><input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleCheckItem('${type}', ${idx})" class="w-4 h-4 rounded"><span class="${item.checked ? 'line-through text-slate-400' : 'text-slate-700'}">${escapeHtml(item.text)}</span></label>`;
+                }).join('');
+                if (countEl) countEl.innerText = `${checkedCount} / ${list.length} 완료`;
             });
         }
 
@@ -538,9 +538,9 @@ html_code = f"""
             const resultBox = document.getElementById('ai-quiz-result');
             resultBox.classList.remove('hidden');
             resultBox.innerHTML = `<div class="flex items-center gap-2 text-indigo-600 font-bold"><div class="spinner-dark"></div><span>AI 퀴즈 생성 중...</span></div>`;
-            setTimeout(() => {{
+            setTimeout(() => {
                 resultBox.innerHTML = `<div class="bg-indigo-50 p-3.5 rounded-xl"><div class="font-bold text-indigo-900">📜 한국사 퀴즈</div><p class="text-xs mt-1">조선 시대 정약용이 거중기를 활용해 축조한 유네스코 세계문화유산은?</p><div class="mt-2 text-xs font-black text-emerald-700">✅ 정답: 수원 화성</div></div>`;
-            }}, 800);
+            }, 800);
         }
 
         async function generateAIVoice() {
@@ -552,7 +552,7 @@ html_code = f"""
         async function generateAISticker() {
             const resultContainer = document.getElementById('sticker-result');
             const prompt = document.getElementById('sticker-prompt').value;
-            appData.stickers.push({{ id: Date.now(), title: prompt, icon: "⭐", gradient: "from-pink-400 to-purple-500" }});
+            appData.stickers.push({ id: Date.now(), title: prompt, icon: "⭐", gradient: "from-pink-400 to-purple-500" });
             saveData();
             renderStickerGallery();
             resultContainer.innerHTML = `<div class="text-xs font-bold text-pink-700">🎉 칭찬 스티커가 스티커북에 저장되었습니다!</div>`;
@@ -566,9 +566,9 @@ html_code = f"""
             let html = "";
             for (let i = 0; i < 30; i++) {
                 if (appData.stickers[i]) {
-                    html += `<div class="w-8 h-8 rounded-lg bg-gradient-to-tr ${{appData.stickers[i].gradient}} flex items-center justify-center text-sm shadow-sm">${{appData.stickers[i].icon}}</div>`;
+                    html += `<div class="w-8 h-8 rounded-lg bg-gradient-to-tr ${appData.stickers[i].gradient} flex items-center justify-center text-sm shadow-sm">${appData.stickers[i].icon}</div>`;
                 } else {
-                    html += `<div class="w-8 h-8 rounded-lg border border-dashed border-pink-200 bg-white/60 flex items-center justify-center text-[9px] text-pink-300 font-bold">${{i + 1}}</div>`;
+                    html += `<div class="w-8 h-8 rounded-lg border border-dashed border-pink-200 bg-white/60 flex items-center justify-center text-[9px] text-pink-300 font-bold">${i + 1}</div>`;
                 }
             }
             container.innerHTML = html;
@@ -586,31 +586,31 @@ html_code = f"""
             const query = document.getElementById('search-query').value;
             const container = document.getElementById('search-result');
             container.classList.remove('hidden');
-            container.innerHTML = `<div class="text-xs text-slate-700">⚔️ **'${{escapeHtml(query)}}' 탐구 백과**<br><br>이순신 장군님은 임진왜란 당시 학익진 전법과 거북선으로 나라를 구한 위대한 영웅입니다!</div>`;
+            container.innerHTML = `<div class="text-xs text-slate-700">⚔️ **'${escapeHtml(query)}' 탐구 백과**<br><br>이순신 장군님은 임진왜란 당시 학익진 전법과 거북선으로 나라를 구한 위대한 영웅입니다!</div>`;
         }
 
         function initCharts() {
             const pieCtx = document.getElementById('timePieChart')?.getContext('2d');
             if (pieCtx) {
-                new Chart(pieCtx, {{
+                new Chart(pieCtx, {
                     type: 'doughnut',
-                    data: {{
+                    data: {
                         labels: ['수면 (8.5시간)', '학교/학원 (8시간)', '여유/이동 (6.3시간)', '저녁몰입 (1.1시간)'],
-                        datasets: [{{ data: [35, 33, 27, 5], backgroundColor: ['#6366f1', '#3b82f6', '#f59e0b', '#10b981'] }}]
-                    }},
-                    options: {{ responsive: true, maintainAspectRatio: false }}
-                }});
+                        datasets: [{ data: [35, 33, 27, 5], backgroundColor: ['#6366f1', '#3b82f6', '#f59e0b', '#10b981'] }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
             }
             const barCtx = document.getElementById('studyBarChart')?.getContext('2d');
             if (barCtx) {
-                new Chart(barCtx, {{
+                new Chart(barCtx, {
                     type: 'bar',
-                    data: {{
+                    data: {
                         labels: ['수학', '영어', '국어', '마무리'],
-                        datasets: [{{ data: [30, 15, 15, 10], backgroundColor: ['#3b82f6', '#8b5cf6', '#ec4899', '#64748b'], borderRadius: 8 }}]
-                    }},
-                    options: {{ responsive: true, maintainAspectRatio: false, plugins: {{ legend: {{ display: false }} }} }}
-                }});
+                        datasets: [{ data: [30, 15, 15, 10], backgroundColor: ['#3b82f6', '#8b5cf6', '#ec4899', '#64748b'], borderRadius: 8 }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                });
             }
         }
 
@@ -619,7 +619,7 @@ html_code = f"""
             return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
 
-        window.addEventListener('DOMContentLoaded', () => {{
+        window.addEventListener('DOMContentLoaded', () => {
             loadData();
             renderDaySchedule('mon');
             setEveningPlan('A');
@@ -627,15 +627,17 @@ html_code = f"""
             renderChecklists();
             renderStickerGallery();
             initCharts();
-        }});
+        });
     </script>
 </body>
 </html>
 """
 
-# Streamlit 컴포넌트를 통해 안전하게 HTML 렌더링 (파이썬 변수 api_key를 자바스크립트에 안전하게 주입)
+# API 키를 안전하게 치환하여 Streamlit 컴포넌트로 렌더링
+final_html = html_code.replace("__API_KEY__", api_key)
+
 st.components.v1.html(
-    html_code.replace("{api_key}", api_key),
+    final_html,
     height=1200,
     scrolling=True,
 )
