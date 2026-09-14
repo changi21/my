@@ -193,6 +193,35 @@ html_code = """
                     </div>
                 </div>
             </div>
+
+            <!-- Quick Summary Timeline Cards (5.py에서 복구됨) -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <h3 class="text-base font-bold text-slate-800 mb-3 flex items-center gap-2">
+                    <span>⚡</span> 하루 핵심 타임라인 한눈에 보기
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <div class="text-xs font-bold text-blue-600 mb-1">🌅 06:30 ~ 08:30 [아침]</div>
+                        <div class="text-xs font-semibold text-slate-800">기상 & 한국사 강의 시청</div>
+                        <div class="text-[11px] text-slate-500 mt-1">할아버지 댁 이동(07:20) 후 아침 식사 ➡️ 08:22 등교</div>
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <div class="text-xs font-bold text-emerald-600 mb-1">🏫 08:30 ~ 18:30 [방과후]</div>
+                        <div class="text-xs font-semibold text-slate-800">학교 수업 & 학원 동선</div>
+                        <div class="text-[11px] text-slate-500 mt-1">수학/피아노/미술 픽업 ➡️ 17:30 합기도(도보3분)</div>
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <div class="text-xs font-bold text-amber-600 mb-1">🚘 18:30 ~ 20:10 [귀가&식사]</div>
+                        <div class="text-xs font-semibold text-slate-800">부모님 픽업 & 저녁 식사</div>
+                        <div class="text-[11px] text-slate-500 mt-1">18:40 픽업 ➡️ 19:15 집 도착 ➡️ 가족 저녁 식사</div>
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <div class="text-xs font-bold text-indigo-600 mb-1">🌙 20:10 ~ 22:10 [저녁&취침]</div>
+                        <div class="text-xs font-semibold text-slate-800">70분 학습 & 22시 전 취침</div>
+                        <div class="text-[11px] text-slate-500 mt-1">20:10 학습 ➡️ 21:20 샤워 ➡️ 22:00~22:10 취침</div>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <!-- TAB 2: WEEKDAY ACADEMIES & ROUTES -->
@@ -286,23 +315,26 @@ html_code = """
                     <div>
                         <span class="bg-white/20 text-white text-xs px-3 py-1 rounded-full font-extrabold uppercase tracking-wider backdrop-blur-sm">Gemini AI Engine Powered</span>
                         <h2 class="text-2xl font-black mt-2 tracking-tight">✨ 초등 5학년 Gemini AI 스마트 학습 코치</h2>
-                        <p class="text-xs text-indigo-100 mt-1 max-w-xl">AI가 퀴즈 생성, 음성 응원 칭찬, 칭찬 스티커 생성, 그리고 역사/과학 궁금증 답변까지 돕습니다!</p>
+                        <p class="text-xs text-indigo-100 mt-1 max-w-xl">AI가 퀴즈 생성, 음성 응원 칭찬, 칭찬 스티커 생성, 그리고 역사/과학 궁금증 답변까지 돕습니다! (패밀리 링크 태블릿 완벽 대응)</p>
                     </div>
                     <span class="text-3xl">🤖</span>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- TOOL 1 -->
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between border-b pb-3 mb-4">
                             <h3 class="font-bold text-slate-800 flex items-center gap-2"><span>🧠</span> 초등 5학년 1분 AI 퀴즈 생성기</h3>
+                            <span class="text-[11px] bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full font-semibold">gemini-3-flash-preview</span>
                         </div>
+                        <p class="text-xs text-slate-500 mb-4">아침 시청 복습이나 저녁 공부 시작 전, 재미있는 1분 퀴즈로 뇌를 세워보세요!</p>
                         <div class="flex gap-2 mb-4">
                             <select id="ai-quiz-subject" class="bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 flex-grow">
-                                <option value="한국사능력검정시험">📜 한국사능력검정시험(한능검) 실전 퀴즈</option>
-                                <option value="과학">🔬 재미있는 초등 5학년 과학 퀴즈</option>
-                                <option value="영어">영어 단어 & 표현 퀴즈</option>
+                                <option value="한국사능력검정시험 (한능검 기본/초등 5학년 출제 유형)">📜 한국사능력검정시험(한능검) 실전 퀴즈</option>
+                                <option value="초등 5학년 과학교과 (태양계, 날씨, 물체의 운동)">🔬 재미있는 초등 5학년 과학 퀴즈</option>
+                                <option value="초등 필수 영단어 & 영어 회화">영어 단어 & 표현 퀴즈</option>
                             </select>
                             <button onclick="generateAIQuiz()" id="btn-gen-quiz" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs transition-all shrink-0">✨ 퀴즈 생성</button>
                         </div>
@@ -310,56 +342,86 @@ html_code = """
                     </div>
                 </div>
 
+                <!-- TOOL 2 -->
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between border-b pb-3 mb-4">
                             <h3 class="font-bold text-slate-800 flex items-center gap-2"><span>🔊</span> AI 멘토 음성 응원 메시지 (TTS)</h3>
+                            <span class="text-[11px] bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full font-semibold">gemini-2.5-flash-preview-tts</span>
                         </div>
+                        <p class="text-xs text-slate-500 mb-4">상황과 기분에 맞게 선택해 보세요! 매일 매일 다른 칭찬과 응원 멘트가 전해집니다.</p>
                         <div class="grid grid-cols-2 gap-2 mb-3">
-                            <select id="tts-situation" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-1.5 text-xs text-slate-700">
-                                <option value="morning">🌅 아침 등교 전 화이팅!</option>
-                                <option value="evening">🌙 저녁 70분 공부 완수!</option>
-                                <option value="weekend">⚾ 주말 운동/야구 완수!</option>
-                            </select>
-                            <select id="tts-voice" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-1.5 text-xs text-slate-700">
-                                <option value="Puck">Puck (밝고 에너지)</option>
-                                <option value="Zephyr">Zephyr (상냥한 톤)</option>
-                            </select>
+                            <div>
+                                <label class="text-[11px] font-bold text-slate-600 block mb-1">상황/기분 선택:</label>
+                                <select id="tts-situation" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-1.5 text-xs text-slate-700">
+                                    <option value="morning">🌅 아침 등교 전 화이팅!</option>
+                                    <option value="evening">🌙 저녁 70분 공부 완수!</option>
+                                    <option value="weekend">⚾ 주말 운동/야구 완수!</option>
+                                    <option value="together">🔥 같이 힘내자! 의샤의샤!</option>
+                                    <option value="happy">😊 기분 최고! 신나는 축하</option>
+                                    <option value="comfort">🌧️ 피곤하거나 속상할 때 따뜻한 위로</option>
+                                    <option value="confident">🎯 할 수 있어! 자신감 충전</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-slate-600 block mb-1">목소리 캐릭터:</label>
+                                <select id="tts-voice" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-1.5 text-xs text-slate-700">
+                                    <option value="Puck">Puck (밝고 에너지 넘치는 소년)</option>
+                                    <option value="Zephyr">Zephyr (상냥하고 밝은 목소리)</option>
+                                    <option value="Kore">Kore (다정하고 든든한 멘토)</option>
+                                    <option value="Fenrir">Fenrir (신나는 스포티 목소리)</option>
+                                </select>
+                            </div>
                         </div>
                         <button onclick="generateAIVoice()" id="btn-gen-tts" class="w-full py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl text-xs transition-all">🎙️ AI 응원 음성 들려주기</button>
                         <div id="tts-status" class="mt-3 text-center text-xs font-semibold text-slate-500 hidden"></div>
                     </div>
                 </div>
 
+                <!-- TOOL 3 -->
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between border-b pb-3 mb-4">
-                            <h3 class="font-bold text-slate-800 flex items-center gap-2"><span>🎨</span> AI 칭찬 스티커북</h3>
+                            <h3 class="font-bold text-slate-800 flex items-center gap-2"><span>🎨</span> AI 미션 달성 칭찬 스티커 카운터</h3>
+                            <span class="text-[11px] bg-pink-100 text-pink-800 px-2 py-0.5 rounded-full font-semibold">하루 1장 제한</span>
                         </div>
+                        <p class="text-xs text-slate-500 mb-4">오늘 미션을 성공했을 때 칭찬 스티커 카드를 생성하여 <b>내 스티커북(30개판)</b>에 저장합니다!</p>
                         <div class="flex gap-2 mb-4">
-                            <input type="text" id="sticker-prompt" value="용감한 초등학생 히어로 배지" class="bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-800 flex-grow">
+                            <input type="text" id="sticker-prompt" value="한국사 탐험가 로봇과 야구 방망이를 든 용감한 초등학생 칭찬 캐릭터" class="bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-800 flex-grow" placeholder="스티커 콘셉트를 입력하세요">
                             <button onclick="generateAISticker()" id="btn-gen-sticker" class="px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white font-bold rounded-xl text-xs shrink-0">🖼️ 스티커 그리기</button>
                         </div>
                         <div id="sticker-result" class="bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center justify-center min-h-[140px]">
-                            <span class="text-xs text-slate-400">버튼을 누르면 칭찬 스티커가 생성됩니다.</span>
+                            <span class="text-xs text-slate-400">버튼을 누르면 칭찬 스티커가 생성되어 내 스티커북에 저장됩니다.</span>
                         </div>
                         <div class="mt-4 border-t border-slate-100 pt-3">
+                            <div class="bg-gradient-to-r from-pink-50 via-purple-50 to-indigo-50 p-3 rounded-xl border border-pink-200 mb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                <div class="flex items-center gap-1.5 min-w-0 flex-grow">
+                                    <span class="text-xs font-bold text-pink-900 shrink-0">🎯 30개 달성 보상 목표:</span>
+                                    <input type="text" id="reward-goal-input" onchange="updateRewardGoal(this.value)" value="아빠와 프로야구 직관 가기 & 갖고 싶던 선물!" class="editable-input text-xs font-bold text-indigo-700 bg-white border border-pink-300 rounded-lg px-2.5 py-1 flex-grow">
+                                </div>
+                                <div class="text-right shrink-0">
+                                    <span class="text-[11px] font-extrabold text-purple-700 bg-white px-2.5 py-1 rounded-lg border border-purple-200 shadow-sm" id="reward-progress-text">0 / 30개 (0%)</span>
+                                </div>
+                            </div>
                             <div class="flex items-center justify-between mb-2">
-                                <span class="text-xs font-bold text-pink-900">🏆 내 스티커북 (<span id="sticker-count-badge">0</span>/30개)</span>
-                                <button onclick="resetStickers()" class="text-[10px] text-slate-400 hover:text-red-500 underline">초기화</button>
+                                <span class="text-xs font-bold text-pink-900">🏆 내 칭찬 스티커북 (<span id="sticker-count-badge">0</span>/30개 모음)</span>
+                                <button onclick="resetStickers()" class="text-[10px] text-slate-400 hover:text-red-500 underline">스티커판 리셋</button>
                             </div>
                             <div id="sticker-gallery" class="grid grid-cols-6 sm:grid-cols-10 gap-1.5 bg-pink-50/50 p-2.5 rounded-xl border border-pink-100 min-h-[110px] items-center"></div>
                         </div>
                     </div>
                 </div>
 
+                <!-- TOOL 4 -->
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between border-b pb-3 mb-4">
-                            <h3 class="font-bold text-slate-800 flex items-center gap-2"><span>🔍</span> AI 탐구 & 호기심 질의응답</h3>
+                            <h3 class="font-bold text-slate-800 flex items-center gap-2"><span>🔍</span> AI 탐구 & 호기심 질의응답 (구글 검색 연동)</h3>
+                            <span class="text-[11px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-semibold">Google Search Grounding</span>
                         </div>
+                        <p class="text-xs text-slate-500 mb-4">역사, 과학, 수학 개념 등 궁금한 점을 최신 정보로 정확하게 답변해 줍니다.</p>
                         <div class="flex gap-2 mb-4">
-                            <input type="text" id="search-query" value="이순신 장군 3대 대첩이 뭐야?" class="bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-800 flex-grow">
+                            <input type="text" id="search-query" value="조선 시대 임진왜란 때 이순신 장군 3대 대첩이 뭐야?" class="bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-800 flex-grow">
                             <button onclick="searchAIQna()" id="btn-gen-search" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shrink-0">🔍 질문하기</button>
                         </div>
                         <div id="search-result" class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs leading-relaxed hidden min-h-[160px] max-h-[220px] overflow-y-auto"></div>
@@ -370,45 +432,87 @@ html_code = """
     </main>
 
     <footer class="bg-white border-t border-slate-200 mt-8 py-4 text-center text-xs text-slate-500">
-        <p>초등 5학년 맞춤 주간 일정표 & AI 스마트 루틴 대시보드</p>
+        <p>초등 5학년 맞춤 주간 일정표 & AI 스마트 루틴 대시보드 • 데이터는 브라우저에 안전하게 저장됩니다.</p>
     </footer>
 
+    <!-- JS Application Logic (5.py 100% 원본 유지) -->
     <script>
-        // Streamlit Secrets에서 안전하게 주입된 API 키 연동
         const apiKey = "__API_KEY__";
 
         const DEFAULT_WEEKDAY_SCHEDULES = {
-            mon: { title: "월요일 일정 (수학 데이)", items: [{ time: "15:00 ~ 17:00", name: "📐 수학학원", detail: "픽업", badge: "학원" }, { time: "17:30 ~ 18:30", name: "🥋 합기도 학원", detail: "운동", badge: "운동" }] },
-            tue: { title: "화요일 일정", items: [{ time: "14:00 ~ 15:00", name: "🎹 피아노 학원", detail: "학원", badge: "학원" }, { time: "17:30 ~ 18:30", name: "🥋 합기도 학원", detail: "운동", badge: "운동" }] },
-            wed: { title: "수요일 일정", items: [{ time: "14:00 ~ 15:00", name: "🎹 피아노 학원", detail: "학원", badge: "학원" }, { time: "15:00 ~ 17:00", name: "📐 수학 학원", detail: "연계", badge: "바로연결" }, { time: "17:30 ~ 18:30", name: "🥋 합기도 학원", detail: "운동", badge: "운동" }] },
-            thu: { title: "목요일 일정", items: [{ time: "14:00 ~ 15:00", name: "🎹 피아노 학원", detail: "학원", badge: "학원" }, { time: "17:30 ~ 18:30", name: "🥋 합기도 학원", detail: "운동", badge: "운동" }] },
-            fri: { title: "금요일 일정", items: [{ time: "14:00 ~ 16:00", name: "🎨 미술 학원", detail: "학원", badge: "학원" }, { time: "17:30 ~ 18:30", name: "🥋 합기도 학원", detail: "운동", badge: "운동" }] }
+            mon: {
+                title: "월요일 일정 (수학 데이)",
+                items: [
+                    { time: "14:00 ~ 15:00", name: "하교 & 할아버지 댁 휴식", detail: "학교 수업 종료 후 이동", badge: "휴식" },
+                    { time: "15:00 ~ 17:00", name: "📐 수학학원", detail: "픽업 차량 이용 이동", badge: "학원" },
+                    { time: "17:00 ~ 17:30", name: "할아버지 댁 이동 & 간식", detail: "휴식 및 합기도 준비", badge: "이동" },
+                    { time: "17:30 ~ 18:30", name: "🥋 합기도 학원", detail: "할아버지 댁에서 도보 3분", badge: "운동" },
+                    { time: "18:30 ~ 19:15", name: "🚘 하원 픽업 & 집 이동", detail: "18:40 픽업 ➡️ 19:15 집 도착", badge: "픽업" }
+                ]
+            },
+            tue: {
+                title: "화요일 일정 (★ 여유 시간 활용)",
+                items: [
+                    { time: "14:00 ~ 15:00", name: "🎹 피아노 학원", detail: "픽업 차량 이용 이동", badge: "학원" },
+                    { time: "15:00 ~ 17:30", name: "🏠 할아버지 댁 여유시간", detail: "💡 독서, 학교/학원 숙제 일부 사전 해결", badge: "여유시간" },
+                    { time: "17:30 ~ 18:30", name: "🥋 합기도 학원", detail: "할아버지 댁에서 도보 3분", badge: "운동" },
+                    { time: "18:30 ~ 19:15", name: "🚘 하원 픽업 & 집 이동", detail: "18:40 픽업 ➡️ 19:15 집 도착", badge: "픽업" }
+                ]
+            },
+            wed: {
+                title: "수요일 일정 (★ 학원 연계 데이)",
+                items: [
+                    { time: "14:00 ~ 15:00", name: "🎹 피아노 학원", detail: "픽업 차량 이용 이동", badge: "학원" },
+                    { time: "15:00 ~ 17:00", name: "📐 수학 학원", detail: "💡 피아노 학원 바로 옆 호실로 즉시 이동", badge: "바로연결" },
+                    { time: "17:00 ~ 17:30", name: "할아버지 댁 이동", detail: "잠시 휴식 후 이동", badge: "휴식" },
+                    { time: "17:30 ~ 18:30", name: "🥋 합기도 학원", detail: "할아버지 댁에서 도보 3분", badge: "운동" },
+                    { time: "18:30 ~ 19:15", name: "🚘 하원 픽업 & 집 이동", detail: "18:40 픽업 ➡️ 19:15 집 도착", badge: "픽업" }
+                ]
+            },
+            thu: {
+                title: "목요일 일정 (★ 여유 시간 활용)",
+                items: [
+                    { time: "14:00 ~ 15:00", name: "🎹 피아노 학원", detail: "픽업 차량 이용 이동", badge: "학원" },
+                    { time: "15:00 ~ 17:30", name: "🏠 할아버지 댁 여유시간", detail: "💡 독서, 역사 책 읽기 및 숙제 해결", badge: "여유시간" },
+                    { time: "17:30 ~ 18:30", name: "🥋 합기도 학원", detail: "할아버지 댁에서 도보 3분", badge: "운동" },
+                    { time: "18:30 ~ 19:15", name: "🚘 하원 픽업 & 집 이동", detail: "18:40 픽업 ➡️ 19:15 집 도착", badge: "픽업" }
+                ]
+            },
+            fri: {
+                title: "금요일 일정 (미술 데이)",
+                items: [
+                    { time: "14:00 ~ 16:00", name: "🎨 미술 학원", detail: "픽업 차량 이용 이동", badge: "학원" },
+                    { time: "16:00 ~ 17:30", name: "🏠 할아버지 댁 휴식 & 간식", detail: "자유시간 및 독서", badge: "휴식" },
+                    { time: "17:30 ~ 18:30", name: "🥋 합기도 학원", detail: "할아버지 댁에서 도보 3분", badge: "운동" },
+                    { time: "18:30 ~ 19:15", name: "🚘 하원 픽업 & 집 이동", detail: "18:40 픽업 ➡️ 19:15 집 도착", badge: "픽업" }
+                ]
+            }
         };
 
         const DEFAULT_CHECKLIST_WEEKDAY = [
-            { id: "w1", text: "아침 뇌 깨우기: 한국사 시청", checked: false },
-            { id: "w2", text: "학원 미션 및 안전 이동", checked: false },
-            { id: "w3", text: "70분 몰입 학습 완수", checked: false },
-            { id: "w4", text: "내일 가방 및 책상 정돈", checked: false },
-            { id: "w5", text: "22:00 이전 취침 골든타임", checked: false }
+            { id: "w1", text: "아침 뇌 깨우기: 06:50 최태성 한국사 시청 또는 스트레칭", checked: false },
+            { id: "w2", text: "학원 미션: 학원 수강 및 안전한 이동 (도보/차량)", checked: false },
+            { id: "w3", text: "70분 몰입 학습: 수학(30분)+영어(15분)+국어 어휘(15분) 완수", checked: false },
+            { id: "w4", text: "내일 준비: 21:10 책상 정돈 및 책가방 미리 챙기기", checked: false },
+            { id: "w5", text: "취침 골든타임: 21:20 샤워 ➡️ 22:00~22:10 소등 및 눕기", checked: false }
         ];
 
         const DEFAULT_CHECKLIST_WEEKEND = [
-            { id: "wk1", text: "주말 모닝 공부 90분 완주", checked: false },
-            { id: "wk2", text: "아빠와 야구 야외활동", checked: false },
-            { id: "wk3", text: "게임 약속 준수 (3시간)", checked: false },
-            { id: "wk4", text: "밤 몰입 독서 1시간", checked: false },
-            { id: "wk5", text: "취침 리듬 유지", checked: false }
+            { id: "wk1", text: "주말 모닝 공부: 기상 직후 90분 학습 (수학+영어+독서) 완수하기", checked: false },
+            { id: "wk2", text: "아빠와 야구: 13:00~15:30 햇빛 쬐며 신체활동 다녀오기", checked: false },
+            { id: "wk3", text: "게임 약속 준수: 3시간 쪼개기 규칙 (1.5시간 × 2회) 지키기", checked: false },
+            { id: "wk4", text: "밤 몰입 독서: 20:00~21:00 부모님 운동 시간 동안 1시간 독서", checked: false },
+            { id: "wk5", text: "주말 취침 리듬 유지: 22:00~22:10 이전에 제자리에 눕기", checked: false }
         ];
 
         let appData = {
             schedules: JSON.parse(JSON.stringify(DEFAULT_WEEKDAY_SCHEDULES)),
             checklistWeekday: JSON.parse(JSON.stringify(DEFAULT_CHECKLIST_WEEKDAY)),
             checklistWeekend: JSON.parse(JSON.stringify(DEFAULT_CHECKLIST_WEEKEND)),
-            lastDate: "",
+            lastDate: getTodayString(),
             historyLog: [],
             stickers: [],
-            rewardGoal: "아빠와 프로야구 직관 가기!",
+            rewardGoal: "아빠와 프로야구 직관 가기 & 갖고 싶던 선물!",
             isEditMode: false,
             currentDayKey: 'mon',
             currentPlanKey: 'A',
@@ -416,177 +520,843 @@ html_code = """
         };
 
         function loadData() {
-            const stored = localStorage.getItem('elem5_routine_data_v3');
-            if (stored) { try { appData = { ...appData, ...JSON.parse(stored) }; } catch(e){}}
+            const stored = localStorage.getItem('elem5_routine_data_v2');
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    appData = { ...appData, ...parsed };
+                } catch (e) {
+                    console.error("Storage load error:", e);
+                }
+            }
             if (!appData.stickers) appData.stickers = [];
+            if (!appData.rewardGoal) appData.rewardGoal = "아빠와 프로야구 직관 가기 & 갖고 싶던 선물!";
             checkAndResetDailyData();
         }
 
         function saveData() {
-            localStorage.setItem('elem5_routine_data_v3', JSON.stringify(appData));
+            localStorage.setItem('elem5_routine_data_v2', JSON.stringify(appData));
         }
 
         function getTodayString() {
             const today = new Date();
-            return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
         }
 
         function checkAndResetDailyData() {
             const todayStr = getTodayString();
             const dateBadge = document.getElementById('current-date-badge');
             if (dateBadge) dateBadge.innerText = `오늘: ${todayStr}`;
+
             if (appData.lastDate !== todayStr) {
+                const prevWeekdayDone = appData.checklistWeekday.filter(i => i.checked).length;
+                const prevWeekendDone = appData.checklistWeekend.filter(i => i.checked).length;
+                const totalDone = Math.max(prevWeekdayDone, prevWeekendDone);
+
+                if (appData.lastDate) {
+                    appData.historyLog.unshift({
+                        date: appData.lastDate,
+                        count: totalDone,
+                        total: 5
+                    });
+                    if (appData.historyLog.length > 14) appData.historyLog.pop();
+                }
+
+                appData.checklistWeekday.forEach(item => item.checked = false);
+                appData.checklistWeekend.forEach(item => item.checked = false);
                 appData.lastDate = todayStr;
                 saveData();
+            }
+        }
+
+        function forceDailyReset() {
+            if (window.confirm("오늘 완료한 체크리스트를 정말 초기화하시겠습니까?")) {
+                appData.checklistWeekday.forEach(item => item.checked = false);
+                appData.checklistWeekend.forEach(item => item.checked = false);
+                saveData();
+                renderChecklists();
+                updateStreakBadge();
             }
         }
 
         function toggleEditMode() {
             appData.isEditMode = !appData.isEditMode;
             const btn = document.getElementById('btn-edit-mode');
-            btn.className = appData.isEditMode ? "text-xs px-3 py-1.5 bg-amber-500 text-white font-bold rounded-xl transition-all shrink-0 whitespace-nowrap" : "text-xs px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition-all shrink-0 whitespace-nowrap";
-            btn.innerText = appData.isEditMode ? "💾 수정 완료" : "✏️ 일정 수정";
+            if (appData.isEditMode) {
+                btn.className = "text-xs px-3 py-1.5 bg-amber-500 text-white font-bold rounded-xl transition-all shadow-sm shrink-0 whitespace-nowrap";
+                btn.innerText = "💾 수정 완료 및 저장";
+            } else {
+                btn.className = "text-xs px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition-all shrink-0 whitespace-nowrap";
+                btn.innerText = "✏️ 일정 수정";
+                saveData();
+            }
             renderDaySchedule(appData.currentDayKey);
             renderChecklists();
         }
 
         function switchTab(tabId) {
-            ['dashboard', 'weekday', 'evening', 'weekend', 'checklist', 'ai'].forEach(t => {
-                document.getElementById(`sec-${t}`)?.classList.add('hidden');
+            const tabs = ['dashboard', 'weekday', 'evening', 'weekend', 'checklist', 'ai'];
+            tabs.forEach(t => {
+                const sec = document.getElementById(`sec-${t}`);
                 const nav = document.getElementById(`nav-${t}`);
-                if (nav) { nav.classList.remove('active'); nav.classList.add('text-slate-600'); }
+                if (sec) sec.classList.add('hidden');
+                if (nav) {
+                    nav.classList.remove('active');
+                    nav.classList.add('text-slate-600');
+                }
             });
-            document.getElementById(`sec-${tabId}`)?.classList.remove('hidden');
+
+            const activeSec = document.getElementById(`sec-${tabId}`);
             const activeNav = document.getElementById(`nav-${tabId}`);
-            if (activeNav) { activeNav.classList.add('active'); activeNav.classList.remove('text-slate-600'); }
+            if (activeSec) activeSec.classList.remove('hidden');
+            if (activeNav) {
+                activeNav.classList.add('active');
+                activeNav.classList.remove('text-slate-600');
+            }
+
+            if (tabId === 'checklist') renderHistoryLog();
             if (tabId === 'ai') renderStickerGallery();
         }
 
         function renderDaySchedule(dayKey) {
             appData.currentDayKey = dayKey;
             ['mon', 'tue', 'wed', 'thu', 'fri'].forEach(d => {
-                document.getElementById(`day-${d}`)?.className = (d === dayKey) ? "day-btn active px-4 py-2 rounded-xl border border-slate-200 bg-white text-sm transition-all" : "day-btn px-4 py-2 rounded-xl border border-slate-200 bg-white text-sm transition-all";
+                const btn = document.getElementById(`day-${d}`);
+                if (btn) {
+                    btn.className = (d === dayKey) ? "day-btn active px-4 py-2 rounded-xl border border-slate-200 bg-white text-sm transition-all" : "day-btn px-4 py-2 rounded-xl border border-slate-200 bg-white text-sm transition-all";
+                }
             });
+
             const data = appData.schedules[dayKey];
             const container = document.getElementById('day-schedule-card');
             if (!container || !data) return;
 
-            let html = `<div class="flex items-center justify-between border-b pb-3"><h3 class="text-lg font-bold text-slate-800">${escapeHtml(data.title)}</h3></div><div class="space-y-3">`;
-            data.items.forEach((item) => {
-                html += `
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 bg-slate-50 rounded-xl border border-slate-100 gap-2">
-                        <div class="flex items-center gap-3">
-                            <span class="text-xs font-bold text-slate-500 w-28 shrink-0">🕒 ${escapeHtml(item.time)}</span>
-                            <span class="text-sm font-bold text-slate-800">${escapeHtml(item.name)}</span>
+            let html = `
+                <div class="flex items-center justify-between border-b pb-3">
+                    <h3 class="text-lg font-bold text-slate-800">
+                        ${appData.isEditMode 
+                            ? `<input type="text" value="${escapeHtml(data.title)}" onchange="updateDayTitle('${dayKey}', this.value)" class="editable-input font-bold text-lg w-full">`
+                            : escapeHtml(data.title)}
+                    </h3>
+                    <span class="text-xs text-slate-500 font-medium">하교/차량 픽업 동선</span>
+                </div>
+                <div class="space-y-3">
+            `;
+
+            data.items.forEach((item, index) => {
+                let badgeColor = "bg-slate-100 text-slate-700";
+                if (item.badge === "학원") badgeColor = "bg-indigo-100 text-indigo-800";
+                if (item.badge === "운동") badgeColor = "bg-red-100 text-red-800";
+                if (item.badge === "여유시간") badgeColor = "bg-emerald-100 text-emerald-800 font-bold";
+                if (item.badge === "바로연결") badgeColor = "bg-amber-100 text-amber-800 font-bold";
+
+                if (appData.isEditMode) {
+                    html += `
+                        <div class="p-3.5 bg-amber-50/50 rounded-xl border border-amber-200 flex flex-col gap-2 text-xs">
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold">시간:</span>
+                                <input type="text" value="${escapeHtml(item.time)}" onchange="updateScheduleItem('${dayKey}', ${index}, 'time', this.value)" class="editable-input w-36">
+                                <span class="font-bold ml-2">활동명:</span>
+                                <input type="text" value="${escapeHtml(item.name)}" onchange="updateScheduleItem('${dayKey}', ${index}, 'name', this.value)" class="editable-input font-bold flex-grow">
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold">상세:</span>
+                                <input type="text" value="${escapeHtml(item.detail)}" onchange="updateScheduleItem('${dayKey}', ${index}, 'detail', this.value)" class="editable-input flex-grow">
+                            </div>
                         </div>
-                        <span class="text-xs text-slate-500">${escapeHtml(item.detail)}</span>
-                    </div>
-                `;
+                    `;
+                } else {
+                    html += `
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 bg-slate-50 rounded-xl hover:bg-slate-100 transition-all border border-slate-100 gap-2">
+                            <div class="flex items-center gap-3">
+                                <span class="text-xs font-bold text-slate-500 w-28 shrink-0">🕒 ${escapeHtml(item.time)}</span>
+                                <span class="text-sm font-bold text-slate-800">${escapeHtml(item.name)}</span>
+                            </div>
+                            <div class="flex items-center gap-2 justify-between sm:justify-end">
+                                <span class="text-xs text-slate-500">${escapeHtml(item.detail)}</span>
+                                <span class="text-[11px] px-2 py-0.5 rounded-md ${badgeColor}">${escapeHtml(item.badge)}</span>
+                            </div>
+                        </div>
+                    `;
+                }
             });
-            container.innerHTML = html + `</div>`;
+
+            html += `</div>`;
+            container.innerHTML = html;
         }
+
+        function updateDayTitle(dayKey, value) {
+            appData.schedules[dayKey].title = value;
+            saveData();
+        }
+
+        function updateScheduleItem(dayKey, index, key, value) {
+            appData.schedules[dayKey].items[index][key] = value;
+            saveData();
+        }
+
+        const eveningPlans = {
+            A: {
+                title: "🟢 Plan A: 평소 루틴 (저녁 준비가 바로 되는 날)",
+                items: [
+                    { time: "19:15 ~ 19:30", title: "귀가 및 정돈", detail: "손 씻기, 알림장/가방 정리, 옷 갈아입기 / 저녁 준비" },
+                    { time: "19:30 ~ 20:10", title: "저녁 식사", detail: "온 가족 식사 및 하루 일과 도란도란 대화" },
+                    { time: "20:10 ~ 21:20", title: "⚡ 자기주도 몰입 학습 (70분)", detail: "수학(30m) ➡️ 영어(15m) ➡️ 국어/어휘(15m) ➡️ 내일가방(10m)" },
+                    { time: "21:20 ~ 21:50", title: "🚿 샤워 & 취침 준비", detail: "21:20~21:30 샤워 들어가기 ➡️ 머리 말리기 및 소등 준비" },
+                    { time: "21:50 ~ 22:10", title: "🛌 잠자리 취침 완료", detail: "22:00 ~ 22:10 사이 완전히 눕기 (수면 골든타임)" }
+                ]
+            },
+            B: {
+                title: "🟡 Plan B: 유연 루틴 (퇴근이 늦거나 저녁 준비가 길어지는 날)",
+                items: [
+                    { time: "19:15 ~ 19:40", title: "자기 관리 시간", detail: "부모님 저녁 준비 동안 손 씻기, 가방 정리, 할 일 체크" },
+                    { time: "19:40 ~ 20:10", title: "📖 선(先) 집중 학습 (30분)", detail: "영어 단어 + 영어 학습지 1장 + 국어 독해 1장 미리 끝내기" },
+                    { time: "20:10 ~ 20:50", title: "저녁 식사", detail: "식사 및 식탁 정돈" },
+                    { time: "20:50 ~ 21:20", title: "📐 메인 학습: 수학 & 마무리 (30분)", detail: "수학 숙제 마저 마무리 & 내일 책가방 챙기기" },
+                    { time: "21:20 ~ 21:50", title: "🚿 샤워 & 취침 준비", detail: "21:20~21:30 샤워 시작, 머리 말리기" },
+                    { time: "21:50 ~ 22:10", title: "🛌 잠자리 취침 완료", detail: "22:00~22:10 취침 완수" }
+                ]
+            }
+        };
 
         function setEveningPlan(planKey) {
             appData.currentPlanKey = planKey;
-            document.getElementById('btn-planA').className = planKey === 'A' ? "px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-600 text-white" : "px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-600";
-            document.getElementById('btn-planB').className = planKey === 'B' ? "px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-600 text-white" : "px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-600";
-            
-            const plans = {
-                A: [{ time: "20:10 ~ 21:20", title: "⚡ 자기주도 몰입 학습 (70분)", detail: "수학 ➡️ 영어 ➡️ 국어" }],
-                B: [{ time: "19:40 ~ 20:10", title: "📖 선(先) 집중 학습", detail: "영어 + 국어" }, { time: "20:50 ~ 21:20", title: "📐 수학 마무리", detail: "수학 숙제" }]
-            };
-            document.getElementById('evening-plan-container').innerHTML = `<div class="space-y-3">` + plans[planKey].map(i => `<div class="p-4 bg-slate-50 rounded-xl border border-slate-100"><div class="text-xs font-bold text-indigo-600">${i.time}</div><div class="text-sm font-bold">${i.title}</div><div class="text-xs text-slate-600">${i.detail}</div></div>`).join('') + `</div>`;
+            const btnA = document.getElementById('btn-planA');
+            const btnB = document.getElementById('btn-planB');
+
+            if (planKey === 'A') {
+                if (btnA) btnA.className = "px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-600 text-white";
+                if (btnB) btnB.className = "px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200";
+            } else {
+                if (btnB) btnB.className = "px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-600 text-white";
+                if (btnA) btnA.className = "px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200";
+            }
+
+            const plan = eveningPlans[planKey];
+            const container = document.getElementById('evening-plan-container');
+            if (!container) return;
+
+            let html = `
+                <div class="border-b pb-3">
+                    <h3 class="text-lg font-bold text-slate-800">${plan.title}</h3>
+                </div>
+                <div class="space-y-3">
+            `;
+
+            plan.items.forEach(item => {
+                html += `
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-2">
+                        <div class="w-36 text-xs font-bold text-indigo-600 shrink-0">⏰ ${item.time}</div>
+                        <div class="flex-grow">
+                            <h4 class="text-sm font-bold text-slate-800 mb-0.5">${item.title}</h4>
+                            <p class="text-xs text-slate-600">${item.detail}</p>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div>`;
+            container.innerHTML = html;
         }
 
+        const weekendData = {
+            sat: {
+                title: "🗓️ 토요일 알찬 타임라인",
+                items: [
+                    { time: "06:30 ~ 07:00", task: "기상 및 아침 뇌 깨우기", note: "6시 30분~7시 사이 기상" },
+                    { time: "07:00 ~ 08:30", task: "📝 [주말 모닝 학습] 90분 몰입 완주", note: "기상 직후 바로 공부! (수학 문제집+영어+독서)" },
+                    { time: "08:30 ~ 09:00", task: "🍚 아침 식사 및 정돈", note: "8시 30분~9시 사이 온 가족 아침 식사" },
+                    { time: "09:00 ~ 10:00", task: "🔬 흥미 탐구 및 1차 게임 준비", note: "자유시간 및 탐구 타임" },
+                    { time: "10:00 ~ 12:00", task: "🎮 게임 & 자유시간 1차 (120분)", note: "공부 먼저 끝내고 기분 좋게 자유시간" },
+                    { time: "12:00 ~ 13:00", task: "🍱 점심 식사", note: "맛있는 점심 식사" },
+                    { time: "13:00 ~ 15:30", task: "⚾ [신체활동] 아빠와 야구", note: "햇빛 쬐며 신체 발달 & 스트레스 해소" },
+                    { time: "15:30 ~ 16:30", task: "🔬 흥미 탐구 (과학/역사)", note: "좋아하는 과학 다큐, 실험 키트, 역사 책" },
+                    { time: "16:30 ~ 18:00", task: "🎮 게임 & 자유시간 2차 (90분)", note: "게임 3시간 쪼개기 법칙 완수" },
+                    { time: "18:00 ~ 19:00", task: "🍖 저녁 식사", note: "가족 저녁 식사" },
+                    { time: "19:00 ~ 20:00", task: "🎲 가족 화목 시간", note: "보드게임 또는 고스톱 타임" },
+                    { time: "20:00 ~ 21:00", task: "📖 밤 몰입 독서 1시간", note: "부모님 운동 시간 동안 아이 차분한 독서" },
+                    { time: "21:00 ~ 21:20", task: "🛋️ 자유 휴식 & 샤워 준비", note: "취침 전 마음 정돈" },
+                    { time: "21:20 ~ 22:10", task: "🚿 샤워 및 취침", note: "21:20 샤워 ➡️ 22:00~22:10 취침" }
+                ]
+            },
+            sun: {
+                title: "🗓️ 일요일 알찬 타임라인 (예배 포함)",
+                items: [
+                    { time: "06:30 ~ 07:00", task: "기상 및 아침 뇌 깨우기", note: "평일과 동일한 수면 리듬 유지" },
+                    { time: "07:00 ~ 08:30", task: "📝 [주말 모닝 학습] 90분 몰입 완주", note: "기상 직후 바로 공부! (수학 문제집+영어+독서)" },
+                    { time: "08:30 ~ 09:00", task: "🍚 아침 식사 및 정돈", note: "8시 30분~9시 사이 온 가족 아침 식사" },
+                    { time: "09:00 ~ 10:00", task: "🙏 인터넷 예배", note: "가족 인터넷 예배 드리기" },
+                    { time: "10:00 ~ 12:00", task: "🎮 게임 & 자유시간 1차 (120분)", note: "공부 완주 후 기분 좋은 자유시간" },
+                    { time: "12:00 ~ 13:00", task: "🍱 점심 식사", note: "점심 식사" },
+                    { time: "13:00 ~ 15:30", task: "⚾ [신체활동] 아빠와 야구 / 외출", note: "야외활동 또는 주말 여행/외출" },
+                    { time: "15:30 ~ 16:30", task: "🔬 흥미 탐구 (과학/역사)", note: "자연 관찰, 과학동아 시청 등" },
+                    { time: "16:30 ~ 18:00", task: "🎮 게임 & 자유시간 2차 (90분)", note: "게임 시간 마무리" },
+                    { time: "18:00 ~ 19:00", task: "🍖 저녁 식사", note: "가족 저녁 식사" },
+                    { time: "19:00 ~ 20:00", task: "🎲 가족 화목 시간", note: "보드게임 또는 이야기 나누기" },
+                    { time: "20:00 ~ 21:00", task: "📖 밤 몰입 독서 1시간", note: "부모님 운동 시간 동안 아이 차분한 독서" },
+                    { time: "21:00 ~ 21:20", task: "🛋️ 자유 휴식 & 샤워 준비", note: "월요일 준비" },
+                    { time: "21:20 ~ 22:10", task: "🚿 샤워 및 취침", note: "21:20 샤워 ➡️ 22:00~22:10 취침" }
+                ]
+            }
+        };
+
         function setWeekendDay(dayKey) {
-            document.getElementById('btn-sat').className = dayKey === 'sat' ? "px-3 py-1 rounded-lg text-xs font-bold bg-emerald-600 text-white" : "px-3 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-600";
-            document.getElementById('btn-sun').className = dayKey === 'sun' ? "px-3 py-1 rounded-lg text-xs font-bold bg-emerald-600 text-white" : "px-3 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-600";
-            document.getElementById('weekend-title').innerText = dayKey === 'sat' ? "🗓️ 토요일 알찬 타임라인" : "🗓️ 일요일 알찬 타임라인 (예배 포함)";
-            document.getElementById('weekend-timeline-list').innerHTML = `<div class="p-3.5 bg-slate-50 rounded-xl border border-slate-100">모닝 90분 학습 + 아빠와 야구 야외활동 루틴 진행</div>`;
+            appData.currentWeekendKey = dayKey;
+            const btnSat = document.getElementById('btn-sat');
+            const btnSun = document.getElementById('btn-sun');
+
+            if (dayKey === 'sat') {
+                if (btnSat) btnSat.className = "px-3 py-1 rounded-lg text-xs font-bold bg-emerald-600 text-white";
+                if (btnSun) btnSun.className = "px-3 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200";
+            } else {
+                if (btnSun) btnSun.className = "px-3 py-1 rounded-lg text-xs font-bold bg-emerald-600 text-white";
+                if (btnSat) btnSat.className = "px-3 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200";
+            }
+
+            const data = weekendData[dayKey];
+            const titleEl = document.getElementById('weekend-title');
+            if (titleEl) titleEl.innerText = data.title;
+            const container = document.getElementById('weekend-timeline-list');
+            if (!container) return;
+
+            let html = "";
+            data.items.forEach(item => {
+                const isHighlight = item.task.includes("야구") || item.task.includes("독서") || item.task.includes("모닝 학습");
+                const bgClass = isHighlight ? "bg-emerald-50/70 border-emerald-200" : "bg-slate-50 border-slate-100";
+
+                html += `
+                    <div class="p-3.5 rounded-xl border ${bgClass} flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs font-bold text-slate-500 w-32 shrink-0">⏰ ${escapeHtml(item.time)}</span>
+                            <span class="text-sm font-bold text-slate-800">${escapeHtml(item.task)}</span>
+                        </div>
+                        <span class="text-xs text-slate-600">${escapeHtml(item.note)}</span>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
         }
 
         function renderChecklists() {
-            ['weekday', 'weekend'].forEach(type => {
-                const list = type === 'weekday' ? appData.checklistWeekday : appData.checklistWeekend;
-                const container = document.getElementById(`${type}-checklist-container`);
-                const countEl = document.getElementById(`${type}-count`);
-                if (!container) return;
-                let checkedCount = 0;
-                container.innerHTML = list.map((item, idx) => {
-                    if (item.checked) checkedCount++;
-                    return `<label class="flex items-center gap-3 p-2.5 bg-slate-50 rounded-xl cursor-pointer border border-slate-100"><input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleCheckItem('${type}', ${idx})" class="w-4 h-4 rounded"><span class="${item.checked ? 'line-through text-slate-400' : 'text-slate-700'}">${escapeHtml(item.text)}</span></label>`;
-                }).join('');
-                if (countEl) countEl.innerText = `${checkedCount} / ${list.length} 완료`;
-            });
+            const wContainer = document.getElementById('weekday-checklist-container');
+            const wCount = document.getElementById('weekday-count');
+            let wCheckedCount = 0;
+
+            if (wContainer) {
+                let wHtml = "";
+                appData.checklistWeekday.forEach((item, idx) => {
+                    if (item.checked) wCheckedCount++;
+                    wHtml += `
+                        <label class="flex items-center gap-3 p-2.5 bg-slate-50 rounded-xl hover:bg-slate-100 cursor-pointer border border-slate-100">
+                            <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleCheckItem('w', ${idx})" class="w-4 h-4 text-blue-600 rounded">
+                            <span class="${item.checked ? 'line-through text-slate-400 font-medium' : 'text-slate-700 font-medium'} flex-grow">
+                                ${appData.isEditMode 
+                                    ? `<input type="text" value="${escapeHtml(item.text)}" onchange="updateCheckItemText('w', ${idx}, this.value)" class="editable-input text-xs w-full">`
+                                    : escapeHtml(item.text)}
+                            </span>
+                        </label>
+                    `;
+                });
+                wContainer.innerHTML = wHtml;
+            }
+            if (wCount) wCount.innerText = `${wCheckedCount} / ${appData.checklistWeekday.length} 완료`;
+
+            const wkContainer = document.getElementById('weekend-checklist-container');
+            const wkCount = document.getElementById('weekend-count');
+            let wkCheckedCount = 0;
+
+            if (wkContainer) {
+                let wkHtml = "";
+                appData.checklistWeekend.forEach((item, idx) => {
+                    if (item.checked) wkCheckedCount++;
+                    wkHtml += `
+                        <label class="flex items-center gap-3 p-2.5 bg-slate-50 rounded-xl hover:bg-slate-100 cursor-pointer border border-slate-100">
+                            <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleCheckItem('wk', ${idx})" class="w-4 h-4 text-emerald-600 rounded">
+                            <span class="${item.checked ? 'line-through text-slate-400 font-medium' : 'text-slate-700 font-medium'} flex-grow">
+                                ${appData.isEditMode 
+                                    ? `<input type="text" value="${escapeHtml(item.text)}" onchange="updateCheckItemText('wk', ${idx}, this.value)" class="editable-input text-xs w-full">`
+                                    : escapeHtml(item.text)}
+                            </span>
+                        </label>
+                    `;
+                });
+                wkContainer.innerHTML = wkHtml;
+            }
+            if (wkCount) wkCount.innerText = `${wkCheckedCount} / ${appData.checklistWeekend.length} 완료`;
+
+            updateStreakBadge();
         }
 
         function toggleCheckItem(type, index) {
-            if (type === 'weekday') appData.checklistWeekday[index].checked = !appData.checklistWeekday[index].checked;
-            else appData.checklistWeekend[index].checked = !appData.checklistWeekend[index].checked;
+            if (type === 'w') {
+                appData.checklistWeekday[index].checked = !appData.checklistWeekday[index].checked;
+            } else {
+                appData.checklistWeekend[index].checked = !appData.checklistWeekend[index].checked;
+            }
             saveData();
             renderChecklists();
         }
 
-        function forceDailyReset() {
-            appData.checklistWeekday.forEach(i => i.checked = false);
-            appData.checklistWeekend.forEach(i => i.checked = false);
+        function updateCheckItemText(type, index, value) {
+            if (type === 'w') {
+                appData.checklistWeekday[index].text = value;
+            } else {
+                appData.checklistWeekend[index].text = value;
+            }
             saveData();
-            renderChecklists();
         }
 
+        function updateStreakBadge() {
+            const streakBadge = document.getElementById('streak-badge');
+            if (!streakBadge) return;
+
+            let streak = 0;
+            const wDone = appData.checklistWeekday.filter(i => i.checked).length;
+            const wkDone = appData.checklistWeekend.filter(i => i.checked).length;
+
+            if (wDone === 5 || wkDone === 5) streak++;
+
+            for (let i = 0; i < appData.historyLog.length; i++) {
+                if (appData.historyLog[i].count >= 4) streak++;
+                else break;
+            }
+
+            streakBadge.innerHTML = `🔥 ${streak}일 연속 미션 완료 중!`;
+        }
+
+        function renderHistoryLog() {
+            const container = document.getElementById('history-cards-container');
+            const summary = document.getElementById('history-total-summary');
+            if (!container) return;
+
+            let html = "";
+            const logs = appData.historyLog.slice(0, 7);
+
+            if (logs.length === 0) {
+                html = `<div class="col-span-full text-center py-6 text-xs text-slate-400">아직 저장된 과거 기록이 없습니다. 오늘 미션을 시작해보세요!</div>`;
+            } else {
+                logs.forEach(log => {
+                    const isSuccess = log.count >= 4;
+                    const cardBg = isSuccess ? "bg-indigo-50 border-indigo-200 text-indigo-900" : "bg-slate-50 border-slate-200 text-slate-700";
+                    html += `
+                        <div class="p-3 rounded-xl border ${cardBg} text-center flex flex-col items-center justify-center">
+                            <span class="text-[10px] font-semibold text-slate-500">${log.date.slice(5)}</span>
+                            <span class="text-base font-black my-1">${log.count} / ${log.total}</span>
+                            <span class="text-[10px] font-bold ${isSuccess ? 'text-indigo-600' : 'text-slate-400'}">${isSuccess ? '🎉 완수' : '수고했어요'}</span>
+                        </div>
+                    `;
+                });
+            }
+            container.innerHTML = html;
+            if (summary) summary.innerText = `최근 ${logs.length}일 기록 저장됨`;
+        }
+
+        // --- GEMINI API HELPERS ---
+        async function fetchGeminiWithRetry(apiUrl, payload, retries = 2, delay = 800) {
+            if (!apiKey) throw new Error("API Key missing");
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (response.ok) {
+                        return await response.json();
+                    }
+                } catch (err) {
+                    if (i === retries - 1) throw err;
+                }
+                await new Promise(res => setTimeout(res, delay * Math.pow(2, i)));
+            }
+            throw new Error("API call failed");
+        }
+
+        // 1. AI Quiz Generator
         async function generateAIQuiz() {
+            const subject = document.getElementById('ai-quiz-subject').value;
             const resultBox = document.getElementById('ai-quiz-result');
+            const btn = document.getElementById('btn-gen-quiz');
+
             resultBox.classList.remove('hidden');
-            resultBox.innerHTML = `<div class="flex items-center gap-2 text-indigo-600 font-bold"><div class="spinner-dark"></div><span>AI 퀴즈 생성 중...</span></div>`;
-            setTimeout(() => {
-                resultBox.innerHTML = `<div class="bg-indigo-50 p-3.5 rounded-xl"><div class="font-bold text-indigo-900">📜 한국사 퀴즈</div><p class="text-xs mt-1">조선 시대 정약용이 거중기를 활용해 축조한 유네스코 세계문화유산은?</p><div class="mt-2 text-xs font-black text-emerald-700">✅ 정답: 수원 화성</div></div>`;
-            }, 800);
+            resultBox.innerHTML = `
+                <div class="flex items-center gap-2 text-indigo-600 font-bold">
+                    <div class="spinner-dark"></div>
+                    <span>한국사능력검정시험 유형 AI 퀴즈를 생성하는 중입니다...</span>
+                </div>
+            `;
+            btn.disabled = true;
+
+            const systemPrompt = "당신은 한국사능력검정시험(한능검) 출제위원입니다. 초등학교 5학년(한능검 기본 수준)에 맞추어 인물, 유물, 사료 힌트를 바탕으로 한 4지선다형 객관식 퀴즈 1개를 생성하세요. 퀴즈 본문 ➡️ 보기 4개 ➡️ 💡 힌트 및 탐구 해설 (중간 배치) ➡️ 🔒 [정답] 순서로 반환하세요.";
+            const userQuery = `${subject} 주제로 한국사능력검정시험(한능검 기본/초등) 스타일의 1분 퀴즈 1개를 만들어주세요.`;
+
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] }
+            };
+
+            try {
+                const data = await fetchGeminiWithRetry(apiUrl, payload);
+                const quizText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (!quizText) throw new Error("API response empty");
+                
+                resultBox.innerHTML = `
+                    <div class="bg-indigo-50/70 border border-indigo-200 p-3.5 rounded-xl space-y-2 text-slate-800">
+                        <div class="font-bold text-indigo-900 flex items-center justify-between border-b border-indigo-200 pb-2">
+                            <span>📜 한국사능력검정시험(한능검) 실전 퀴즈</span>
+                            <span class="text-[10px] bg-indigo-200 text-indigo-800 px-2 py-0.5 rounded-md font-bold">Gemini AI</span>
+                        </div>
+                        <div class="whitespace-pre-line text-xs font-medium text-slate-700 leading-relaxed">${escapeHtml(quizText)}</div>
+                    </div>
+                `;
+            } catch (err) {
+                console.warn("Gemini API call skipped, using Family Link 5th grade quiz bank:", err);
+                renderFallbackQuiz(subject);
+            } finally {
+                btn.disabled = false;
+            }
         }
 
+        function renderFallbackQuiz(subject) {
+            const resultBox = document.getElementById('ai-quiz-result');
+            const fallbackBank = {
+                "한국사": [
+                    { 
+                        q: "Q. [한국사능력검정시험 대표 유형] 다음 설명에 해당하는 조선 시대의 문화유산은 무엇일까요?\n\n- 정조 임금이 아버지 사도세자의 묘를 옮기면서 건설함\n- 정약용이 거중기를 활용하여 과학적으로 축조함\n- 유네스코 세계문화유산으로 지정됨", 
+                        options: ["1. 수원 화성", "2. 남한산성", "3. 한양도성", "4. 북한산성"], 
+                        desc: "💡 힌트 & 해설: 정조는 정약용이 만든 거중기를 활용하여 공사 기간과 비용을 크게 줄이고 아름다움과 방어 기능을 모두 갖춘 '수원 화성'을 건축했습니다.",
+                        a: "1번 수원 화성" 
+                    },
+                    { 
+                        q: "Q. [한국사능력검정시험 대표 유형] 1592년 임진왜란 당시 학익진 전법으로 일본 수군을 크게 무찌른 한산도 대첩을 이끈 장군은 누구일까요?", 
+                        options: ["1. 강감찬 장군", "2. 이순신 장군", "3. 김유신 장군", "4. 을지문덕 장군"], 
+                        desc: "💡 힌트 & 해설: 이순신 장군은 한산도 앞바다에서 학이 날개를 편 형태의 학익진 전법으로 거북선과 함께 승리를 이끌었습니다.",
+                        a: "2번 이순신 장군" 
+                    }
+                ],
+                "과학": [
+                    { 
+                        q: "Q. 초등 5학년 과학 [용액의 성질]: 푸른색 리트머스 종이를 붉은색으로 변하게 하는 용액의 성질은 무엇일까요?", 
+                        options: ["1. 염기성", "2. 산성", "3. 중성", "4. 점성"], 
+                        desc: "💡 힌트 & 해설: 식초, 레몬즙 같은 '산성 용액'은 푸른색 리트머스 종이를 붉게 변화시킵니다.",
+                        a: "2번 산성" 
+                    }
+                ],
+                "영어": [
+                    { 
+                        q: "Q. 다음 빈칸에 들어갈 가장 적절한 숙어 표현은? 'He is very ______ solving math puzzles.' (그는 수학 퀴즈 푸는 것을 잘해.)", 
+                        options: ["1. good at", "2. interested on", "3. afraid of", "4. famous to"], 
+                        desc: "💡 힌트 & 해설: 'be good at ~'은 '~를 잘하다/능숙하다'라는 뜻입니다.",
+                        a: "1번 good at" 
+                    }
+                ]
+            };
+
+            const key = subject.includes("한국사") ? "한국사" : subject.includes("과학") ? "과학" : "영어";
+            const items = fallbackBank[key];
+            const selected = items[Math.floor(Math.random() * items.length)];
+
+            resultBox.innerHTML = `
+                <div class="bg-indigo-50/70 border border-indigo-200 p-4 rounded-xl space-y-3 text-slate-800">
+                    <div class="font-bold text-indigo-900 flex items-center justify-between border-b border-indigo-200 pb-2">
+                        <span>🎯 [초등 5학년 심화 퀴즈] ${key} 탐구</span>
+                        <span class="text-[10px] bg-indigo-200 text-indigo-800 px-2 py-0.5 rounded-md font-bold">도전 퀴즈</span>
+                    </div>
+                    <div class="text-xs font-extrabold text-slate-900 leading-relaxed">${selected.q}</div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs text-slate-700 font-semibold my-1">
+                        ${selected.options.map(o => `<div class="bg-white/80 p-2 rounded-lg border border-indigo-100">${o}</div>`).join('')}
+                    </div>
+                    <div class="text-[11px] text-indigo-900 bg-white/90 p-2.5 rounded-lg border border-indigo-200 leading-relaxed">${selected.desc}</div>
+                    <details class="mt-2 pt-2 border-t border-indigo-200/60">
+                        <summary class="cursor-pointer text-xs font-bold text-indigo-600 hover:text-indigo-800">🔒 정답 확인하기 (클릭)</summary>
+                        <div class="mt-2 text-xs font-black text-emerald-700 bg-emerald-50 p-2 rounded-lg border border-emerald-200 inline-block">✅ 정답: ${selected.a}</div>
+                    </details>
+                </div>
+            `;
+        }
+
+        // 2. AI Voice Encouragement Generator
         async function generateAIVoice() {
+            const sitKey = document.getElementById('tts-situation').value;
+            const voiceName = document.getElementById('tts-voice').value;
+            const btn = document.getElementById('btn-gen-tts');
             const statusBox = document.getElementById('tts-status');
+
             statusBox.classList.remove('hidden');
-            statusBox.innerHTML = `<div class="p-3 bg-purple-50 rounded-xl text-xs font-bold text-purple-900">💬 "오늘도 멋진 5학년 대장님 파이팅!" (음성 준비 완료)</div>`;
+            btn.disabled = true;
+
+            const cleanText = getDynamicCheerPhrase(sitKey);
+
+            statusBox.innerHTML = `
+                <div class="p-3.5 bg-purple-50/80 border border-purple-200 rounded-xl text-left space-y-2">
+                    <div class="font-bold text-purple-900 text-xs flex items-center justify-between border-b border-purple-200 pb-1.5">
+                        <span class="flex items-center gap-1.5">💬 AI 멘토의 응원 메시지</span>
+                        <span id="tts-audio-status" class="text-[10px] bg-purple-200 text-purple-800 px-2 py-0.5 rounded-full font-bold">🎙️ 음성 준비 중...</span>
+                    </div>
+                    <div class="text-xs text-slate-800 font-medium leading-relaxed whitespace-pre-line">${escapeHtml(cleanText)}</div>
+                </div>
+            `;
+
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+            const payload = {
+                contents: [{ parts: [{ text: cleanText }] }],
+                generationConfig: {
+                    responseModalities: ["AUDIO"],
+                    speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: voiceName } } }
+                },
+                model: "gemini-2.5-flash-preview-tts"
+            };
+
+            const statusEl = document.getElementById('tts-audio-status');
+
+            try {
+                const data = await fetchGeminiWithRetry(apiUrl, payload);
+                const part = data.candidates?.[0]?.content?.parts?.[0];
+                const audioBase64 = part?.inlineData?.data;
+                const mimeType = part?.inlineData?.mimeType || "";
+
+                if (audioBase64) {
+                    if (statusEl) statusEl.innerText = "🔊 음성 재생 중!";
+                    let sampleRate = 24000;
+                    const match = mimeType.match(/rate=(\d+)/);
+                    if (match) sampleRate = parseInt(match[1], 10);
+
+                    const pcmBuffer = base64ToArrayBuffer(audioBase64);
+                    const pcm16 = new Int16Array(pcmBuffer);
+                    const wavBlob = pcm16ToWavBlob(pcm16, sampleRate);
+                    const audioUrl = URL.createObjectURL(wavBlob);
+
+                    const audio = new Audio(audioUrl);
+                    audio.play();
+                    audio.onended = () => { if (statusEl) statusEl.innerText = "✅ 재생 완료! 힘내서 파이팅!"; };
+                } else {
+                    throw new Error("TTS base64 missing");
+                }
+            } catch (err) {
+                console.warn("Gemini TTS API skipped, switching to Web Speech Synthesis:", err);
+                speakWithWebSpeech(cleanText, voiceName, statusEl);
+            } finally {
+                btn.disabled = false;
+            }
         }
 
+        function getDynamicCheerPhrase(sitKey) {
+            const greetings = ["멋진 5학년 대장님!", "오늘의 미션 영웅!", "파이팅 넘치는 우리 친구!", "최고의 탐구왕!"];
+            const greet = greetings[Math.floor(Math.random() * greetings.length)];
+            const phrases = {
+                morning: [`${greet} 좋은 아침이에요! 06시 30분 기상 완수! 오늘 최태성 한국사 시청하고 활기차게 등교해 봐요!`],
+                evening: [`${greet} 오늘 70분 저녁 몰입 학습 진짜 대단했어요! 수학, 영어, 국어까지 알차게 끝냈으니 이제 시원하게 샤워하고 편하게 쉬세요!`],
+                weekend: [`${greet} 아빠와 야구 신체활동 완수! 주말 모닝 90분 학습 완주까지 해내다니 정말 최고의 하루였어요!`],
+                together: [`${greet} 의샤의샤! 우리 함께 힘내요! 어려워 보이는 수학 문제도 한 걸음씩 차근차근 풀면 반드시 해결할 수 있어요!`],
+                happy: [`${greet} 우와! 기분이 최고라니 저도 너무 신나요! 이 신나는 기운으로 오늘 미션도 멋지게 다 섭렵해 볼까요?`],
+                comfort: [`${greet} 많이 피곤하거나 속상한 일이 있었나요? 괜찮아요. 오늘은 푹 쉬고 내일 다시 힘차게 일어나면 돼요!`],
+                confident: [`${greet} 너는 이미 멋진 능력을 가지고 있어요! 자신감을 갖고 도전하면 어떤 퀴즈와 문제도 멋지게 해결할 수 있습니다!`]
+            };
+            const list = phrases[sitKey] || phrases.together;
+            return list[Math.floor(Math.random() * list.length)];
+        }
+
+        function speakWithWebSpeech(cleanText, voiceName, statusEl) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(cleanText);
+                utterance.lang = 'ko-KR';
+                utterance.pitch = voiceName === 'Puck' ? 1.35 : 1.0;
+                utterance.rate = 1.0;
+                if (statusEl) statusEl.innerText = `🔊 태블릿 음성 (${voiceName} 톤) 재생 중!`;
+                window.speechSynthesis.speak(utterance);
+                utterance.onend = () => { if (statusEl) statusEl.innerText = "✅ 재생 완료! 오늘도 힘내자!"; };
+            } else {
+                if (statusEl) statusEl.innerText = "👏 축하해요! 오늘 미션 완수!";
+            }
+        }
+
+        function base64ToArrayBuffer(base64) {
+            const binaryString = window.atob(base64);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) bytes[i] = binaryString.charCodeAt(i);
+            return bytes.buffer;
+        }
+
+        function pcm16ToWavBlob(pcm16Data, sampleRate = 24000) {
+            const buffer = new ArrayBuffer(44 + pcm16Data.length * 2);
+            const view = new DataView(buffer);
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, 36 + pcm16Data.length * 2, true);
+            writeString(view, 8, 'WAVE');
+            writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, 1, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * 2, true);
+            view.setUint16(32, 2, true);
+            view.setUint16(34, 16, true);
+            writeString(view, 36, 'data');
+            view.setUint32(40, pcm16Data.length * 2, true);
+            for (let i = 0; i < pcm16Data.length; i++) view.setInt16(44 + i * 2, pcm16Data[i], true);
+            return new Blob([buffer], { type: 'audio/wav' });
+        }
+
+        function writeString(view, offset, string) {
+            for (let i = 0; i < string.length; i++) view.setUint8(offset + i, string.charCodeAt(i));
+        }
+
+        // 3. AI Reward Sticker Creator
         async function generateAISticker() {
+            const todayStr = getTodayString();
+            const existingTodaySticker = (appData.stickers || []).find(s => s.date === todayStr);
             const resultContainer = document.getElementById('sticker-result');
-            const prompt = document.getElementById('sticker-prompt').value;
-            appData.stickers.push({ id: Date.now(), title: prompt, icon: "⭐", gradient: "from-pink-400 to-purple-500" });
+            const btn = document.getElementById('btn-gen-sticker');
+
+            if (existingTodaySticker) {
+                resultContainer.innerHTML = `
+                    <div class="p-3 bg-amber-50 border border-amber-200 rounded-2xl text-center space-y-1">
+                        <div class="text-xs font-bold text-amber-900">⚠️ 오늘의 칭찬 스티커는 이미 획득했습니다! (1일 1장)</div>
+                        <div class="text-[11px] text-amber-700">내일 미션을 완수하고 또 새로운 칭찬 스티커에 도전해보세요! 😊</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const userPrompt = document.getElementById('sticker-prompt').value;
+            resultContainer.innerHTML = `<div class="flex flex-col items-center justify-center p-6 text-pink-600 gap-2"><div class="spinner-dark"></div><span class="text-xs font-bold">칭찬 스티커를 그리거나 생성하는 중입니다...</span></div>`;
+            btn.disabled = true;
+
+            const fullPrompt = `Cute cartoon badge sticker icon for a 5th grade Korean student: ${userPrompt}. Vector art style, white background, vibrant colors.`;
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-image:generateContent?key=${apiKey}`;
+            const payload = { contents: [{ parts: [{ text: fullPrompt }] }], generationConfig: { responseModalities: ['TEXT', 'IMAGE'] } };
+
+            try {
+                const data = await fetchGeminiWithRetry(apiUrl, payload);
+                const base64Data = data?.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
+
+                if (base64Data) {
+                    const stickerObj = { id: Date.now(), date: getTodayString(), title: userPrompt, img: `data:image/png;base64,${base64Data}` };
+                    saveStickerToCollection(stickerObj);
+                    resultContainer.innerHTML = `<div class="flex flex-col items-center gap-2"><img src="${stickerObj.img}" class="w-28 h-28 object-contain rounded-2xl shadow-md border border-pink-100"><span class="text-xs font-bold text-pink-700">🎉 축하합니다! 칭찬 스티커가 내 스티커북에 저장되었습니다!</span></div>`;
+                } else {
+                    throw new Error("No image data");
+                }
+            } catch (err) {
+                console.warn("Sticker Generation skipped, creating custom keyword badge:", err);
+                let selectedIcon = "🏆";
+                let bgGradient = "from-pink-400 to-purple-500";
+                if (userPrompt.includes("야구")) { selectedIcon = "⚾"; bgGradient = "from-amber-400 to-red-500"; }
+                else if (userPrompt.includes("로봇")) { selectedIcon = "🤖"; bgGradient = "from-blue-400 to-indigo-600"; }
+
+                const stickerObj = { id: Date.now(), date: getTodayString(), title: userPrompt, icon: selectedIcon, gradient: bgGradient };
+                saveStickerToCollection(stickerObj);
+
+                resultContainer.innerHTML = `
+                    <div class="flex flex-col items-center gap-2 p-3 bg-pink-50 rounded-2xl border border-pink-200 text-center">
+                        <div class="w-16 h-16 bg-gradient-to-tr ${bgGradient} rounded-full flex items-center justify-center text-3xl shadow-lg border-4 border-white animate-bounce">${selectedIcon}</div>
+                        <div class="text-xs font-bold text-pink-900 mt-1">✨ 초등 5학년 히어로 미션 완수 배지!</div>
+                        <span class="text-[11px] text-pink-600 font-semibold">"${escapeHtml(userPrompt)}" 스티커가 스티커북에 수집되었습니다!</span>
+                    </div>
+                `;
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        function saveStickerToCollection(stickerObj) {
+            if (!appData.stickers) appData.stickers = [];
+            appData.stickers.push(stickerObj);
             saveData();
             renderStickerGallery();
-            resultContainer.innerHTML = `<div class="text-xs font-bold text-pink-700">🎉 칭찬 스티커가 스티커북에 저장되었습니다!</div>`;
+        }
+
+        function updateRewardGoal(value) {
+            appData.rewardGoal = value;
+            saveData();
         }
 
         function renderStickerGallery() {
             const container = document.getElementById('sticker-gallery');
             const badge = document.getElementById('sticker-count-badge');
-            if (badge) badge.innerText = appData.stickers.length;
+            const goalInput = document.getElementById('reward-goal-input');
+            const progressText = document.getElementById('reward-progress-text');
             if (!container) return;
+
+            const stickers = appData.stickers || [];
+            if (badge) badge.innerText = stickers.length;
+            if (goalInput && appData.rewardGoal !== undefined) goalInput.value = appData.rewardGoal;
+
+            const count = stickers.length;
+            const percent = Math.min(100, Math.round((count / 30) * 100));
+            if (progressText) progressText.innerText = `${count} / 30개 (${percent}%)`;
+
             let html = "";
             for (let i = 0; i < 30; i++) {
-                if (appData.stickers[i]) {
-                    html += `<div class="w-8 h-8 rounded-lg bg-gradient-to-tr ${appData.stickers[i].gradient} flex items-center justify-center text-sm shadow-sm">${appData.stickers[i].icon}</div>`;
+                if (stickers[i]) {
+                    const st = stickers[i];
+                    if (st.img) {
+                        html += `<div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg border-2 border-pink-400 bg-white overflow-hidden shadow-sm flex items-center justify-center"><img src="${st.img}" class="w-full h-full object-cover"></div>`;
+                    } else {
+                        html += `<div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg border-2 border-pink-400 bg-gradient-to-tr ${st.gradient || 'from-pink-300 to-indigo-300'} flex items-center justify-center text-sm shadow-sm">${st.icon || '⭐'}</div>`;
+                    }
                 } else {
-                    html += `<div class="w-8 h-8 rounded-lg border border-dashed border-pink-200 bg-white/60 flex items-center justify-center text-[9px] text-pink-300 font-bold">${i + 1}</div>`;
+                    html += `<div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg border border-dashed border-pink-200 bg-white/60 flex items-center justify-center text-[9px] text-pink-300 font-bold">${i + 1}</div>`;
                 }
             }
             container.innerHTML = html;
         }
 
         function resetStickers() {
-            if (confirm("스티커판을 초기화하시겠습니까?")) {
+            if (window.confirm("모은 칭찬 스티커판을 초기화하시겠습니까?")) {
                 appData.stickers = [];
                 saveData();
                 renderStickerGallery();
+                document.getElementById('sticker-result').innerHTML = `<span class="text-xs text-slate-400">새로운 30개 스티커판이 시작되었습니다!</span>`;
             }
         }
 
+        // 4. AI Grounded Search Q&A
         async function searchAIQna() {
             const query = document.getElementById('search-query').value;
             const container = document.getElementById('search-result');
+            const btn = document.getElementById('btn-gen-search');
+
             container.classList.remove('hidden');
-            container.innerHTML = `<div class="text-xs text-slate-700">⚔️ **'${escapeHtml(query)}' 탐구 백과**<br><br>이순신 장군님은 임진왜란 당시 학익진 전법과 거북선으로 나라를 구한 위대한 영웅입니다!</div>`;
+            container.innerHTML = `<div class="flex items-center gap-2 text-emerald-600 font-bold text-xs"><div class="spinner-dark"></div><span>Google 검색 및 백과사전으로 탐색 중입니다...</span></div>`;
+            btn.disabled = true;
+
+            const systemPrompt = "당신은 초등학교 5학년 학생을 위한 친절한 백과사전 튜터입니다. 실시간 구글 검색을 바탕으로 궁금증을 쉬운 언어로 명쾌하게 설명하세요.";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+            const payload = { contents: [{ parts: [{ text: query }] }], tools: [{ "google_search": {} }], systemInstruction: { parts: [{ text: systemPrompt }] } };
+
+            try {
+                const data = await fetchGeminiWithRetry(apiUrl, payload);
+                const candidate = data.candidates?.[0];
+                const text = candidate?.content?.parts?.[0]?.text || "답변을 가져올 수 없습니다.";
+
+                let sourcesHtml = "";
+                const groundingMetadata = candidate?.groundingMetadata;
+                if (groundingMetadata && groundingMetadata.groundingAttributions) {
+                    const sources = groundingMetadata.groundingAttributions.map(attr => ({ uri: attr.web?.uri, title: attr.web?.title })).filter(s => s.uri && s.title);
+                    if (sources.length > 0) {
+                        sourcesHtml = `<div class="mt-3 pt-2 border-t border-slate-200 text-[11px] text-slate-500"><span class="font-bold text-slate-600">📌 출처 참고:</span><ul class="list-disc list-inside mt-1 space-y-0.5">${sources.slice(0, 3).map(s => `<li><a href="${s.uri}" target="_blank" class="text-blue-600 hover:underline">${escapeHtml(s.title)}</a></li>`).join('')}</ul></div>`;
+                    }
+                }
+
+                container.innerHTML = `<div class="text-slate-800 space-y-2"><div class="font-bold text-emerald-900 flex items-center justify-between"><span>💡 AI 탐구 답변</span><span class="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">검색 검증 완료</span></div><div class="whitespace-pre-line text-xs leading-relaxed text-slate-700">${escapeHtml(text)}</div>${sourcesHtml}</div>`;
+            } catch (err) {
+                console.warn("Search API skipped, using fallback encyclopedia:", err);
+                renderFallbackQna(query, container);
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        function renderFallbackQna(query, container) {
+            let answerText = `💡 **초등 5학년 탐구 백과: '${escapeHtml(query)}'**\n\n이순신 장군님은 임진왜란 당시 학익진 전법과 거북선으로 나라를 구한 위대한 영웅입니다! 대표적인 3대 대첩은 한산도 대첩, 명량 대첩, 노량 대첩입니다.`;
+            container.innerHTML = `<div class="text-slate-800 space-y-2"><div class="font-bold text-emerald-900 flex items-center justify-between border-b border-emerald-200 pb-1.5"><span>💡 [5학년 추천 백과] 탐구 답변</span><span class="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">내장 지식 백과</span></div><div class="whitespace-pre-line text-xs leading-relaxed text-slate-700">${answerText}</div></div>`;
         }
 
         function initCharts() {
@@ -595,21 +1365,22 @@ html_code = """
                 new Chart(pieCtx, {
                     type: 'doughnut',
                     data: {
-                        labels: ['수면 (8.5시간)', '학교/학원 (8시간)', '여유/이동 (6.3시간)', '저녁몰입 (1.1시간)'],
-                        datasets: [{ data: [35, 33, 27, 5], backgroundColor: ['#6366f1', '#3b82f6', '#f59e0b', '#10b981'] }]
+                        labels: ['수면 (8.5시간)', '학교/학원 (8시간)', '여유/이동/식사 (6.3시간)', '저녁몰입학습 (1.1시간)'],
+                        datasets: [{ data: [35, 33, 27, 5], backgroundColor: ['#6366f1', '#3b82f6', '#f59e0b', '#10b981'], borderWidth: 2, borderColor: '#ffffff' }]
                     },
-                    options: { responsive: true, maintainAspectRatio: false }
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } } }
                 });
             }
+
             const barCtx = document.getElementById('studyBarChart')?.getContext('2d');
             if (barCtx) {
                 new Chart(barCtx, {
                     type: 'bar',
                     data: {
-                        labels: ['수학', '영어', '국어', '마무리'],
-                        datasets: [{ data: [30, 15, 15, 10], backgroundColor: ['#3b82f6', '#8b5cf6', '#ec4899', '#64748b'], borderRadius: 8 }]
+                        labels: ['수학 (학원숙제)', '영어 (단어+학습지)', '국어 (어휘/독해)', '마무리 (가방/책상)'],
+                        datasets: [{ label: '분(Min)', data: [30, 15, 15, 10], backgroundColor: ['#3b82f6', '#8b5cf6', '#ec4899', '#64748b'], borderRadius: 8 }]
                     },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 35, ticks: { stepSize: 10 } } } }
                 });
             }
         }
@@ -626,6 +1397,7 @@ html_code = """
             setWeekendDay('sat');
             renderChecklists();
             renderStickerGallery();
+            updateStreakBadge();
             initCharts();
         });
     </script>
