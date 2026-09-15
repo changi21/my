@@ -17,7 +17,7 @@ st.set_page_config(
 api_key = st.secrets.get("GEMINI_API_KEY", "")
 
 
-# REST API 방식으로 Gemini 호출하는 함수 (모델명: gemini-3.6-flash)
+# REST API 방식으로 Gemini 호출하는 함수
 def call_gemini_api(prompt):
     if not api_key:
         return "Secrets에 GEMINI_API_KEY가 설정되어 있지 않습니다."
@@ -685,7 +685,7 @@ with tab5:
         )
 
 # ==========================================
-# TAB 6: AI 코치 & 퀴즈 (gemini-3.6-flash 지정)
+# TAB 6: AI 코치 & 퀴즈 (호칭 및 자연스러운 목소리 개선)
 # ==========================================
 with tab6:
     st.subheader("✨ Gemini AI 스마트 학습 코치")
@@ -728,7 +728,7 @@ with tab6:
                 st.success(f"회차 #{idx} 퀴즈 생성 완료!")
                 st.markdown(res_text)
 
-    # 2. AI 응원 멘트
+    # 2. AI 응원 멘트 (호칭 수정 & 다양한 목소리 톤 제공)
     elif "AI 응원 멘트" in ai_tool:
         sit_choice = st.selectbox(
             "현재 내 상황이나 기분을 선택하세요 (10가지):",
@@ -746,24 +746,50 @@ with tab6:
             ],
         )
 
+        voice_style = st.selectbox(
+            "🗣️ 목소리 톤을 선택하세요:",
+            [
+                "🌸 상냥하고 다정한 선생님 (보통 톤)",
+                "🔥 신나고 활기찬 친구 (높고 빠른 톤)",
+                "🐻 든든하고 따뜻한 멘토 (낮고 부드러운 톤)",
+            ],
+        )
+
         if st.button("🎙️ AI 응원 메시지 생성 & 음성 재생"):
             with st.spinner("AI 멘토가 응원 메시지를 작성 중입니다..."):
+                # [학생 이름] 등의 대명사 대신 "에릭"으로 호칭하도록 지정
                 prompt = (
-                    f"초등 5학년 학생의 현재 상황: '{sit_choice}'. 이 상황에 맞게"
-                    " 학생의 이름을 따스하게 부르듯 50자~100자 사이로 다정하고"
-                    " 힘이 나는 응원 문구를 작성해줘."
+                    f"초등 5학년 학생 '에릭'의 현재 상황: '{sit_choice}'. 이 상황에"
+                    " 맞게 학생의 이름을 '에릭'으로 부르거나 자연스럽게 잇고,"
+                    " '[학생 이름]'이나 'OO야' 같은 템플릿 문구를 절대 사용하지"
+                    " 마세요. 50자~100자 사이로 따스하고 다정한 응원 문구를"
+                    " 완성해줘."
                 )
                 msg_text = call_gemini_api(prompt)
 
                 st.balloons()
                 st.info(f"💬 **AI 멘토의 응원:**\n\n{msg_text}")
 
+                # 톤 설정
+                if "신나고 활기찬" in voice_style:
+                    rate_val = 1.15
+                    pitch_val = 1.3
+                elif "든든하고 따뜻한" in voice_style:
+                    rate_val = 0.9
+                    pitch_val = 0.8
+                else:
+                    rate_val = 1.0
+                    pitch_val = 1.05
+
+                clean_text = msg_text.replace("\n", " ").replace('"', "'")
+
                 tts_script = f"""
                 <script>
-                    var msg = new SpeechSynthesisUtterance("{msg_text.replace('\n', ' ')}");
+                    window.speechSynthesis.cancel(); // 이전 음성 취소
+                    var msg = new SpeechSynthesisUtterance("{clean_text}");
                     msg.lang = 'ko-KR';
-                    msg.rate = 1.0;
-                    msg.pitch = 1.1;
+                    msg.rate = {rate_val};
+                    msg.pitch = {pitch_val};
                     window.speechSynthesis.speak(msg);
                 </script>
                 """
