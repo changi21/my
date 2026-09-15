@@ -13,13 +13,12 @@ st.set_page_config(
     layout="wide",
 )
 
-# 2. 보내주신 HTML 파일의 Tailwind CSS 디자인 1:1 재현 CSS
+# 2. 모던 Tailwind CSS 스타일링 (하단 겹침 짤림 버그 수정)
 st.markdown(
     """
 <style>
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
     
-    /* 전체 폰트 및 배경색 (Tailwind Slate-50) */
     html, body, [class*="css"] {
         font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif !important;
     }
@@ -29,24 +28,22 @@ st.markdown(
         color: #1e293b;
     }
     
-    /* 화면 여백 조절 (노트북 화면에 알차게 들어가도록 마진 축소) */
     .main .block-container {
         padding-top: 1.2rem;
         padding-bottom: 2rem;
         max-width: 1180px;
     }
 
-    /* Streamlit 네이티브 테두리 컨테이너를 통합 카드(White Card) 스타일로 변경 */
+    /* 통합 큰 네모 상자 (하단 패딩 26px로 확대하여 작은 카드 짤림 해결) */
     div[data-testid="stVerticalBlockBorderWrapper"] {
         background-color: #ffffff !important;
         border: 1px solid #e2e8f0 !important;
         border-radius: 16px !important;
         box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.02) !important;
-        padding: 16px 20px !important;
-        margin-bottom: 12px !important;
+        padding: 18px 20px 26px 20px !important;
+        margin-bottom: 14px !important;
     }
 
-    /* 상단 안내 배너 (HTML의 bg-blue-50 디자인) */
     .banner-blue {
         background-color: #eff6ff;
         border: 1px solid #bfdbfe;
@@ -60,7 +57,6 @@ st.markdown(
         margin-bottom: 16px;
     }
 
-    /* 4개 키 메트릭 카드 (Tailwind p-4 rounded-2xl border border-slate-200) */
     .metric-card-tw {
         background-color: #ffffff;
         border: 1px solid #e2e8f0;
@@ -91,7 +87,6 @@ st.markdown(
         color: #64748b;
     }
 
-    /* AI 상단 배너 그라데이션 */
     .banner-ai-grad {
         background: linear-gradient(to right, #4f46e5, #7c3aed, #ec4899);
         border-radius: 16px;
@@ -101,7 +96,7 @@ st.markdown(
         box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
     }
 
-    /* 타임라인 개별 아이템 박스 (Tailwind bg-slate-50 border-slate-100) */
+    /* 타임라인 안쪽 작은 네모 상자 */
     .tl-item-box {
         background-color: #f8fafc;
         border: 1px solid #f1f5f9;
@@ -110,7 +105,6 @@ st.markdown(
         height: 100%;
     }
 
-    /* Streamlit 기본 버튼 모던화 */
     .stButton>button {
         border-radius: 10px;
         font-weight: 700;
@@ -120,7 +114,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# 3. PIN 번호 인증 시스템 (1306 설정)
+# 3. PIN 번호 인증 시스템
 SET_PIN = "1306"
 
 if "authenticated" not in st.session_state:
@@ -163,7 +157,7 @@ SHEET_CSV_URL = (
 )
 WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxrG7rYb5WXHcXkbd20QsiWywCNM7GWbW7KVll2n88gP15kHVsCfAdF_Tcr7Uhc53eqRw/exec"
 
-# 기본 일정 데이터 구조 정의
+# 기본 일정 데이터 구조
 DEFAULT_SCHEDULES = {
     "월요일": [
         {
@@ -370,7 +364,7 @@ DEFAULT_WEEKEND = {
 }
 
 
-# 구글 시트 전체 데이터 불러오기 (Read)
+# 구글 시트 데이터 로드
 def load_all_sheet_data():
     try:
         df = pd.read_csv(SHEET_CSV_URL)
@@ -426,7 +420,7 @@ def load_all_sheet_data():
     )
 
 
-# 구글 시트 데이터 전송 (Write)
+# 구글 시트 데이터 저장
 def save_sheet_data(
     stickers_count=None,
     reward_goal=None,
@@ -455,7 +449,7 @@ def save_sheet_data(
         pass
 
 
-# 5. API 키 가져오기 & Gemini 호출
+# Gemini API 호출
 api_key = st.secrets.get("GEMINI_API_KEY", "")
 
 
@@ -482,7 +476,7 @@ def call_gemini_api(prompt):
         return f"통신 오류 발생: {e}"
 
 
-# 6. 세션 상태 초기화 & 구글 시트 전체 동기화
+# 세션 데이터 동기화
 (
     init_stk,
     init_goal,
@@ -614,7 +608,7 @@ STICKER_MSG = [
     "내일 더 멋지게 날아오르자!",
 ]
 
-# 7. 상단 헤더 (보내주신 HTML 타이틀 및 뱃지 스타일 적용)
+# 상단 헤더
 days_kor = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"]
 today_idx = datetime.date.today().weekday()
 today_name = days_kor[today_idx]
@@ -643,7 +637,7 @@ with h_col2:
 
 st.markdown("<div style='margin-bottom: 10px;'></div>", unsafe_allow_html=True)
 
-# 8. 메인 탭 구성
+# 메인 탭
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "📊 대시보드",
     "🎒 요일별 학원",
@@ -654,7 +648,7 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
 ])
 
 # ==========================================
-# TAB 1: 대시보드 (통합 Card Container + Tailwind 스타일링 완벽 적용)
+# TAB 1: 대시보드
 # ==========================================
 with tab1:
     st.markdown(
@@ -678,7 +672,6 @@ with tab1:
 
     is_weekend = selected_day in ["토요일", "일요일"]
 
-    # 4개 핵심 메트릭 카드 (Tailwind 스타일)
     st.markdown(
         "<div style='margin-top: 6px;'></div>", unsafe_allow_html=True
     )
@@ -758,7 +751,6 @@ with tab1:
         "<div style='margin-top: 12px;'></div>", unsafe_allow_html=True
     )
 
-    # 📌 Streamlit 네이티브 Container를 활용하여 제목 + 차트가 단 하나의 둥근 상자 안에 포함
     c1, c2 = st.columns(2)
 
     with c1:
@@ -794,7 +786,6 @@ with tab1:
                     "시간": [8.5, 8.0, 6.3, 1.1],
                 })
 
-            # 보내주신 파일의 Chart.js 색상 팔레트 적용
             fig_pie = px.pie(
                 df_pie,
                 values="시간",
@@ -850,7 +841,6 @@ with tab1:
                 "시간(분)": [30, 15, 15, 10],
             })
 
-            # 보내주신 파일의 Bar Chart 색상 팔레트 적용
             fig_bar = px.bar(
                 df_bar,
                 x="과목",
@@ -890,11 +880,11 @@ with tab1:
             )
             st.plotly_chart(fig_bar, use_container_width=True)
 
-    # 📌 타임라인 섹션 (제목과 4개 타임라인 박스가 단 하나의 둥근 카드에 통합)
+    # 📌 타임라인 섹션 (작은 네모 상자가 짤리지 않도록 공간 확보)
     with st.container(border=True):
         st.markdown(
             """
-            <div style="margin-bottom: 10px;">
+            <div style="margin-bottom: 12px;">
                 <h3 style="margin:0; font-size:15px; font-weight:800; color:#0f172a;">⚡ 하루 핵심 타임라인 한눈에 보기</h3>
             </div>
             """,
@@ -946,6 +936,7 @@ with tab1:
                 """,
                 unsafe_allow_html=True,
             )
+        st.markdown("<div style='margin-bottom: 4px;'></div>", unsafe_allow_html=True)
 
 # ==========================================
 # TAB 2: 요일별 학원
@@ -1285,7 +1276,7 @@ with tab5:
             )
 
 # ==========================================
-# TAB 6: AI 코치 & 퀴즈 (HTML 배너 그라데이션 반영)
+# TAB 6: AI 코치 & 퀴즈
 # ==========================================
 with tab6:
     st.markdown(
