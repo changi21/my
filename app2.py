@@ -8,81 +8,85 @@ import streamlit as st
 
 # 1. 페이지 기본 설정
 st.set_page_config(
-    page_title="스마트 루틴 & AI 대시보드",
+    page_title="초등 5학년 주간 일정 & 저녁/주말 루틴",
     page_icon="📅",
     layout="wide",
 )
 
-# 2. 1번 사진 완벽 재현 모던 CSS 스타일링
+# 2. 2번 사진 완벽 재현 - 모던 파스텔 & 컴팩트 레이아웃 CSS
 st.markdown(
     """
 <style>
+    /* 전체 배경 */
     .stApp {
         background-color: #f8fafc;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
     
+    /* 전체 여백 조절하여 한 화면에 쏙 들어가도록 컴팩트화 */
     .main .block-container {
-        padding-top: 1.2rem;
-        padding-bottom: 3rem;
-        max-width: 1250px;
+        padding-top: 1rem;
+        padding-bottom: 1.5rem;
+        padding-left: 2rem;
+        padding-right: 2rem;
+        max-width: 1280px;
     }
 
-    /* 카드 기본 틀 (1번 사진 스타일) */
-    .custom-card {
+    /* 통합 카드 (제목 + 내용이 한 상자 안에 위치) */
+    .custom-card-unified {
         background-color: #ffffff;
-        border-radius: 14px;
-        padding: 22px;
+        border-radius: 16px;
+        padding: 16px 20px;
         border: 1px solid #e2e8f0;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        margin-bottom: 12px;
     }
 
-    /* 상단 4개 메트릭 카드 */
+    /* 상단 4개 컴팩트 메트릭 카드 */
     .metric-card-box {
         background-color: #ffffff;
         border-radius: 14px;
-        padding: 18px 20px;
+        padding: 12px 16px;
         border: 1px solid #e2e8f0;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
         height: 100%;
     }
     .metric-title {
-        font-size: 13px;
-        color: #94a3b8;
-        font-weight: 500;
-        margin-bottom: 6px;
+        font-size: 12px;
+        color: #64748b;
+        font-weight: 600;
+        margin-bottom: 4px;
     }
     .metric-value {
-        font-size: 28px;
+        font-size: 24px;
         font-weight: 800;
         line-height: 1.1;
-        margin-bottom: 6px;
+        margin-bottom: 4px;
     }
     .metric-desc {
-        font-size: 12px;
+        font-size: 11px;
         color: #94a3b8;
     }
 
-    /* 상단 안내 배너 */
+    /* 상단 안내 배너 컴팩트화 */
     .info-banner-box {
-        background-color: #f0fdf4;
-        border: 1px solid #bbf7d0;
+        background-color: #faf5ff;
+        border: 1px solid #f3e8ff;
         border-radius: 12px;
-        padding: 12px 18px;
-        color: #166534;
+        padding: 10px 16px;
+        color: #7e22ce;
         font-size: 13px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 20px;
+        margin-bottom: 12px;
     }
 
     /* 타임라인 박스 */
     .tl-box {
         background-color: #f8fafc;
-        border-radius: 10px;
-        padding: 14px;
+        border-radius: 12px;
+        padding: 12px 14px;
         border: 1px solid #f1f5f9;
         height: 100%;
     }
@@ -590,7 +594,7 @@ STICKER_MSG = [
     "내일 더 멋지게 날아오르자!",
 ]
 
-# 7. 상단 1번 사진 완벽 재현 타이틀 Header
+# 7. 2번 사진 헤더 반영
 days_kor = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"]
 today_idx = datetime.date.today().weekday()
 today_name = days_kor[today_idx]
@@ -600,11 +604,12 @@ h_col1, h_col2 = st.columns([8, 1])
 with h_col1:
     st.markdown(
         f"""
-        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 2px;">
-            <span style="font-size: 24px;">📅</span>
-            <h2 style="margin:0; font-weight:800; color:#0f172a; font-size: 22px;">주간 일정 & 저녁/주말 루틴</h2>
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 2px;">
+            <span style="font-size: 22px;">📅</span>
+            <h3 style="margin:0; font-weight:800; color:#0f172a; font-size: 20px;">주간 일정 & 저녁/주말 루틴</h3>
+            <span style="background: #e0e7ff; color: #4338ca; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 14px;">✨ AI Powered</span>
         </div>
-        <div style="font-size: 13px; color: #64748b; font-weight: 500; margin-top:2px;">
+        <div style="font-size: 12px; color: #64748b; font-weight: 500;">
             <b style="color:#2563eb;">오늘: {today_str}</b> &nbsp;|&nbsp; 수면 22:00 전 • 아침 최태성 한국사 • 저녁 70분 스퍼트
         </div>
         """,
@@ -615,7 +620,7 @@ with h_col2:
         st.session_state.authenticated = False
         st.rerun()
 
-st.markdown("<div style='margin-bottom: 12px;'></div>", unsafe_allow_html=True)
+st.markdown("<div style='margin-bottom: 10px;'></div>", unsafe_allow_html=True)
 
 # 8. 메인 탭 구성
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
@@ -628,14 +633,14 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
 ])
 
 # ==========================================
-# TAB 1: 대시보드 (1번 사진 완벽 일치 디자인 + 방과후 시간 표시)
+# TAB 1: 대시보드 (2번 사진과 100% 동일한 구획 통합 및 모던 차트 디자인)
 # ==========================================
 with tab1:
     st.markdown(
         """
         <div class="info-banner-box">
             <span>💡 <b>맞춤형 스마트 루틴 대시보드:</b> 학원 동선, 70분 저녁 집중 학습, 주말 야외활동 및 독서 루틴이 통합 저장됩니다. Gemini AI 학습 코치가 함께합니다!</span>
-            <span style="background:#ffffff; color:#166534; padding:3px 10px; border-radius:20px; font-weight:700; font-size:12px; border:1px solid #bbf7d0;">🔥 0일 연속 미션 완료 중</span>
+            <span style="background:#ffffff; color:#7e22ce; padding:2px 10px; border-radius:14px; font-weight:700; font-size:11px; border:1px solid #f3e8ff;">🔥 0일 연속 미션 완료 중</span>
         </div>
         """,
         unsafe_allow_html=True,
@@ -652,28 +657,19 @@ with tab1:
 
     is_weekend = selected_day in ["토요일", "일요일"]
 
-    # 📌 방과후 활동 총 시간 계산 (14:00~19:15 기준 5.25시간 또는 요일별 실제 등록된 시간 계산)
-    if is_weekend:
-        after_school_val = "2.5시간"
-        after_school_sub = "아빠와 야구 & 야외활동"
-    else:
-        # 평일 14:00 ~ 19:15 기준 5.25시간 (약 5.3시간)
-        after_school_val = "5.3시간"
-        after_school_sub = "14:00~19:15 방과후&학원 동선"
-
+    # 상단 메트릭 4개 카드 (2번 사진 비율)
     st.markdown(
-        "<div style='margin-top: 10px;'></div>", unsafe_allow_html=True
+        "<div style='margin-top: 8px;'></div>", unsafe_allow_html=True
     )
     col1, col2, col3, col4 = st.columns(4)
 
-    # 1번 사진 4개 메트릭 카드 정확히 복원
     with col1:
         st.markdown(
             """
             <div class="metric-card-box">
                 <div class="metric-title">권장 수면 시간</div>
-                <div class="metric-value" style="color:#2563eb;">8.5시간</div>
-                <div style="font-size:11px; color:#94a3b8; display:flex; justify-content:space-between; margin-top:4px;">
+                <div class="metric-value" style="color:#3b82f6;">8.5시간</div>
+                <div style="font-size:11px; color:#94a3b8; display:flex; justify-content:space-between;">
                     <span>21:20 샤워 ➡️ 22:00 취침</span>
                     <span>22:00~06:30</span>
                 </div>
@@ -697,8 +693,8 @@ with tab1:
             f"""
             <div class="metric-card-box">
                 <div class="metric-title">{title_txt}</div>
-                <div class="metric-value" style="color:#4f46e5;">{val_txt}</div>
-                <div style="font-size:11px; color:#94a3b8; display:flex; justify-content:space-between; margin-top:4px;">
+                <div class="metric-value" style="color:#6366f1;">{val_txt}</div>
+                <div style="font-size:11px; color:#94a3b8; display:flex; justify-content:space-between;">
                     <span>{sub_txt}</span>
                     <span>{time_txt}</span>
                 </div>
@@ -708,15 +704,21 @@ with tab1:
         )
 
     with col3:
-        title_txt = "주말 야외/신체 활동" if is_weekend else "방과 후 활동 시간"
+        title_txt = "주말 야외/신체 활동" if is_weekend else "주말 야외/신체 활동"
+        val_txt = "2.5시간" if is_weekend else "2.5시간"
+        sub_txt = (
+            "아빠와 야구 & 야외활동"
+            if is_weekend
+            else "아빠와 야구 & 야외활동"
+        )
         st.markdown(
             f"""
             <div class="metric-card-box">
                 <div class="metric-title">{title_txt}</div>
-                <div class="metric-value" style="color:#d97706;">{after_school_val}</div>
-                <div style="font-size:11px; color:#94a3b8; display:flex; justify-content:space-between; margin-top:4px;">
-                    <span>{after_school_sub}</span>
-                    <span>{'오후 13:00~' if is_weekend else '14:00~19:15'}</span>
+                <div class="metric-value" style="color:#f59e0b;">{val_txt}</div>
+                <div style="font-size:11px; color:#94a3b8; display:flex; justify-content:space-between;">
+                    <span>{sub_txt}</span>
+                    <span>오후 13:00~</span>
                 </div>
             </div>
             """,
@@ -728,8 +730,8 @@ with tab1:
             """
             <div class="metric-card-box">
                 <div class="metric-title">주말 게임 시간 관리</div>
-                <div class="metric-value" style="color:#059669;">3시간</div>
-                <div style="font-size:11px; color:#94a3b8; display:flex; justify-content:space-between; margin-top:4px;">
+                <div class="metric-value" style="color:#10b981;">3시간</div>
+                <div style="font-size:11px; color:#94a3b8; display:flex; justify-content:space-between;">
                     <span>오전 1차 + 해질녘 2차</span>
                     <span>1.5h × 2회 쪼개기</span>
                 </div>
@@ -739,20 +741,26 @@ with tab1:
         )
 
     st.markdown(
-        "<div style='margin-top: 20px;'></div>", unsafe_allow_html=True
+        "<div style='margin-top: 12px;'></div>", unsafe_allow_html=True
     )
 
-    # 1번 사진 그래프 카드 영역
+    # 📌 2번 사진처럼 '제목 + 차트'가 단 하나의 카드 상자(Custom Card Unified) 안에 통합
     c1, c2 = st.columns(2)
+
     with c1:
+        # 통합 카드 상자 시작
         st.markdown(
             f"""
-            <div class="custom-card">
-                <h4 style="margin-top:0; margin-bottom:4px; font-weight:700; color:#0f172a; font-size:16px;">📊 {selected_day} 시간 배분 비율</h4>
-                <div style="font-size:12px; color:#94a3b8; margin-bottom:12px;">학업, 수면, 휴식, 이동의 균형 시각화</div>
+            <div class="custom-card-unified">
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:2px;">
+                    <span style="font-size:16px;">📊</span>
+                    <h4 style="margin:0; font-weight:700; color:#0f172a; font-size:15px;">{'평일' if not is_weekend else selected_day} 하루 시간 배분 비율</h4>
+                </div>
+                <div style="font-size:11px; color:#94a3b8; margin-bottom:10px;">학업, 수면, 휴식, 이동의 균형 시각화</div>
             """,
             unsafe_allow_html=True,
         )
+
         if is_weekend:
             df_pie = pd.DataFrame({
                 "항목": [
@@ -773,30 +781,46 @@ with tab1:
                 ],
                 "시간": [8.5, 8.0, 6.3, 1.1],
             })
+
+        # 2번 사진의 모던 원형 차트 구현 (부드러운 라운딩 도넛 차트)
         fig_pie = px.pie(
             df_pie,
             values="시간",
             names="항목",
-            hole=0.6,
-            color_discrete_sequence=["#3b82f6", "#2563eb", "#f59e0b", "#10b981"],
+            hole=0.62,
+            color_discrete_sequence=["#6366f1", "#3b82f6", "#f59e0b", "#10b981"],
         )
-        fig_pie.update_traces(textposition="inside", textinfo="percent+label")
+        fig_pie.update_traces(
+            textposition="none",
+            hoverinfo="label+percent",
+            marker=dict(line=dict(color="#ffffff", width=2)),
+        )
         fig_pie.update_layout(
             margin=dict(t=5, b=5, l=5, r=5),
-            height=280,
+            height=210,
+            showlegend=True,
             legend=dict(
-                orientation="h", yanchor="bottom", y=-0.25, xanchor="center", x=0.5
+                orientation="h",
+                yanchor="bottom",
+                y=-0.28,
+                xanchor="center",
+                x=0.5,
+                font=dict(size=10, color="#64748b"),
             ),
         )
         st.plotly_chart(fig_pie, use_container_width=True)
-        st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)  # 통합 카드 상자 끝
 
     with c2:
+        # 통합 카드 상자 시작
         st.markdown(
             """
-            <div class="custom-card">
-                <h4 style="margin-top:0; margin-bottom:4px; font-weight:700; color:#0f172a; font-size:16px;">🎯 저녁 70분 몰입 학습 과목 구성</h4>
-                <div style="font-size:12px; color:#94a3b8; margin-bottom:12px;">15-30분 단위 숏 스퍼트로 지루함 없는 구성</div>
+            <div class="custom-card-unified">
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:2px;">
+                    <span style="font-size:16px;">🎯</span>
+                    <h4 style="margin:0; font-weight:700; color:#0f172a; font-size:15px;">저녁 70분 몰입 학습 과목 구성</h4>
+                </div>
+                <div style="font-size:11px; color:#94a3b8; margin-bottom:10px;">15-30분 단위 숏 스퍼트로 지루함 없는 구성</div>
             """,
             unsafe_allow_html=True,
         )
@@ -809,30 +833,55 @@ with tab1:
             ],
             "시간(분)": [30, 15, 15, 10],
         })
+
+        # 2번 사진의 예쁜 라운드 막대 그래프 구현 (모서리 곡선 + 파스텔 컬러)
         fig_bar = px.bar(
             df_bar,
             x="과목",
             y="시간(분)",
             color="과목",
-            text="시간(분)",
             color_discrete_sequence=[
-                "#2563eb",
+                "#3b82f6",
                 "#818cf8",
-                "#f43f5e",
+                "#ec4899",
                 "#64748b",
             ],
         )
+        fig_bar.update_traces(
+            marker_line_width=0,
+            width=0.45,
+            hovertemplate="<b>%{x}</b>: %{y}분",
+        )
         fig_bar.update_layout(
-            margin=dict(t=5, b=5, l=5, r=5), height=280, showlegend=False
+            margin=dict(t=5, b=5, l=5, r=5),
+            height=210,
+            showlegend=False,
+            plot_bgcolor="rgba(0,0,0,0)",
+            paper_bgcolor="rgba(0,0,0,0)",
+            xaxis=dict(
+                showgrid=False,
+                tickfont=dict(size=10, color="#64748b"),
+                title=None,
+            ),
+            yaxis=dict(
+                showgrid=True,
+                gridcolor="#f1f5f9",
+                tickfont=dict(size=10, color="#94a3b8"),
+                title=None,
+                range=[0, 35],
+            ),
         )
         st.plotly_chart(fig_bar, use_container_width=True)
-        st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)  # 통합 카드 상자 끝
 
-    # 1번 사진 하단 '하루 핵심 타임라인 한눈에 보기'
+    # 📌 2번 사진 하단 '하루 핵심 타임라인 한눈에 보기' (제목 + 타임라인 아이템 통합)
     st.markdown(
         """
-        <div class="custom-card">
-            <h4 style="margin-top:0; margin-bottom:15px; font-weight:700; color:#0f172a; font-size:16px;">⚡ 하루 핵심 타임라인 한눈에 보기</h4>
+        <div class="custom-card-unified">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+                <span style="font-size:16px;">⚡</span>
+                <h4 style="margin:0; font-weight:700; color:#0f172a; font-size:15px;">하루 핵심 타임라인 한눈에 보기</h4>
+            </div>
         """,
         unsafe_allow_html=True,
     )
@@ -843,8 +892,8 @@ with tab1:
             """
             <div class="tl-box">
                 <div style="font-size:11px; font-weight:700; color:#d97706;">🌅 06:30 ~ 08:30 [아침]</div>
-                <div style="font-size:13px; font-weight:700; color:#0f172a; margin:4px 0;">기상 & 한국사 강의 시청</div>
-                <div style="font-size:11px; color:#64748b;">할아버지 댁 이동(07:20) 후 아침 식사 ➡️ 08:22 등교</div>
+                <div style="font-size:12px; font-weight:700; color:#0f172a; margin:3px 0;">기상 & 한국사 강의 시청</div>
+                <div style="font-size:10px; color:#64748b;">할아버지 댁 이동(07:20) 후 아침 식사 ➡️ 08:22 등교</div>
             </div>
             """,
             unsafe_allow_html=True,
@@ -854,8 +903,8 @@ with tab1:
             """
             <div class="tl-box">
                 <div style="font-size:11px; font-weight:700; color:#16a34a;">🏫 08:30 ~ 18:30 [방과후]</div>
-                <div style="font-size:13px; font-weight:700; color:#0f172a; margin:4px 0;">학교 수업 & 학원 동선</div>
-                <div style="font-size:11px; color:#64748b;">수학/피아노/미술 픽업 ➡️ 17:30 합기도(도보 3분)</div>
+                <div style="font-size:12px; font-weight:700; color:#0f172a; margin:3px 0;">학교 수업 & 학원 동선</div>
+                <div style="font-size:10px; color:#64748b;">수학/피아노/미술 픽업 ➡️ 17:30 합기도(도보 3분)</div>
             </div>
             """,
             unsafe_allow_html=True,
@@ -865,8 +914,8 @@ with tab1:
             """
             <div class="tl-box">
                 <div style="font-size:11px; font-weight:700; color:#dc2626;">🚘 18:30 ~ 20:10 [귀가&식사]</div>
-                <div style="font-size:13px; font-weight:700; color:#0f172a; margin:4px 0;">부모님 픽업 & 저녁 식사</div>
-                <div style="font-size:11px; color:#64748b;">18:40 픽업 ➡️ 19:15 집 도착 ➡️ 가족 저녁 식사</div>
+                <div style="font-size:12px; font-weight:700; color:#0f172a; margin:3px 0;">부모님 픽업 & 저녁 식사</div>
+                <div style="font-size:10px; color:#64748b;">18:40 픽업 ➡️ 19:15 집 도착 ➡️ 가족 저녁 식사</div>
             </div>
             """,
             unsafe_allow_html=True,
@@ -876,13 +925,13 @@ with tab1:
             """
             <div class="tl-box">
                 <div style="font-size:11px; font-weight:700; color:#2563eb;">🌙 20:10 ~ 22:10 [저녁&취침]</div>
-                <div style="font-size:13px; font-weight:700; color:#0f172a; margin:4px 0;">70분 학습 & 22시 전 취침</div>
-                <div style="font-size:11px; color:#64748b;">20:10 학습 ➡️ 21:20 샤워 ➡️ 22:00~22:10 취침</div>
+                <div style="font-size:12px; font-weight:700; color:#0f172a; margin:3px 0;">70분 학습 & 22시 전 취침</div>
+                <div style="font-size:10px; color:#64748b;">20:10 학습 ➡️ 21:20 샤워 ➡️ 22:00~22:10 취침</div>
             </div>
             """,
             unsafe_allow_html=True,
         )
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)  # 타임라인 통합 카드 상자 끝
 
 # ==========================================
 # TAB 2: 요일별 학원
@@ -907,9 +956,7 @@ with tab2:
     )
     items = st.session_state.schedules[day_choice]
 
-    st.markdown(
-        "<div style='margin-top: 15px;'></div>", unsafe_allow_html=True
-    )
+    st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
 
     if edit_weekday:
         st.warning(
@@ -950,23 +997,23 @@ with tab2:
     else:
         st.markdown(
             f"""
-            <div class="custom-card">
-                <h3 style="margin-top:0; font-weight:700; color:#0f172a; font-size:18px;">{day_choice} 일정 상세 보기</h3>
-                <div style="margin-top:15px;">
+            <div class="custom-card-unified">
+                <h4 style="margin-top:0; font-weight:700; color:#0f172a; font-size:16px;">{day_choice} 일정 상세 보기</h4>
+                <div style="margin-top:12px;">
             """,
             unsafe_allow_html=True,
         )
         for item in items:
             st.markdown(
                 f"""
-                <div style="display:flex; justify-content:space-between; align-items:center; padding: 14px 18px; background-color:#f8fafc; border-radius:12px; margin-bottom:10px; border:1px solid #f1f5f9;">
-                    <div style="display:flex; align-items:center; gap:15px;">
-                        <span style="font-size:13px; font-weight:700; color:#64748b;">⏰ {item['time']}</span>
-                        <span style="font-size:15px; font-weight:700; color:#1e293b;">{item['name']}</span>
+                <div style="display:flex; justify-content:space-between; align-items:center; padding: 12px 16px; background-color:#f8fafc; border-radius:12px; margin-bottom:8px; border:1px solid #f1f5f9;">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <span style="font-size:12px; font-weight:700; color:#64748b;">⏰ {item['time']}</span>
+                        <span style="font-size:14px; font-weight:700; color:#1e293b;">{item['name']}</span>
                     </div>
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <span style="font-size:12px; color:#64748b;">{item['detail']}</span>
-                        <span style="background:#e2e8f0; color:#475569; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px;">{item['badge']}</span>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="font-size:11px; color:#64748b;">{item['detail']}</span>
+                        <span style="background:#e2e8f0; color:#475569; font-size:10px; font-weight:700; padding:2px 6px; border-radius:6px;">{item['badge']}</span>
                     </div>
                 </div>
                 """,
@@ -1027,9 +1074,9 @@ with tab3:
     else:
         st.markdown(
             f"""
-            <div class="custom-card">
-                <h3 style="margin-top:0; font-weight:700; color:#0f172a; font-size:18px;">🟢 {plan_key} 상세 단계</h3>
-                <div style="margin-top:15px;">
+            <div class="custom-card-unified">
+                <h4 style="margin-top:0; font-weight:700; color:#0f172a; font-size:16px;">🟢 {plan_key} 상세 단계</h4>
+                <div style="margin-top:12px;">
             """,
             unsafe_allow_html=True,
         )
@@ -1038,12 +1085,12 @@ with tab3:
         ):
             st.markdown(
                 f"""
-                <div style="padding: 14px 18px; background-color:#f8fafc; border-radius:12px; margin-bottom:10px; border:1px solid #f1f5f9;">
-                    <div style="display:flex; align-items:center; gap:12px;">
-                        <span style="font-size:12px; font-weight:700; color:#ef4444; background:#fee2e2; padding:2px 8px; border-radius:6px;">{t}</span>
-                        <span style="font-size:15px; font-weight:700; color:#1e293b;">{n}</span>
+                <div style="padding: 12px 16px; background-color:#f8fafc; border-radius:12px; margin-bottom:8px; border:1px solid #f1f5f9;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:11px; font-weight:700; color:#ef4444; background:#fee2e2; padding:2px 6px; border-radius:6px;">{t}</span>
+                        <span style="font-size:14px; font-weight:700; color:#1e293b;">{n}</span>
                     </div>
-                    <div style="font-size:12px; color:#64748b; margin-top:6px; margin-left:2px;">{d}</div>
+                    <div style="font-size:11px; color:#64748b; margin-top:4px;">{d}</div>
                 </div>
                 """,
                 unsafe_allow_html=True,
@@ -1104,21 +1151,21 @@ with tab4:
     else:
         st.markdown(
             f"""
-            <div class="custom-card">
-                <h3 style="margin-top:0; font-weight:700; color:#0f172a; font-size:18px;">🗓️ {wk_key} 상세 일정</h3>
-                <div style="margin-top:15px;">
+            <div class="custom-card-unified">
+                <h4 style="margin-top:0; font-weight:700; color:#0f172a; font-size:16px;">🗓️ {wk_key} 상세 일정</h4>
+                <div style="margin-top:12px;">
             """,
             unsafe_allow_html=True,
         )
         for t, n, d in st.session_state.weekend_plans[wk_key]:
             st.markdown(
                 f"""
-                <div style="display:flex; justify-content:space-between; align-items:center; padding: 14px 18px; background-color:#f8fafc; border-radius:12px; margin-bottom:10px; border:1px solid #f1f5f9;">
-                    <div style="display:flex; align-items:center; gap:15px;">
-                        <span style="font-size:13px; font-weight:700; color:#d97706;">⏰ {t}</span>
-                        <span style="font-size:15px; font-weight:700; color:#1e293b;">{n}</span>
+                <div style="display:flex; justify-content:space-between; align-items:center; padding: 12px 16px; background-color:#f8fafc; border-radius:12px; margin-bottom:8px; border:1px solid #f1f5f9;">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <span style="font-size:12px; font-weight:700; color:#d97706;">⏰ {t}</span>
+                        <span style="font-size:14px; font-weight:700; color:#1e293b;">{n}</span>
                     </div>
-                    <span style="font-size:12px; color:#64748b;">{d}</span>
+                    <span style="font-size:11px; color:#64748b;">{d}</span>
                 </div>
                 """,
                 unsafe_allow_html=True,
@@ -1176,8 +1223,8 @@ with tab5:
         with col_w:
             st.markdown(
                 """
-                <div class="custom-card">
-                    <h4 style="margin-top:0; font-weight:700; color:#0f172a;">📅 평일 필수 미션</h4>
+                <div class="custom-card-unified">
+                    <h4 style="margin-top:0; font-weight:700; color:#0f172a; font-size:15px; margin-bottom:12px;">📅 평일 필수 미션</h4>
                 """,
                 unsafe_allow_html=True,
             )
@@ -1192,8 +1239,8 @@ with tab5:
         with col_wk:
             st.markdown(
                 """
-                <div class="custom-card">
-                    <h4 style="margin-top:0; font-weight:700; color:#0f172a;">☀️ 주말 필수 미션</h4>
+                <div class="custom-card-unified">
+                    <h4 style="margin-top:0; font-weight:700; color:#0f172a; font-size:15px; margin-bottom:12px;">☀️ 주말 필수 미션</h4>
                 """,
                 unsafe_allow_html=True,
             )
@@ -1214,9 +1261,9 @@ with tab5:
 
         st.markdown(
             f"""
-            <div class="custom-card" style="text-align:center;">
-                <h4 style="margin:0; font-weight:700; color:#1e293b;">🎉 오늘의 미션 달성 상태</h4>
-                <p style="font-size:16px; font-weight:700; color:#2563eb; margin-top:8px; margin-bottom:0;">
+            <div class="custom-card-unified" style="text-align:center;">
+                <h4 style="margin:0; font-weight:700; color:#1e293b; font-size:15px;">🎉 오늘의 미션 달성 상태</h4>
+                <p style="font-size:15px; font-weight:700; color:#2563eb; margin-top:6px; margin-bottom:0;">
                     평일 ({w_count}/5 완료) &nbsp;|&nbsp; 주말 ({wk_count}/5 완료)
                 </p>
             </div>
@@ -1230,9 +1277,9 @@ with tab5:
 with tab6:
     st.markdown(
         """
-        <div class="custom-card" style="background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%); color:white;">
+        <div class="custom-card-unified" style="background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%); color:white;">
             <div style="font-size:11px; font-weight:700; opacity:0.9; margin-bottom:4px;">GEMINI AI ENGINE POWERED</div>
-            <h2 style="margin:0; font-weight:800; font-size:22px;">✨ Gemini AI 스마트 학습 코치</h2>
+            <h2 style="margin:0; font-weight:800; font-size:20px;">✨ Gemini AI 스마트 학습 코치</h2>
             <p style="margin-top:4px; margin-bottom:0; font-size:12px; opacity:0.95;">AI 퀴즈 생성, 음성 응원 칭찬, 칭찬 스티커 생성, 그리고 역사/과학 궁금증 답변까지 도웁니다!</p>
         </div>
         """,
@@ -1251,17 +1298,15 @@ with tab6:
         label_visibility="collapsed",
     )
 
-    st.markdown(
-        "<div style='margin-top: 15px;'></div>", unsafe_allow_html=True
-    )
+    st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
 
     # 1. 1분 AI 퀴즈
     if "1분 AI 퀴즈" in ai_tool:
         st.markdown(
             """
-            <div class="custom-card">
-                <h3 style="margin-top:0; font-weight:700; color:#0f172a; font-size:18px;">🧠 1분 AI 퀴즈 생성기</h3>
-                <p style="font-size:12px; color:#64748b; margin-bottom:15px;">아침 시청 복습이나 저녁 공부 시작 전, 재미있는 1분 퀴즈로 뇌를 세워보세요!</p>
+            <div class="custom-card-unified">
+                <h4 style="margin-top:0; font-weight:700; color:#0f172a; font-size:16px;">🧠 1분 AI 퀴즈 생성기</h4>
+                <p style="font-size:11px; color:#64748b; margin-bottom:12px;">아침 시청 복습이나 저녁 공부 시작 전, 재미있는 1분 퀴즈로 뇌를 세워보세요!</p>
             """,
             unsafe_allow_html=True,
         )
@@ -1299,9 +1344,9 @@ with tab6:
     elif "AI 응원 멘트" in ai_tool:
         st.markdown(
             """
-            <div class="custom-card">
-                <h3 style="margin-top:0; font-weight:700; color:#0f172a; font-size:18px;">🔊 AI 멘토 음성 응원 메시지 (TTS)</h3>
-                <p style="font-size:12px; color:#64748b; margin-bottom:15px;">상황과 기분에 맞게 선택해 보세요! 매일 다른 칭찬과 응원 멘트가 전해집니다.</p>
+            <div class="custom-card-unified">
+                <h4 style="margin-top:0; font-weight:700; color:#0f172a; font-size:16px;">🔊 AI 멘토 음성 응원 메시지 (TTS)</h4>
+                <p style="font-size:11px; color:#64748b; margin-bottom:12px;">상황과 기분에 맞게 선택해 보세요! 매일 다른 칭찬과 응원 멘트가 전해집니다.</p>
             """,
             unsafe_allow_html=True,
         )
@@ -1372,9 +1417,9 @@ with tab6:
     elif "칭찬 스티커" in ai_tool:
         st.markdown(
             """
-            <div class="custom-card">
-                <h3 style="margin-top:0; font-weight:700; color:#0f172a; font-size:18px;">🎨 AI 미션 달성 칭찬 스티커 카운터</h3>
-                <p style="font-size:12px; color:#64748b; margin-bottom:15px;">오늘 미션을 성공했을 때 칭찬 스티커 카드를 생성하여 내 스티커북(30개판)에 저장합니다!</p>
+            <div class="custom-card-unified">
+                <h4 style="margin-top:0; font-weight:700; color:#0f172a; font-size:16px;">🎨 AI 미션 달성 칭찬 스티커 카운터</h4>
+                <p style="font-size:11px; color:#64748b; margin-bottom:12px;">오늘 미션을 성공했을 때 칭찬 스티커 카드를 생성하여 내 스티커북(30개판)에 저장합니다!</p>
             """,
             unsafe_allow_html=True,
         )
@@ -1419,10 +1464,10 @@ with tab6:
             lstk = st.session_state.latest_draw_sticker
             st.markdown(
                 f"""
-                <div style="text-align:center; padding: 16px; background: linear-gradient(135deg, #fbcfe8, #e0e7ff); border-radius:14px; margin-top: 15px;">
-                    <div style="font-size: 50px;">{lstk['icon']}</div>
-                    <div style="font-size: 16px; font-weight: bold; color: #831843;">🎉 축하합니다! 스티커를 획득했어요!</div>
-                    <div style="font-size: 13px; color: #4338ca; font-weight: bold; margin-top: 2px;">"{lstk['msg']}"</div>
+                <div style="text-align:center; padding: 14px; background: linear-gradient(135deg, #fbcfe8, #e0e7ff); border-radius:12px; margin-top: 12px;">
+                    <div style="font-size: 40px;">{lstk['icon']}</div>
+                    <div style="font-size: 15px; font-weight: bold; color: #831843;">🎉 축하합니다! 스티커를 획득했어요!</div>
+                    <div style="font-size: 12px; color: #4338ca; font-weight: bold; margin-top: 2px;">"{lstk['msg']}"</div>
                 </div>
                 """,
                 unsafe_allow_html=True,
@@ -1430,7 +1475,7 @@ with tab6:
 
         st.markdown(
             f"""
-            <div style="margin-top:20px; font-size:14px; font-weight:700; color:#475569;">
+            <div style="margin-top:15px; font-size:13px; font-weight:700; color:#475569;">
                 🏆 <b>내 칭찬 스티커북</b> ({len(st.session_state.stickers)} / 30개 모음)
             </div>
             """,
@@ -1449,8 +1494,8 @@ with tab6:
                             stk = st.session_state.stickers[i]
                             st.markdown(
                                 f"""
-                                <div style="height:75px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1px solid #f472b6; border-radius:10px; padding:4px; background-color:#fff5f5; margin-bottom:8px;">
-                                    <div style="font-size:22px;">{stk['icon']}</div>
+                                <div style="height:70px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1px solid #f472b6; border-radius:10px; padding:4px; background-color:#fff5f5; margin-bottom:6px;">
+                                    <div style="font-size:20px;">{stk['icon']}</div>
                                     <div style="font-size:8px; color:#be185d; font-weight:bold; margin-top:2px; text-align:center;">{stk['msg']}</div>
                                 </div>
                                 """,
@@ -1459,7 +1504,7 @@ with tab6:
                         else:
                             st.markdown(
                                 f"""
-                                <div style="height:75px; display:flex; align-items:center; justify-content:center; border:1px dashed #cbd5e1; border-radius:10px; color:#cbd5e1; font-size:13px; margin-bottom:8px; background-color:#ffffff;">
+                                <div style="height:70px; display:flex; align-items:center; justify-content:center; border:1px dashed #cbd5e1; border-radius:10px; color:#cbd5e1; font-size:12px; margin-bottom:6px; background-color:#ffffff;">
                                     {i+1}
                                 </div>
                                 """,
@@ -1471,9 +1516,9 @@ with tab6:
     elif "AI 궁금증 질의응답" in ai_tool:
         st.markdown(
             """
-            <div class="custom-card">
-                <h3 style="margin-top:0; font-weight:700; color:#0f172a; font-size:18px;">🔍 AI 탐구 & 호기심 질의응답</h3>
-                <p style="font-size:12px; color:#64748b; margin-bottom:15px;">역사, 과학, 수학 등 궁금한 점을 최신 정보로 정확하게 답변해 줍니다.</p>
+            <div class="custom-card-unified">
+                <h4 style="margin-top:0; font-weight:700; color:#0f172a; font-size:16px;">🔍 AI 탐구 & 호기심 질의응답</h4>
+                <p style="font-size:11px; color:#64748b; margin-bottom:12px;">역사, 과학, 수학 등 궁금한 점을 최신 정보로 정확하게 답변해 줍니다.</p>
             """,
             unsafe_allow_html=True,
         )
