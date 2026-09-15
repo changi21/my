@@ -452,7 +452,7 @@ def save_sheet_data(
         pass
 
 
-# 5. API 키 가져오기 & Gemini 호출
+# 5. API 키 가져오기 & Gemini 호출 (timeout을 15초 -> 30초로 확장)
 api_key = st.secrets.get("GEMINI_API_KEY", "")
 
 
@@ -466,7 +466,7 @@ def call_gemini_api(prompt):
 
     try:
         response = requests.post(
-            url, headers=headers, data=json.dumps(payload), timeout=15
+            url, headers=headers, data=json.dumps(payload), timeout=30
         )
         res_json = response.json()
 
@@ -615,7 +615,7 @@ STICKER_MSG = [
     "내일 더 멋지게 날아오르자!",
 ]
 
-# 7. 상단 헤더 (✨ AI Powered 배지 삭제 적용)
+# 7. 상단 헤더
 days_kor = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"]
 today_idx = datetime.date.today().weekday()
 today_name = days_kor[today_idx]
@@ -1369,7 +1369,7 @@ with tab5:
             )
 
 # ==========================================
-# TAB 6: AI 코치 & 퀴즈 (사진과 동일한 2x2 카드 통합 한 화면 레이아웃)
+# TAB 6: AI 코치 & 퀴즈 (전범위 퀴즈 프롬프트 + 10가지 음성 상황 원상복구)
 # ==========================================
 with tab6:
     st.markdown(
@@ -1398,8 +1398,8 @@ with tab6:
             subject = st.selectbox(
                 "퀴즈 과목 선택:",
                 [
-                    "📜 한국사 퀴즈 (조선시대/역사 인물)",
-                    "🔬 초등 과학 (생물/지구과학)",
+                    "📜 한국사 퀴즈 (전 범위 다채로운 기출 유형)",
+                    "🔬 초등 과학교과 (전 범위 탐구 유형)",
                     "🔤 초등 필수 영단어 & 표현",
                 ],
                 key="grid_subject",
@@ -1409,13 +1409,16 @@ with tab6:
                 st.session_state.quiz_click_count += 1
                 idx = st.session_state.quiz_click_count
                 with st.spinner("알맞은 퀴즈를 생성하는 중입니다..."):
+                    # 특정 시기에 갇히지 않도록 과목 프롬프트 강화
                     prompt = (
-                        f"당신은 친절한 AI 튜터입니다. {subject} 주제에 대해 초등"
-                        f" 5학년 수준의 {idx}번째 모의 문제 1개를 출제하세요.\n\n[조건]\n-"
-                        " 4지선다형 객관식 문제로 만드세요.\n- 💡 해설 부분은"
-                        " '에릭 학생, 이 문제는 ~ 때문이야!'처럼 눈높이에 맞춰"
-                        " 다정하고 쉽게 설명해 주세요.\n\n[출력 형식]\n[문제]"
-                        " ➡️ [보기 1,2,3,4] ➡️ 💡 [친절한 해설] ➡️ 🔒 [정답]"
+                        f"당신은 친절한 AI 튜터입니다. '{subject}' 과목에 대해 초등"
+                        f" 5학년 수준의 {idx}번째 모의 문제 1개를 무작위 출제하세요."
+                        " 특정 시대나 단원에 치우치지 말고 전 범위에서 흥미로운"
+                        " 문제를 골라주세요.\n\n[조건]\n- 4지선다형 객관식 문제로"
+                        " 만드세요.\n- 💡 해설 부분은 '에릭 학생, 이 문제는 ~"
+                        " 때문이야!'처럼 눈높이에 맞춰 다정하고 쉽게 설명해"
+                        " 주세요.\n\n[출력 형식]\n[문제] ➡️ [보기 1,2,3,4] ➡️ 💡"
+                        " [친절한 해설] ➡️ 🔒 [정답]"
                     )
                     res_text = call_gemini_api(prompt)
                     st.success(f"회차 #{idx} 퀴즈 생성 완료!")
@@ -1431,13 +1434,18 @@ with tab6:
                 unsafe_allow_html=True,
             )
             sit_target = st.selectbox(
-                "상황/기분 선택:",
+                "상황/기분 선택 (10가지):",
                 [
-                    "🌅 1. 아침 등교 전 화이팅!",
-                    "🏫 2. 학원 다녀와서 대견할 때",
-                    "⚡ 3. 저녁 70분 공부를 완수했을 때",
-                    "📖 4. 책 1시간 독서를 마쳤을 때",
-                    "😴 5. 지치고 피곤할 때 힘내기",
+                    "🌅 1. 아침 일찍 일어나 기상 미션을 완수했을 때",
+                    "🏫 2. 방과 후 학원 3곳을 모두 무사히 다녀왔을 때",
+                    "⚡ 3. 저녁 70분 몰입 학습(수학+영어+국어)을 다 끝냈을 때",
+                    "⚾ 4. 주말 아빠와 야구/운동 활동을 완수했을 때",
+                    "📖 5. 밤 1시간 몰입 독서를 마쳤을 때",
+                    "😊 6. 기분이 아주 좋고 자신감이 넘칠 때",
+                    "🌧️ 7. 공부나 문제 풀이가 잘 안되어 속상할 때",
+                    "😴 8. 하루 일과가 끝나고 너무 피곤하고 지칠 때",
+                    "🔥 9. 시험이나 퀴즈를 앞두고 의욕을 다질 때",
+                    "🛌 10. 밤 22시 전 샤워 후 잠자리에 누울 때",
                 ],
                 key="grid_sit",
             )
@@ -1445,8 +1453,8 @@ with tab6:
                 "목소리 캐릭터:",
                 [
                     "🌸 Puck (밝고 에너지 넘치는 소년)",
-                    "🌸 상냥한 선생님",
-                    "🐻 든든한 멘토",
+                    "🌸 상냥하고 다정한 선생님",
+                    "🐻 든든하고 따뜻한 멘토",
                 ],
                 key="grid_voice",
             )
@@ -1458,8 +1466,9 @@ with tab6:
             ):
                 with st.spinner("AI 멘토가 응원 메시지를 작성 중입니다..."):
                     prompt = (
-                        f"학생 '에릭'의 현재 상황: '{sit_target}'. 50자~100자"
-                        " 사이로 따스하고 다정한 응원 문구를 완성해줘."
+                        f"학생 '에릭'의 현재 상황: '{sit_target}'. 이 상황에 맞게"
+                        " 학생 이름 '에릭'을 부르고 50자~100자 사이로 따스하고"
+                        " 다정한 응원 문구를 완성해줘."
                     )
                     msg_text = call_gemini_api(prompt)
 
@@ -1497,7 +1506,7 @@ with tab6:
             )
 
             if st.button(
-                "🎲 스티커 그리구", key="btn_g_sticker", use_container_width=True
+                "🎲 스티커 그리기", key="btn_g_sticker", use_container_width=True
             ):
                 if st.session_state.last_sticker_date == today_str:
                     st.warning("⚠️ 오늘의 칭찬 스티커는 이미 획득하셨습니다!")
