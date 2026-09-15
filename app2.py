@@ -13,7 +13,7 @@ st.set_page_config(
     layout="wide",
 )
 
-# 2. Pretendard 폰트 및 Tailwind CSS 디자인 1:1 통합 (하단 테두리 겹침 완벽 방지 CSS)
+# 2. Pretendard 폰트 및 파스텔 톤 2중 카드 디자인 적용 (작은 네모 파스텔 배경)
 st.markdown(
     """
 <style>
@@ -34,7 +34,7 @@ st.markdown(
         max-width: 1180px;
     }
 
-    /* Outer Card Container (하단 패딩 24px로 확대하여 내부 박스 겹침 방지) */
+    /* 큰 네모 박스 (White Card Container) */
     div[data-testid="stVerticalBlockBorderWrapper"] {
         background-color: #ffffff !important;
         border: 1px solid #e2e8f0 !important;
@@ -58,11 +58,11 @@ st.markdown(
 
     /* 상단 4개 키 메트릭 카드 */
     .metric-card-tw {
-        background-color: #ffffff;
-        border: 1px solid #e2e8f0;
+        background-color: #f1f5f9;
+        border: 1px solid #cbd5e1;
         border-radius: 16px;
         padding: 14px 16px;
-        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.02);
         height: 100%;
         display: flex;
         flex-direction: column;
@@ -71,7 +71,7 @@ st.markdown(
     .metric-title-tw {
         font-size: 11px;
         font-weight: 700;
-        color: #94a3b8;
+        color: #64748b;
         text-transform: uppercase;
         letter-spacing: 0.05em;
     }
@@ -97,12 +97,12 @@ st.markdown(
         box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
     }
 
-    /* 타임라인 및 7일 기록 개별 내부 박스 */
+    /* 작은 네모 박스: 눈이 편안한 연한 파스텔 슬레이트/블루 배경(#f1f5f9) 적용 */
     .tl-item-box {
-        background-color: #f8fafc;
-        border: 1px solid #e2e8f0;
+        background-color: #f1f5f9 !important;
+        border: 1px solid #cbd5e1 !important;
         border-radius: 12px;
-        padding: 12px 14px;
+        padding: 14px 14px;
         height: 100%;
         margin-bottom: 4px;
     }
@@ -655,7 +655,7 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
 ])
 
 # ==========================================
-# TAB 1: 대시보드 (하단 여백 완전 분리 및 테두리 겹침 수정)
+# TAB 1: 대시보드
 # ==========================================
 with tab1:
     st.markdown(
@@ -882,7 +882,7 @@ with tab1:
             )
             st.plotly_chart(fig_bar, use_container_width=True)
 
-    # 📌 타임라인 외각 박스와 내부 4개 시간 박스 하단이 맞닿지 않도록 공간 여백 보장
+    # 타임라인 작은 박스 배경 파스텔 톤 적용
     with st.container(border=True):
         st.markdown(
             """
@@ -1012,7 +1012,7 @@ with tab2:
             for item in items:
                 st.markdown(
                     f"""
-                    <div style="display:flex; justify-content:space-between; align-items:center; padding: 12px 16px; background-color:#f8fafc; border-radius:12px; margin-bottom:8px; border:1px solid #f1f5f9;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding: 12px 16px; background-color:#f1f5f9; border-radius:12px; margin-bottom:8px; border:1px solid #cbd5e1;">
                         <div style="display:flex; align-items:center; gap:12px;">
                             <span style="font-size:12px; font-weight:700; color:#64748b;">⏰ {item['time']}</span>
                             <span style="font-size:14px; font-weight:700; color:#1e293b;">{item['name']}</span>
@@ -1089,7 +1089,7 @@ with tab3:
             ):
                 st.markdown(
                     f"""
-                    <div style="padding: 12px 16px; background-color:#f8fafc; border-radius:12px; margin-bottom:8px; border:1px solid #f1f5f9;">
+                    <div style="padding: 12px 16px; background-color:#f1f5f9; border-radius:12px; margin-bottom:8px; border:1px solid #cbd5e1;">
                         <div style="display:flex; align-items:center; gap:10px;">
                             <span style="font-size:11px; font-weight:700; color:#ef4444; background:#fee2e2; padding:2px 6px; border-radius:6px;">{t}</span>
                             <span style="font-size:14px; font-weight:700; color:#1e293b;">{n}</span>
@@ -1162,7 +1162,7 @@ with tab4:
             for t, n, d in st.session_state.weekend_plans[wk_key]:
                 st.markdown(
                     f"""
-                    <div style="display:flex; justify-content:space-between; align-items:center; padding: 12px 16px; background-color:#f8fafc; border-radius:12px; margin-bottom:8px; border:1px solid #f1f5f9;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding: 12px 16px; background-color:#f1f5f9; border-radius:12px; margin-bottom:8px; border:1px solid #cbd5e1;">
                         <div style="display:flex; align-items:center; gap:12px;">
                             <span style="font-size:12px; font-weight:700; color:#d97706;">⏰ {t}</span>
                             <span style="font-size:14px; font-weight:700; color:#1e293b;">{n}</span>
@@ -1174,7 +1174,7 @@ with tab4:
                 )
 
 # ==========================================
-# TAB 5: 체크 & 기록 ('오늘의 미션 달성 상태' 상자 삭제 및 누적 기록 박스 겹침 완전 해결)
+# TAB 5: 체크 & 기록 (작은 네모 박스 배경 연한 파스텔 톤 수정)
 # ==========================================
 with tab5:
     st.markdown(
@@ -1304,9 +1304,7 @@ with tab5:
                         }
                         save_sheet_data(checklist=chk_payload)
 
-        # 📌 요청사항 1: '오늘의 미션 달성 상태' 중복 상자 완벽 삭제됨
-
-        # 📌 요청사항 2: 7일간 누적 실천 로그 카드 (외각 테두리와 하단 7개 개별 박스가 맞닿거나 겹치지 않게 여백 보장)
+        # 7일간 누적 실천 로그 카드 (작은 네모 박스 배경 파스텔 블루/슬레이트 계열 수정)
         with st.container(border=True):
             st.markdown(
                 """
@@ -1343,8 +1341,8 @@ with tab5:
                                 "background-color:#eff6ff; border:1px solid"
                                 " #bfdbfe; color:#1e40af;"
                                 if is_success
-                                else "background-color:#f8fafc; border:1px solid"
-                                " #e2e8f0; color:#64748b;"
+                                else "background-color:#f1f5f9; border:1px solid"
+                                " #cbd5e1; color:#475569;"
                             )
 
                             st.markdown(
@@ -1360,7 +1358,7 @@ with tab5:
                         else:
                             st.markdown(
                                 """
-                                <div style="background-color:#ffffff; border:1px dashed #cbd5e1; border-radius:12px; padding:10px 4px; text-align:center; color:#cbd5e1; margin-bottom:4px;">
+                                <div style="background-color:#f8fafc; border:1px dashed #cbd5e1; border-radius:12px; padding:10px 4px; text-align:center; color:#94a3b8; margin-bottom:4px;">
                                     <div style="font-size:10px;">대기</div>
                                     <div style="font-size:16px; font-weight:700; margin:4px 0;">-</div>
                                     <div style="font-size:10px;">-</div>
