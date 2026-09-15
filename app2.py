@@ -17,13 +17,12 @@ st.set_page_config(
 api_key = st.secrets.get("GEMINI_API_KEY", "")
 
 
-# REST API 방식으로 Gemini 호출하는 함수 (SDK 에러 원천 차단)
+# REST API 방식으로 Gemini 호출하는 함수 (모델명: gemini-3.6-flash)
 def call_gemini_api(prompt):
     if not api_key:
         return "Secrets에 GEMINI_API_KEY가 설정되어 있지 않습니다."
 
-    # 최신 모델 gemini-2.5-flash 엔드포인트
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key={api_key}"
     headers = {"Content-Type": "application/json"}
     payload = {"contents": [{"parts": [{"text": prompt}]}]}
 
@@ -686,7 +685,7 @@ with tab5:
         )
 
 # ==========================================
-# TAB 6: AI 코치 & 퀴즈 (REST API 호출 방식)
+# TAB 6: AI 코치 & 퀴즈 (gemini-3.6-flash 지정)
 # ==========================================
 with tab6:
     st.subheader("✨ Gemini AI 스마트 학습 코치")
