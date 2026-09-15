@@ -450,7 +450,7 @@ with tab1:
         )
 
 # ==========================================
-# TAB 2: 요일별 학원 (수정 지원)
+# TAB 2: 요일별 학원
 # ==========================================
 with tab2:
     st.subheader("🎒 방과 후 요일별 학원 일정 & 이동 동선")
@@ -507,7 +507,7 @@ with tab2:
             )
 
 # ==========================================
-# TAB 3: 저녁 루틴 (수정 지원)
+# TAB 3: 저녁 루틴
 # ==========================================
 with tab3:
     st.subheader("🌙 저녁 시간대 루틴 시뮬레이션")
@@ -554,7 +554,7 @@ with tab3:
             st.write(f"{idx+1}. **`{t}` | {n}** - {d}")
 
 # ==========================================
-# TAB 4: 주말 일과 (수정 지원)
+# TAB 4: 주말 일과
 # ==========================================
 with tab4:
     st.subheader("☀️ 주말 알찬 타임라인 (토/일)")
@@ -599,7 +599,7 @@ with tab4:
             st.write(f"- **`{t}` | {n}** ({d})")
 
 # ==========================================
-# TAB 5: 체크 & 기록 (문구 수정 지원)
+# TAB 5: 체크 & 기록
 # ==========================================
 with tab5:
     st.subheader("✅ 일일 실천 체크리스트")
@@ -665,7 +665,7 @@ with tab5:
         )
 
 # ==========================================
-# TAB 6: AI 코치 & 퀴즈 (에러 수정 & 스티커 보상 시스템)
+# TAB 6: AI 코치 & 퀴즈 (gemini-2.0-flash 사용 & 스티커 높이 완벽 통일)
 # ==========================================
 with tab6:
     st.subheader("✨ Gemini AI 스마트 학습 코치")
@@ -681,7 +681,7 @@ with tab6:
         horizontal=True,
     )
 
-    # 1. 1분 AI 퀴즈 (안정적인 모델 사용)
+    # 1. 1분 AI 퀴즈 (gemini-2.0-flash 적용)
     if "1분 AI 퀴즈" in ai_tool:
         subject = st.selectbox(
             "퀴즈 과목 선택:",
@@ -709,14 +709,14 @@ with tab6:
                             " 명확히 출력하세요."
                         )
                         response = client.models.generate_content(
-                            model="gemini-1.5-flash", contents=prompt
+                            model="gemini-2.0-flash", contents=prompt
                         )
                         st.success(f"회차 #{idx} 퀴즈 생성 완료!")
                         st.markdown(response.text)
                     except Exception as e:
                         st.error(f"오류 발생: {e}")
 
-    # 2. AI 응원 멘트 (안정적인 모델 사용)
+    # 2. AI 응원 멘트 (gemini-2.0-flash 적용)
     elif "AI 응원 멘트" in ai_tool:
         sit_choice = st.selectbox(
             "현재 내 상황이나 기분을 선택하세요 (10가지):",
@@ -746,7 +746,7 @@ with tab6:
                             " 힘이 나는 응원 문구를 작성해줘."
                         )
                         response = client.models.generate_content(
-                            model="gemini-1.5-flash", contents=prompt
+                            model="gemini-2.0-flash", contents=prompt
                         )
                         msg_text = response.text.strip()
 
@@ -766,11 +766,10 @@ with tab6:
                     except Exception as e:
                         st.error(f"오류 발생: {e}")
 
-    # 3. 칭찬 스티커 (대형 심볼 연출 + 1일 1개 제한 + 30개 보상 목표)
+    # 3. 칭찬 스티커 (높이 박스 완벽 통일)
     elif "칭찬 스티커" in ai_tool:
         st.write("### 🏆 칭찬 스티커 & 보상 스티커북")
 
-        # 보상 목표 설정 입력 칸
         reward_in = st.text_input(
             "🎯 30개 스티커 완성 시 받고 싶은 보상을 적어보세요:",
             value=st.session_state.reward_goal,
@@ -801,7 +800,6 @@ with tab6:
                 st.session_state.latest_draw_sticker = sticker_item
                 st.balloons()
 
-        # 뽑았을 때 커다란 대형 심볼로 획득 연출 보여주기
         if st.session_state.latest_draw_sticker:
             lstk = st.session_state.latest_draw_sticker
             st.markdown(
@@ -809,7 +807,7 @@ with tab6:
                 <div style="text-align:center; padding: 20px; background: linear-gradient(135deg, #fbcfe8, #e0e7ff); border-radius:20px; border:3px solid #ec4899; margin-bottom: 20px;">
                     <div style="font-size: 70px; margin-bottom: 5px;">{lstk['icon']}</div>
                     <div style="font-size: 18px; font-weight: bold; color: #831843;">🎉 축하합니다! 스티커를 획득했어요!</div>
-                    <div style="font-size: 14px; color: #4338ca; font-weight: bold; mt-1;">"{lstk['msg']}"</div>
+                    <div style="font-size: 14px; color: #4338ca; font-weight: bold; margin-top: 4px;">"{lstk['msg']}"</div>
                 </div>
                 """,
                 unsafe_allow_html=True,
@@ -828,26 +826,25 @@ with tab6:
                 if i < len(st.session_state.stickers):
                     stk = st.session_state.stickers[i]
                     st.markdown(
-                        f"<div style='text-align:center; border:2px solid"
-                        " #ec4899; border-radius:12px; padding:8px;"
-                        " background-color:#fdf2f8; margin-bottom:8px;'>"
-                        f"<div style='font-size:26px;'>{stk['icon']}</div>"
-                        f"<div style='font-size:9px; color:#be185d;"
-                        f" font-weight:bold;'>{stk['msg']}</div>"
-                        "</div>",
+                        f"""
+                        <div style="height:80px; display:flex; flex-direction:column; align-items:center; justify-center:center; border:2px solid #ec4899; border-radius:12px; padding:6px; background-color:#fdf2f8; margin-bottom:10px; box-sizing:border-box;">
+                            <div style="font-size:24px; line-height:1.2;">{stk['icon']}</div>
+                            <div style="font-size:9px; color:#be185d; font-weight:bold; margin-top:4px; text-align:center; word-break:keep-all;">{stk['msg']}</div>
+                        </div>
+                        """,
                         unsafe_allow_html=True,
                     )
                 else:
                     st.markdown(
-                        "<div style='text-align:center; border:1px dashed"
-                        " #cbd5e1; border-radius:12px; padding:14px;"
-                        " color:#94a3b8; font-size:12px; margin-bottom:8px;'>"
-                        f"{i+1}"
-                        "</div>",
+                        f"""
+                        <div style="height:80px; display:flex; align-items:center; justify-content:center; border:1px dashed #cbd5e1; border-radius:12px; color:#94a3b8; font-size:14px; margin-bottom:10px; box-sizing:border-box; background-color:#ffffff;">
+                            {i+1}
+                        </div>
+                        """,
                         unsafe_allow_html=True,
                     )
 
-    # 4. AI 궁금증 질의응답 (안정적인 모델 사용)
+    # 4. AI 궁금증 질의응답 (gemini-2.0-flash 적용)
     elif "AI 궁금증 질의응답" in ai_tool:
         q_input = st.text_input(
             "궁금한 역사/과학 질문을 적어보세요:",
@@ -870,7 +867,7 @@ with tab6:
                             " 정리해 주세요."
                         )
                         response = client.models.generate_content(
-                            model="gemini-1.5-flash", contents=prompt
+                            model="gemini-2.0-flash", contents=prompt
                         )
                         st.success("답변 완료!")
                         st.markdown(response.text)
