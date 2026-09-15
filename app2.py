@@ -444,7 +444,7 @@ def save_sheet_data(
         pass
 
 
-# 5. API 키 설정 (가장 표준적인 REST API 모델명 적용)
+# 5. API 키 설정 (gemini-2.5-flash 정식 지원 엔드포인트 적용)
 api_key = st.secrets.get("GEMINI_API_KEY", "")
 
 
@@ -452,7 +452,7 @@ def call_gemini_api(prompt):
     if not api_key:
         return "Secrets에 GEMINI_API_KEY가 설정되어 있지 않습니다."
 
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
     headers = {"Content-Type": "application/json"}
     payload = {"contents": [{"parts": [{"text": prompt}]}]}
 
@@ -1363,7 +1363,7 @@ with tab5:
             )
 
 # ==========================================
-# TAB 6: AI 코치 & 퀴즈 (안정적인 gemini-1.5-flash 표준 엔드포인트 연동)
+# TAB 6: AI 코치 & 퀴즈 (gemini-2.5-flash 표준 엔드포인트)
 # ==========================================
 with tab6:
     st.markdown(
@@ -1481,7 +1481,7 @@ with tab6:
                     """
                     st.components.v1.html(tts_script, height=0)
 
-    # 하단 2행: 스티커 (높이 2배 확대 디자인) + 호기심 질의응답
+    # 하단 2행: 스티커 (높이 2배 확대 상자) + 호기심 질의응답
     row2_col1, row2_col2 = st.columns(2)
 
     with row2_col1:
