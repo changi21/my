@@ -444,7 +444,7 @@ def save_sheet_data(
         pass
 
 
-# 5. 안정적인 gemini-1.5-flash 표준 엔드포인트 적용
+# 5. API 키 설정 (안정적인 gemini-2.5-flash 정식 지원 모델 적용)
 api_key = st.secrets.get("GEMINI_API_KEY", "")
 
 
@@ -452,7 +452,7 @@ def call_gemini_api(prompt):
     if not api_key:
         return "Secrets에 GEMINI_API_KEY가 설정되어 있지 않습니다."
 
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
     headers = {"Content-Type": "application/json"}
     payload = {"contents": [{"parts": [{"text": prompt}]}]}
 
@@ -1363,7 +1363,7 @@ with tab5:
             )
 
 # ==========================================
-# TAB 6: AI 코치 & 퀴즈 (보상 목표 수정 기능 정상화 + 통신 안정화)
+# TAB 6: AI 코치 & 퀴즈 (결과 상자 높이 2배 조절 + gemini-2.5-flash 정식 지원 모델 연동)
 # ==========================================
 with tab6:
     st.markdown(
@@ -1377,7 +1377,6 @@ with tab6:
         unsafe_allow_html=True,
     )
 
-    # 상단 1행: 퀴즈(좌) + 음성응원(우)
     row1_col1, row1_col2 = st.columns(2)
 
     with row1_col1:
@@ -1482,15 +1481,19 @@ with tab6:
                     """
                     st.components.v1.html(tts_script, height=0)
 
-    # 하단 2행: 스티커 (목표 수정 기능 포함) + 호기심 질의응답
+    # 하단 2행: 스티커 (높이 2배 상자 조절 + 📌 버튼) + 호기심 질의응답
     row2_col1, row2_col2 = st.columns(2)
 
     with row2_col1:
         with st.container(border=True):
+            current_cnt = len(st.session_state.stickers)
+            pct_val = int(current_cnt / 30 * 100)
             st.markdown(
-                """
+                f"""
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h3 style="margin:0; font-weight:800; color:#0f172a; font-size:15px;">🎨 AI 미션 달성 칭찬 스티커 카운터</h3>
+                    <h3 style="margin:0; font-weight:800; color:#0f172a; font-size:15px;">
+                        🎨 AI 미션 달성 칭찬 스티커 카운터 <span style="color:#ec4899; font-weight:900; font-size:14px;">({current_cnt}/30개, {pct_val}%)</span>
+                    </h3>
                     <span style="font-size:10px; background:#fce7f3; color:#be185d; font-weight:700; padding:2px 6px; border-radius:4px;">하루 1장 제한</span>
                 </div>
                 <p style="font-size:11px; color:#64748b; margin-top:4px; margin-bottom:8px;">오늘 미션을 성공했을 때 칭찬 스티커 카드를 생성하여 내 스티커북(30개판)에 저장합니다!</p>
@@ -1519,46 +1522,42 @@ with tab6:
                     )
                     st.balloons()
 
+            # 높이를 2배 조절한 칭찬 스티커 결과 상자 (padding: 24px 16px, font-size: 38px)
             if st.session_state.latest_draw_sticker:
                 lstk = st.session_state.latest_draw_sticker
                 st.markdown(
                     f"""
-                    <div style="text-align:center; padding: 8px; background: linear-gradient(135deg, #fbcfe8, #e0e7ff); border-radius:10px; margin-top: 6px; margin-bottom: 6px;">
-                        <span style="font-size: 22px;">{lstk['icon']}</span>
-                        <div style="font-size: 11px; font-weight: bold; color: #4338ca;">"{lstk['msg']}"</div>
+                    <div style="text-align:center; padding: 24px 16px; background: linear-gradient(135deg, #fbcfe8, #e0e7ff); border-radius:14px; margin-top: 10px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
+                        <div style="font-size: 38px; line-height: 1.2;">{lstk['icon']}</div>
+                        <div style="font-size: 14px; font-weight: 800; color: #4338ca; margin-top: 6px;">"{lstk['msg']}"</div>
                     </div>
                     """,
                     unsafe_allow_html=True,
                 )
 
-            # 🎯 보상 목표 수정 가능 입력창 추가 및 시트 저장 기능 연동
+            # 🎯 달성 보상 목표 : [ 입력창 ] [ 📌 ]
             st.markdown(
                 "<div style='margin-top: 8px;'></div>", unsafe_allow_html=True
             )
-            c_g_in, c_g_btn = st.columns([3, 1])
-            with c_g_in:
+            c_label, c_in, c_btn = st.columns([1.8, 3.4, 1.0])
+            with c_label:
+                st.markdown(
+                    "<div style='font-size:12px; font-weight:700; color:#334155; height:38px; display:flex; align-items:center;'>🎯 달성 보상 목표 :</div>",
+                    unsafe_allow_html=True,
+                )
+            with c_in:
                 new_goal_val = st.text_input(
-                    "🎯 30개 달성 보상 목표 수정:",
+                    "보상 목표",
                     value=st.session_state.reward_goal,
                     key="input_reward_goal",
                     label_visibility="collapsed",
                 )
-            with c_g_btn:
-                if st.button("💾 저장", key="btn_save_goal"):
+            with c_btn:
+                if st.button("📌", key="btn_save_goal", use_container_width=True):
                     st.session_state.reward_goal = new_goal_val
                     save_sheet_data(reward_goal=new_goal_val)
-                    st.success("목표 수정 저장 완료!")
+                    st.success("완료!")
                     st.rerun()
-
-            st.markdown(
-                f"""
-                <div style="margin-top:6px; font-size:11px; font-weight:700; color:#475569; display:flex; justify-content:space-between;">
-                    <span>달성률: {len(st.session_state.stickers)} / 30개</span>
-                    <span style="color:#2563eb;">({int(len(st.session_state.stickers)/30*100)}%)</span>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
 
     with row2_col2:
         with st.container(border=True):
