@@ -13,11 +13,33 @@ st.set_page_config(
     layout="wide",
 )
 
-# 2. API 키 가져오기
+# 2. PIN 번호 인증 시스템 (원하는 4자리 PIN 설정)
+SET_PIN = "1306"  # 👈 사용하실 PIN 번호 4자리를 설정하세요.
+
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+
+if not st.session_state.authenticated:
+    st.title("🔒 비밀번호 입력")
+    st.caption("초등 5학년 스마트 루틴 대시보드에 접속하려면 PIN 번호를 입력하세요.")
+
+    pin_input = st.text_input(
+        "PIN 번호 4자리를 입력하세요:", type="password", max_chars=4
+    )
+
+    if st.button("확인"):
+        if pin_input == SET_PIN:
+            st.session_state.authenticated = True
+            st.success("인증 성공!")
+            st.rerun()
+        else:
+            st.error("PIN 번호가 일치하지 않습니다. 다시 입력해주세요.")
+    st.stop()  # 인증되지 않으면 아래 메인 코드 실행 중단
+
+# 3. API 키 가져오기
 api_key = st.secrets.get("GEMINI_API_KEY", "")
 
 
-# REST API 방식으로 Gemini 호출하는 함수
 def call_gemini_api(prompt):
     if not api_key:
         return "Secrets에 GEMINI_API_KEY가 설정되어 있지 않습니다."
@@ -41,7 +63,7 @@ def call_gemini_api(prompt):
         return f"통신 오류 발생: {e}"
 
 
-# 3. 세션 상태 초기화
+# 4. 세션 상태 초기화
 if "schedules" not in st.session_state:
     st.session_state.schedules = {
         "월요일": [
@@ -355,15 +377,21 @@ STICKER_MSG = [
     "내일 더 멋지게 날아오르자!",
 ]
 
-# 4. 상단 헤더
+# 5. 상단 헤더 & 로그아웃
 today_str = datetime.date.today().strftime("%Y년 %m월 %d일")
-st.title("📅 초등 5학년 주간 일정표 & AI 대시보드")
-st.caption(
-    f"📅 **오늘 날짜:** {today_str} | 수면 22:00 전 • 아침 최태성 한국사 시청 • 저녁"
-    " 70분 스퍼트"
-)
+h_col1, h_col2 = st.columns([8, 1])
+with h_col1:
+    st.title("📅 초등 5학년 주간 일정표 & AI 대시보드")
+    st.caption(
+        f"📅 **오늘 날짜:** {today_str} | 수면 22:00 전 • 아침 최태성 한국사 시청 • 저녁"
+        " 70분 스퍼트"
+    )
+with h_col2:
+    if st.button("🔒 잠금"):
+        st.session_state.authenticated = False
+        st.rerun()
 
-# 5. 메인 탭 구성
+# 6. 메인 탭 구성
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "📊 대시보드",
     "🎒 요일별 학원",
@@ -685,7 +713,7 @@ with tab5:
         )
 
 # ==========================================
-# TAB 6: AI 코치 & 퀴즈 (호칭 및 자연스러운 목소리 개선)
+# TAB 6: AI 코치 & 퀴즈 (스티커판 초기화 버튼 포함)
 # ==========================================
 with tab6:
     st.subheader("✨ Gemini AI 스마트 학습 코치")
@@ -728,7 +756,7 @@ with tab6:
                 st.success(f"회차 #{idx} 퀴즈 생성 완료!")
                 st.markdown(res_text)
 
-    # 2. AI 응원 멘트 (호칭 수정 & 다양한 목소리 톤 제공)
+    # 2. AI 응원 멘트
     elif "AI 응원 멘트" in ai_tool:
         sit_choice = st.selectbox(
             "현재 내 상황이나 기분을 선택하세요 (10가지):",
@@ -757,7 +785,6 @@ with tab6:
 
         if st.button("🎙️ AI 응원 메시지 생성 & 음성 재생"):
             with st.spinner("AI 멘토가 응원 메시지를 작성 중입니다..."):
-                # [학생 이름] 등의 대명사 대신 "에릭"으로 호칭하도록 지정
                 prompt = (
                     f"초등 5학년 학생 '에릭'의 현재 상황: '{sit_choice}'. 이 상황에"
                     " 맞게 학생의 이름을 '에릭'으로 부르거나 자연스럽게 잇고,"
@@ -770,7 +797,6 @@ with tab6:
                 st.balloons()
                 st.info(f"💬 **AI 멘토의 응원:**\n\n{msg_text}")
 
-                # 톤 설정
                 if "신나고 활기찬" in voice_style:
                     rate_val = 1.15
                     pitch_val = 1.3
@@ -785,7 +811,7 @@ with tab6:
 
                 tts_script = f"""
                 <script>
-                    window.speechSynthesis.cancel(); // 이전 음성 취소
+                    window.speechSynthesis.cancel();
                     var msg = new SpeechSynthesisUtterance("{clean_text}");
                     msg.lang = 'ko-KR';
                     msg.rate = {rate_val};
@@ -795,7 +821,7 @@ with tab6:
                 """
                 st.components.v1.html(tts_script, height=0)
 
-    # 3. 칭찬 스티커
+    # 3. 칭찬 스티커 (초기화 버튼 추가)
     elif "칭찬 스티커" in ai_tool:
         st.write("### 🏆 칭찬 스티커 & 보상 스티커북")
 
@@ -810,24 +836,34 @@ with tab6:
             " 있습니다."
         )
 
-        if st.button("🎲 오늘의 칭찬 스티커 뽑기!"):
-            if st.session_state.last_sticker_date == today_str:
-                st.warning(
-                    "⚠️ 오늘의 칭찬 스티커는 이미 획득하셨습니다! 내일 미션을"
-                    " 완수하고 또 도전해 보세요."
-                )
-            else:
-                rand_icon = random.choice(STICKER_ICONS)
-                rand_msg = random.choice(STICKER_MSG)
-                sticker_item = {
-                    "icon": rand_icon,
-                    "msg": rand_msg,
-                    "date": today_str,
-                }
-                st.session_state.stickers.append(sticker_item)
-                st.session_state.last_sticker_date = today_str
-                st.session_state.latest_draw_sticker = sticker_item
-                st.balloons()
+        btn_c1, btn_c2 = st.columns([3, 1])
+        with btn_c1:
+            if st.button("🎲 오늘의 칭찬 스티커 뽑기!"):
+                if st.session_state.last_sticker_date == today_str:
+                    st.warning(
+                        "⚠️ 오늘의 칭찬 스티커는 이미 획득하셨습니다! 내일 미션을"
+                        " 완수하고 또 도전해 보세요."
+                    )
+                else:
+                    rand_icon = random.choice(STICKER_ICONS)
+                    rand_msg = random.choice(STICKER_MSG)
+                    sticker_item = {
+                        "icon": rand_icon,
+                        "msg": rand_msg,
+                        "date": today_str,
+                    }
+                    st.session_state.stickers.append(sticker_item)
+                    st.session_state.last_sticker_date = today_str
+                    st.session_state.latest_draw_sticker = sticker_item
+                    st.balloons()
+
+        with btn_c2:
+            # 🔄 스티커판 리셋 버튼
+            if st.button("🔄 스티커판 초기화"):
+                st.session_state.stickers = []
+                st.session_state.latest_draw_sticker = None
+                st.success("스티커판이 0개로 리셋되었습니다!")
+                st.rerun()
 
         if st.session_state.latest_draw_sticker:
             lstk = st.session_state.latest_draw_sticker
@@ -846,6 +882,15 @@ with tab6:
         st.write(
             f"🏆 **내 칭찬 스티커북 ({len(st.session_state.stickers)}/30개 모음)**"
         )
+
+        # 30개 전부 다 모았을 때 나오는 보상 축하 메시지
+        if len(st.session_state.stickers) >= 30:
+            st.balloons()
+            st.success(
+                f"🎉 **축하합니다! 스티커 30개를 모두 모았습니다!**\n\n🎁 **보상"
+                f" 획득:** {st.session_state.reward_goal}"
+            )
+
         st.info(f"🎁 **30개 완수 보상:** {st.session_state.reward_goal}")
 
         cols = st.columns(6)
