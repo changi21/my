@@ -742,7 +742,7 @@ with tab1:
             st.write("등록된 학원 일정이 없습니다.")
 
 # ==========================================
-# TAB 2: 요일별 학원 (수정 시 구글 시트 자동 저장)
+# TAB 2: 요일별 학원
 # ==========================================
 with tab2:
     st.subheader("🎒 방과 후 요일별 학원 일정 & 이동 동선")
@@ -802,7 +802,7 @@ with tab2:
             )
 
 # ==========================================
-# TAB 3: 저녁 루틴 (수정 시 구글 시트 자동 저장)
+# TAB 3: 저녁 루틴
 # ==========================================
 with tab3:
     st.subheader("🌙 저녁 시간대 루틴 시뮬레이션")
@@ -850,7 +850,7 @@ with tab3:
             st.write(f"{idx+1}. **`{t}` | {n}** - {d}")
 
 # ==========================================
-# TAB 4: 주말 일과 (수정 시 구글 시트 자동 저장)
+# TAB 4: 주말 일과
 # ==========================================
 with tab4:
     st.subheader("☀️ 주말 알찬 타임라인 (토/일)")
@@ -899,7 +899,7 @@ with tab4:
             st.write(f"- **`{t}` | {n}** ({d})")
 
 # ==========================================
-# TAB 5: 체크 & 기록 (수정 시 구글 시트 자동 저장)
+# TAB 5: 체크 & 기록
 # ==========================================
 with tab5:
     st.subheader("✅ 일일 실천 체크리스트")
@@ -970,7 +970,7 @@ with tab5:
         )
 
 # ==========================================
-# TAB 6: AI 코치 & 퀴즈
+# TAB 6: AI 코치 & 퀴즈 (모바일 순서 보정 레이아웃 적용)
 # ==========================================
 with tab6:
     st.subheader("✨ Gemini AI 스마트 학습 코치")
@@ -1085,7 +1085,7 @@ with tab6:
                 """
                 st.components.v1.html(tts_script, height=0)
 
-    # 3. 칭찬 스티커
+    # 3. 칭찬 스티커 (모바일 순서 보정 레이아웃)
     elif "칭찬 스티커" in ai_tool:
         st.write("### 🏆 칭찬 스티커 & 보상 스티커북")
 
@@ -1162,30 +1162,35 @@ with tab6:
 
         st.info(f"🎁 **30개 완수 보상:** {st.session_state.reward_goal}")
 
-        cols = st.columns(6)
-        for i in range(30):
-            col = cols[i % 6]
-            with col:
-                if i < len(st.session_state.stickers):
-                    stk = st.session_state.stickers[i]
-                    st.markdown(
-                        f"""
-                        <div style="height:80px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:2px solid #ec4899; border-radius:12px; padding:6px; background-color:#fdf2f8; margin-bottom:10px; box-sizing:border-box;">
-                            <div style="font-size:24px; line-height:1.2;">{stk['icon']}</div>
-                            <div style="font-size:9px; color:#be185d; font-weight:bold; margin-top:4px; text-align:center; word-break:keep-all;">{stk['msg']}</div>
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
-                else:
-                    st.markdown(
-                        f"""
-                        <div style="height:80px; display:flex; align-items:center; justify-content:center; border:1px dashed #cbd5e1; border-radius:12px; color:#94a3b8; font-size:14px; margin-bottom:10px; box-sizing:border-box; background-color:#ffffff;">
-                            {i+1}
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
+        # 모바일에서도 1~30번 순서가 왜곡되지 않는 행(Row) 기준 안전한 그리드 구성
+        total_stickers = 30
+        cols_per_row = 6
+        for row_idx in range(0, total_stickers, cols_per_row):
+            row_cols = st.columns(cols_per_row)
+            for c_idx in range(cols_per_row):
+                i = row_idx + c_idx
+                if i < total_stickers:
+                    with row_cols[c_idx]:
+                        if i < len(st.session_state.stickers):
+                            stk = st.session_state.stickers[i]
+                            st.markdown(
+                                f"""
+                                <div style="height:80px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:2px solid #ec4899; border-radius:12px; padding:6px; background-color:#fdf2f8; margin-bottom:10px; box-sizing:border-box;">
+                                    <div style="font-size:24px; line-height:1.2;">{stk['icon']}</div>
+                                    <div style="font-size:9px; color:#be185d; font-weight:bold; margin-top:4px; text-align:center; word-break:keep-all;">{stk['msg']}</div>
+                                </div>
+                                """,
+                                unsafe_allow_html=True,
+                            )
+                        else:
+                            st.markdown(
+                                f"""
+                                <div style="height:80px; display:flex; align-items:center; justify-content:center; border:1px dashed #cbd5e1; border-radius:12px; color:#94a3b8; font-size:14px; margin-bottom:10px; box-sizing:border-box; background-color:#ffffff;">
+                                    {i+1}
+                                </div>
+                                """,
+                                unsafe_allow_html=True,
+                            )
 
     # 4. AI 궁금증 질의응답
     elif "AI 궁금증 질의응답" in ai_tool:
