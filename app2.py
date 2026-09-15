@@ -13,7 +13,7 @@ st.set_page_config(
     layout="wide",
 )
 
-# 2. Pretendard 폰트 및 Tailwind CSS 디자인 1:1 통합 (HTML 태그 분리 현상 완벽 방지)
+# 2. Pretendard 폰트 및 Tailwind CSS 디자인 1:1 통합 (하단 테두리 겹침 완벽 방지 CSS)
 st.markdown(
     """
 <style>
@@ -34,15 +34,14 @@ st.markdown(
         max-width: 1180px;
     }
 
-    /* Streamlit 네이티브 테두리 컨테이너를 통합 카드(White Card) 스타일로 변환 */
-    /* 제목과 내용이 하나의 네모 박스 안에 완벽히 고정됩니다 */
+    /* Outer Card Container (하단 패딩 24px로 확대하여 내부 박스 겹침 방지) */
     div[data-testid="stVerticalBlockBorderWrapper"] {
         background-color: #ffffff !important;
         border: 1px solid #e2e8f0 !important;
         border-radius: 16px !important;
         box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04) !important;
-        padding: 18px 20px !important;
-        margin-bottom: 16px !important;
+        padding: 20px 20px 24px 20px !important;
+        margin-bottom: 18px !important;
     }
 
     /* 상단 안내 배너 */
@@ -98,13 +97,14 @@ st.markdown(
         box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
     }
 
-    /* 타임라인 개별 내부 박스 */
+    /* 타임라인 및 7일 기록 개별 내부 박스 */
     .tl-item-box {
         background-color: #f8fafc;
         border: 1px solid #e2e8f0;
         border-radius: 12px;
         padding: 12px 14px;
         height: 100%;
+        margin-bottom: 4px;
     }
 
     .stButton>button {
@@ -655,7 +655,7 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
 ])
 
 # ==========================================
-# TAB 1: 대시보드 (Streamlit 네이티브 컨테이너 단일화 적용)
+# TAB 1: 대시보드 (하단 여백 완전 분리 및 테두리 겹침 수정)
 # ==========================================
 with tab1:
     st.markdown(
@@ -760,7 +760,6 @@ with tab1:
     c1, c2 = st.columns(2)
 
     with c1:
-        # 📌 st.container(border=True) 내부로 완벽히 묶어서 제목과 네모 박스가 이중으로 뜨는 현상 100% 방지
         with st.container(border=True):
             st.markdown(
                 f"""
@@ -883,7 +882,7 @@ with tab1:
             )
             st.plotly_chart(fig_bar, use_container_width=True)
 
-    # 📌 단일 테두리 컨테이너 내부로 타임라인 제목과 4개 박스를 결합하여 분리 현상 해결
+    # 📌 타임라인 외각 박스와 내부 4개 시간 박스 하단이 맞닿지 않도록 공간 여백 보장
     with st.container(border=True):
         st.markdown(
             """
@@ -937,6 +936,9 @@ with tab1:
                 """,
                 unsafe_allow_html=True,
             )
+        st.markdown(
+            "<div style='margin-bottom:4px;'></div>", unsafe_allow_html=True
+        )
 
 # ==========================================
 # TAB 2: 요일별 학원
@@ -1172,7 +1174,7 @@ with tab4:
                 )
 
 # ==========================================
-# TAB 5: 체크 & 기록 (7일 누적 기록)
+# TAB 5: 체크 & 기록 ('오늘의 미션 달성 상태' 상자 삭제 및 누적 기록 박스 겹침 완전 해결)
 # ==========================================
 with tab5:
     st.markdown(
@@ -1302,31 +1304,13 @@ with tab5:
                         }
                         save_sheet_data(checklist=chk_payload)
 
-        w_count = sum(
-            1 for _, val in st.session_state.checklist_weekday.values() if val
-        )
-        wk_count = sum(
-            1 for _, val in st.session_state.checklist_weekend.values() if val
-        )
+        # 📌 요청사항 1: '오늘의 미션 달성 상태' 중복 상자 완벽 삭제됨
 
-        with st.container(border=True):
-            st.markdown(
-                f"""
-                <div style="text-align:center;">
-                    <h3 style="margin:0; font-weight:800; color:#1e293b; font-size:15px;">🎉 오늘의 미션 달성 상태</h3>
-                    <p style="font-size:15px; font-weight:800; color:#2563eb; margin-top:6px; margin-bottom:0;">
-                        평일 ({w_count}/5 완료) &nbsp;|&nbsp; 주말 ({wk_count}/5 완료)
-                    </p>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-
-        # 7일간 누적 실천 로그 카드
+        # 📌 요청사항 2: 7일간 누적 실천 로그 카드 (외각 테두리와 하단 7개 개별 박스가 맞닿거나 겹치지 않게 여백 보장)
         with st.container(border=True):
             st.markdown(
                 """
-                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f1f5f9; padding-bottom:8px; margin-bottom:12px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f1f5f9; padding-bottom:8px; margin-bottom:14px;">
                     <h3 style="margin:0; font-size:15px; font-weight:800; color:#0f172a;">📈 최근 7일 실천 기록 (누적 달성 로그)</h3>
                     <span style="font-size:11px; color:#64748b;">구글 시트에 자동 영구 보관됩니다</span>
                 </div>
@@ -1365,7 +1349,7 @@ with tab5:
 
                             st.markdown(
                                 f"""
-                                <div style="{bg_style} border-radius:12px; padding:10px 4px; text-align:center;">
+                                <div style="{bg_style} border-radius:12px; padding:10px 4px; text-align:center; margin-bottom:4px;">
                                     <div style="font-size:10px; font-weight:700;">{dt_val}</div>
                                     <div style="font-size:16px; font-weight:900; margin:4px 0;">{c_val} / {tot_val}</div>
                                     <div style="font-size:10px; font-weight:700;">{"🎉 완수" if is_success else "참 잘했어요"}</div>
@@ -1376,7 +1360,7 @@ with tab5:
                         else:
                             st.markdown(
                                 """
-                                <div style="background-color:#ffffff; border:1px dashed #cbd5e1; border-radius:12px; padding:10px 4px; text-align:center; color:#cbd5e1;">
+                                <div style="background-color:#ffffff; border:1px dashed #cbd5e1; border-radius:12px; padding:10px 4px; text-align:center; color:#cbd5e1; margin-bottom:4px;">
                                     <div style="font-size:10px;">대기</div>
                                     <div style="font-size:16px; font-weight:700; margin:4px 0;">-</div>
                                     <div style="font-size:10px;">-</div>
@@ -1384,6 +1368,9 @@ with tab5:
                                 """,
                                 unsafe_allow_html=True,
                             )
+            st.markdown(
+                "<div style='margin-bottom:4px;'></div>", unsafe_allow_html=True
+            )
 
 # ==========================================
 # TAB 6: AI 코치 & 퀴즈
