@@ -13,7 +13,7 @@ st.set_page_config(
     layout="wide",
 )
 
-# 2. CSS 완전 수정: 바탕화면(순백색) vs 큰 네모 박스(연 파스텔 블루 톤) 분리
+# 2. CSS 구조 개편: 바탕화면(흰색) vs 큰 네모 박스(불투명 파스텔 블루/슬레이트)
 st.markdown(
     """
 <style>
@@ -23,7 +23,7 @@ st.markdown(
         font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif !important;
     }
     
-    /* 1. 바탕 화면 전체를 완전한 순백색(#ffffff)으로 강제 고정 */
+    /* 1. 바탕 화면 전체: 완전한 순백색 고정 */
     .stApp, .main, [data-testid="stMainBlockContainer"], .block-container {
         background-color: #ffffff !important;
         color: #1e293b;
@@ -35,22 +35,23 @@ st.markdown(
         max-width: 1180px;
     }
 
-    /* 2. 큰 네모 박스: 마음에 들어하신 은은한 파스텔 블루/슬레이트 톤 고정 */
+    /* 2. 큰 네모 박스 껍데기: 조금 더 진하고 명확한 파스텔 블루/슬레이트 (#e2e8f0) */
     div[data-testid="stVerticalBlockBorderWrapper"] {
-        background-color: #eef2f6 !important;
+        background-color: #e2e8f0 !important;
         border: 1.5px solid #cbd5e1 !important;
         border-radius: 16px !important;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03) !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
         padding: 20px 20px 24px 20px !important;
         margin-bottom: 18px !important;
     }
 
-    /* 네모 박스 내부 자식 요소도 동일 배경 유지 */
-    div[data-testid="stVerticalBlockBorderWrapper"] > div {
-        background-color: transparent !important;
+    /* 3. [핵심] 큰 네모 박스 내부 알맹이: 투명 속성 제거 후 불투명 색상 강제 지정 */
+    div[data-testid="stVerticalBlockBorderWrapper"] > div,
+    div[data-testid="stVerticalBlockBorderWrapper"] [data-testid="stVerticalBlock"] {
+        background-color: #e2e8f0 !important;
     }
 
-    /* 3. 높이/가로 라인 100% 동일 수평 맞춤 */
+    /* 4. 가로 라인 및 높이 수평 맞춤 */
     [data-testid="stColumn"] > div {
         height: 100%;
     }
@@ -885,7 +886,7 @@ with tab1:
                 ),
                 yaxis=dict(
                     showgrid=True,
-                    gridcolor="#e2e8f0",
+                    gridcolor="#cbd5e1",
                     tickfont=dict(size=10, color="#94a3b8"),
                     title=None,
                     range=[0, 38],
