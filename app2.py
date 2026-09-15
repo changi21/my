@@ -459,7 +459,7 @@ def call_gemini_api(prompt):
 
     try:
         response = requests.post(
-            url, headers=headers, data=json.dumps(payload), timeout=25
+            url, headers=headers, data=json.dumps(payload), timeout=60
         )
         res_json = response.json()
 
