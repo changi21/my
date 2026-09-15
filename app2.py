@@ -13,7 +13,7 @@ st.set_page_config(
     layout="wide",
 )
 
-# 2. Pretendard 폰트 및 배경(흰색) + 큰 카드(연한 파스텔 톤) 대비 적용
+# 2. Pretendard 폰트 + 바탕화면/큰박스 색상 완전 분리 + 높이 자동 맞춤 CSS
 st.markdown(
     """
 <style>
@@ -23,9 +23,9 @@ st.markdown(
         font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif !important;
     }
     
-    /* 전체 바탕 화면: 완전한 흰색 */
+    /* 1. 전체 바탕화면: 명확한 연한 슬레이트 회색 (#e2e8f0) */
     .stApp {
-        background-color: #ffffff !important;
+        background-color: #e2e8f0 !important;
         color: #1e293b;
     }
     
@@ -35,14 +35,30 @@ st.markdown(
         max-width: 1180px;
     }
 
-    /* 큰 네모 박스: 바탕 흰색과 또렷이 대비되는 은은한 연파스텔 슬레이트 배경 */
+    /* 2. 큰 네모 박스: 완벽한 순백색 (#ffffff) 고정 및 테두리 명확화 */
     div[data-testid="stVerticalBlockBorderWrapper"] {
-        background-color: #f8fafc !important;
+        background-color: #ffffff !important;
         border: 1.5px solid #cbd5e1 !important;
         border-radius: 16px !important;
-        box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.03) !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
         padding: 20px 20px 24px 20px !important;
         margin-bottom: 18px !important;
+    }
+
+    /* 네모 박스 내부 영역 투명화 방지 */
+    div[data-testid="stVerticalBlockBorderWrapper"] > div {
+        background-color: #ffffff !important;
+    }
+
+    /* 열(Column) 내부 컨테이너 높이 100% 동일 맞춤 */
+    [data-testid="stColumn"] > div {
+        height: 100%;
+    }
+    [data-testid="stColumn"] [data-testid="stVerticalBlockBorderWrapper"] {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
 
     .banner-blue {
@@ -57,7 +73,7 @@ st.markdown(
     }
 
     .metric-card-tw {
-        background-color: #ffffff;
+        background-color: #f8fafc;
         border: 1px solid #cbd5e1;
         border-radius: 16px;
         padding: 14px 16px;
@@ -96,7 +112,7 @@ st.markdown(
     }
 
     .tl-item-box {
-        background-color: #ffffff !important;
+        background-color: #f8fafc !important;
         border: 1px solid #cbd5e1 !important;
         border-radius: 12px;
         padding: 14px 14px;
@@ -1006,7 +1022,7 @@ with tab2:
             for item in items:
                 st.markdown(
                     f"""
-                    <div style="display:flex; justify-content:space-between; align-items:center; padding: 12px 16px; background-color:#ffffff; border-radius:12px; margin-bottom:8px; border:1px solid #cbd5e1;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding: 12px 16px; background-color:#f8fafc; border-radius:12px; margin-bottom:8px; border:1px solid #cbd5e1;">
                         <div style="display:flex; align-items:center; gap:12px;">
                             <span style="font-size:12px; font-weight:700; color:#64748b;">⏰ {item['time']}</span>
                             <span style="font-size:14px; font-weight:700; color:#1e293b;">{item['name']}</span>
@@ -1083,7 +1099,7 @@ with tab3:
             ):
                 st.markdown(
                     f"""
-                    <div style="padding: 12px 16px; background-color:#ffffff; border-radius:12px; margin-bottom:8px; border:1px solid #cbd5e1;">
+                    <div style="padding: 12px 16px; background-color:#f8fafc; border-radius:12px; margin-bottom:8px; border:1px solid #cbd5e1;">
                         <div style="display:flex; align-items:center; gap:10px;">
                             <span style="font-size:11px; font-weight:700; color:#ef4444; background:#fee2e2; padding:2px 6px; border-radius:6px;">{t}</span>
                             <span style="font-size:14px; font-weight:700; color:#1e293b;">{n}</span>
@@ -1156,7 +1172,7 @@ with tab4:
             for t, n, d in st.session_state.weekend_plans[wk_key]:
                 st.markdown(
                     f"""
-                    <div style="display:flex; justify-content:space-between; align-items:center; padding: 12px 16px; background-color:#ffffff; border-radius:12px; margin-bottom:8px; border:1px solid #cbd5e1;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding: 12px 16px; background-color:#f8fafc; border-radius:12px; margin-bottom:8px; border:1px solid #cbd5e1;">
                         <div style="display:flex; align-items:center; gap:12px;">
                             <span style="font-size:12px; font-weight:700; color:#d97706;">⏰ {t}</span>
                             <span style="font-size:14px; font-weight:700; color:#1e293b;">{n}</span>
@@ -1302,7 +1318,7 @@ with tab5:
         with st.container(border=True):
             st.markdown(
                 """
-                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:8px; margin-bottom:14px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #cbd5e1; padding-bottom:8px; margin-bottom:14px;">
                     <h3 style="margin:0; font-size:15px; font-weight:800; color:#0f172a;">📈 최근 7일 실천 기록 (누적 달성 로그)</h3>
                     <span style="font-size:11px; color:#64748b;">구글 시트에 자동 영구 보관됩니다</span>
                 </div>
@@ -1335,7 +1351,7 @@ with tab5:
                                 "background-color:#eff6ff; border:1px solid"
                                 " #bfdbfe; color:#1e40af;"
                                 if is_success
-                                else "background-color:#ffffff; border:1px solid"
+                                else "background-color:#f8fafc; border:1px solid"
                                 " #cbd5e1; color:#475569;"
                             )
 
@@ -1352,7 +1368,7 @@ with tab5:
                         else:
                             st.markdown(
                                 """
-                                <div style="background-color:#ffffff; border:1px dashed #cbd5e1; border-radius:12px; padding:10px 4px; text-align:center; color:#94a3b8; margin-bottom:4px;">
+                                <div style="background-color:#f8fafc; border:1px dashed #cbd5e1; border-radius:12px; padding:10px 4px; text-align:center; color:#94a3b8; margin-bottom:4px;">
                                     <div style="font-size:10px;">대기</div>
                                     <div style="font-size:16px; font-weight:700; margin:4px 0;">-</div>
                                     <div style="font-size:10px;">-</div>
@@ -1365,7 +1381,7 @@ with tab5:
             )
 
 # ==========================================
-# TAB 6: AI 코치 & 퀴즈
+# TAB 6: AI 코치 & 퀴즈 (높이/가로라인 100% 동일 맞춤)
 # ==========================================
 with tab6:
     st.markdown(
@@ -1379,30 +1395,32 @@ with tab6:
         unsafe_allow_html=True,
     )
 
-    # 1행: 퀴즈 & 음성응원 메시지
+    # 1행: 퀴즈 생성기 & 음성 응원 (완벽한 상단 가로 라인 수평 맞춤)
     row1_col1, row1_col2 = st.columns(2)
 
     with row1_col1:
         with st.container(border=True):
             st.markdown(
                 """
-                <h3 style="margin-top:0; font-weight:800; color:#0f172a; font-size:15px;">🧠 초등 5학년 1분 AI 퀴즈 생성기</h3>
-                <p style="font-size:11px; color:#64748b; margin-bottom:12px;">아침 시청 복습이나 저녁 공부 시작 전, 재미있는 1분 퀴즈로 뇌를 세워보세요!</p>
+                <div>
+                    <h3 style="margin-top:0; font-weight:800; color:#0f172a; font-size:15px;">🧠 초등 5학년 1분 AI 퀴즈 생성기</h3>
+                    <p style="font-size:11px; color:#64748b; margin-bottom:12px;">아침 시청 복습이나 저녁 공부 시작 전, 재미있는 1분 퀴즈로 뇌를 세워보세요!</p>
+                </div>
                 """,
                 unsafe_allow_html=True,
             )
+            
+            # Selectbox 라벨을 동일하게 부여하여 높이 통일
             subject = st.selectbox(
-                "퀴즈 과목 선택:",
+                "과목 선택",
                 [
                     "📜 한국사 퀴즈 (전 범위 다채로운 기출 유형)",
                     "🔬 초등 과학교과 (전 범위 탐구 유형)",
                     "🔤 초등 필수 영단어 & 표현",
                 ],
                 key="grid_subject",
-                label_visibility="collapsed",
+                label_visibility="visible",
             )
-            
-            st.markdown("<div style='height: 48px;'></div>", unsafe_allow_html=True)
             
             if st.button("✨ 퀴즈 생성", key="btn_g_quiz", use_container_width=True):
                 st.session_state.quiz_click_count += 1
@@ -1426,13 +1444,15 @@ with tab6:
         with st.container(border=True):
             st.markdown(
                 """
-                <h3 style="margin-top:0; font-weight:800; color:#0f172a; font-size:15px;">🔊 AI 멘토 음성 응원 메시지 (TTS)</h3>
-                <p style="font-size:11px; color:#64748b; margin-bottom:12px;">상황과 기분에 맞게 선택해 보세요! 매일 다른 칭찬과 응원 멘트가 전해집니다.</p>
+                <div>
+                    <h3 style="margin-top:0; font-weight:800; color:#0f172a; font-size:15px;">🔊 AI 멘토 음성 응원 메시지 (TTS)</h3>
+                    <p style="font-size:11px; color:#64748b; margin-bottom:12px;">상황과 기분에 맞게 선택해 보세요! 매일 다른 칭찬과 응원 멘트가 전해집니다.</p>
+                </div>
                 """,
                 unsafe_allow_html=True,
             )
             sit_target = st.selectbox(
-                "상황/기분 선택 (10가지):",
+                "상황 선택",
                 [
                     "🌅 1. 아침 일찍 일어나 기상 미션을 완수했을 때",
                     "🏫 2. 방과 후 학원 3곳을 모두 무사히 다녀왔을 때",
@@ -1446,17 +1466,7 @@ with tab6:
                     "🛌 10. 밤 22시 전 샤워 후 잠자리에 누울 때",
                 ],
                 key="grid_sit",
-                label_visibility="collapsed",
-            )
-            voice_style = st.selectbox(
-                "목소리 캐릭터:",
-                [
-                    "🌸 Puck (밝고 에너지 넘치는 소년)",
-                    "🌸 상냥하고 다정한 선생님",
-                    "🐻 든든하고 따뜻한 멘토",
-                ],
-                key="grid_voice",
-                label_visibility="collapsed",
+                label_visibility="visible",
             )
 
             if st.button(
@@ -1489,7 +1499,7 @@ with tab6:
                     """
                     st.components.v1.html(tts_script, height=0)
 
-    # 2행: 스티커 카드 & 구글 서치 질의응답
+    # 2행: 스티커 카운터 & 질의응답 (하단 높이 100% 수평 맞춤)
     row2_col1, row2_col2 = st.columns(2)
 
     with row2_col1:
@@ -1541,15 +1551,8 @@ with tab6:
                     """,
                     unsafe_allow_html=True,
                 )
-            else:
-                st.markdown(
-                    """
-                    <div style="height: 14px;"></div>
-                    """,
-                    unsafe_allow_html=True,
-                )
 
-            # 🎯 달성 보상 목표 : [ 입력창 ] [ 📌 ]
+            # 🎯 달성 보상 목표 입력 부분
             c_label, c_in, c_btn = st.columns([1.8, 3.4, 1.0])
             with c_label:
                 st.markdown(
@@ -1580,13 +1583,11 @@ with tab6:
                 unsafe_allow_html=True,
             )
             q_input = st.text_input(
-                "질문 입력:",
+                "질문 입력",
                 "조선 시대 임진왜란 때 이순신 장군 3대 대첩이 뭐야?",
                 key="grid_q_in",
-                label_visibility="collapsed",
+                label_visibility="visible",
             )
-
-            st.markdown("<div style='height: 38px;'></div>", unsafe_allow_html=True)
 
             if st.button("🟢 질문하기", key="btn_g_q", use_container_width=True):
                 with st.spinner("눈높이에 맞춰 정리하는 중입니다..."):
@@ -1632,7 +1633,7 @@ with tab6:
                         else:
                             st.markdown(
                                 f"""
-                                <div style="height:54px; display:flex; align-items:center; justify-content:center; border:1px dashed #cbd5e1; border-radius:8px; color:#94a3b8; font-size:11px; margin-bottom:4px; background-color:#ffffff;">
+                                <div style="height:54px; display:flex; align-items:center; justify-content:center; border:1px dashed #cbd5e1; border-radius:8px; color:#94a3b8; font-size:11px; margin-bottom:4px; background-color:#f8fafc;">
                                     {i+1}
                                 </div>
                                 """,
