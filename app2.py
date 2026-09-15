@@ -65,15 +65,222 @@ if not st.session_state.authenticated:
                 st.error("PIN 번호가 일치하지 않습니다. 다시 입력해 주세요.")
     st.stop()
 
-# 3. 구글 시트 동기화 설정 (제공해주신 시트 ID 적용)
+# 3. 구글 시트 연동 설정
 SHEET_ID = "1x5A3X2lGb5SFpHE5qspuetmdOsWMiP_mfnWY0ZqD6rc"
 SHEET_CSV_URL = (
     f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sheet=data"
 )
+WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxrG7rYb5WXHcXkbd20QsiWywCNM7GWbW7KVll2n88gP15kHVsCfAdF_Tcr7Uhc53eqRw/exec"
+
+# 기본 일정 데이터 구조 정의
+DEFAULT_SCHEDULES = {
+    "월요일": [
+        {
+            "time": "14:00 ~ 15:00",
+            "name": "하교 & 할아버지 댁 휴식",
+            "detail": "학교 수업 종료 후 이동",
+            "badge": "휴식",
+        },
+        {
+            "time": "15:00 ~ 17:00",
+            "name": "📐 수학학원",
+            "detail": "픽업 차량 이용 이동",
+            "badge": "학원",
+        },
+        {
+            "time": "17:00 ~ 17:30",
+            "name": "할아버지 댁 이동 & 간식",
+            "detail": "휴식 및 합기도 준비",
+            "badge": "이동",
+        },
+        {
+            "time": "17:30 ~ 18:30",
+            "name": "🥋 합기도 학원",
+            "detail": "할아버지 댁에서 도보 3분",
+            "badge": "운동",
+        },
+        {
+            "time": "18:30 ~ 19:15",
+            "name": "🚘 하원 픽업 & 집 이동",
+            "detail": "18:40 픽업 ➡️ 19:15 집 도착",
+            "badge": "픽업",
+        },
+    ],
+    "화요일": [
+        {
+            "time": "14:00 ~ 15:00",
+            "name": "🎹 피아노 학원",
+            "detail": "픽업 차량 이용 이동",
+            "badge": "학원",
+        },
+        {
+            "time": "15:00 ~ 17:30",
+            "name": "🏠 할아버지 댁 여유시간",
+            "detail": "💡 독서, 학교/학원 숙제 사전 해결",
+            "badge": "여유시간",
+        },
+        {
+            "time": "17:30 ~ 18:30",
+            "name": "🥋 합기도 학원",
+            "detail": "할아버지 댁에서 도보 3분",
+            "badge": "운동",
+        },
+        {
+            "time": "18:30 ~ 19:15",
+            "name": "🚘 하원 픽업 & 집 이동",
+            "detail": "18:40 픽업 ➡️ 19:15 집 도착",
+            "badge": "픽업",
+        },
+    ],
+    "수요일": [
+        {
+            "time": "14:00 ~ 15:00",
+            "name": "🎹 피아노 학원",
+            "detail": "픽업 차량 이용 이동",
+            "badge": "학원",
+        },
+        {
+            "time": "15:00 ~ 17:00",
+            "name": "📐 수학 학원",
+            "detail": "💡 피아노 학원 바로 옆 호실로 즉시 이동",
+            "badge": "바로연결",
+        },
+        {
+            "time": "17:00 ~ 17:30",
+            "name": "할아버지 댁 이동",
+            "detail": "잠시 휴식 후 이동",
+            "badge": "휴식",
+        },
+        {
+            "time": "17:30 ~ 18:30",
+            "name": "🥋 합기도 학원",
+            "detail": "할아버지 댁에서 도보 3분",
+            "badge": "운동",
+        },
+        {
+            "time": "18:30 ~ 19:15",
+            "name": "🚘 하원 픽업 & 집 이동",
+            "detail": "18:40 픽업 ➡️ 19:15 집 도착",
+            "badge": "픽업",
+        },
+    ],
+    "목요일": [
+        {
+            "time": "14:00 ~ 15:00",
+            "name": "🎹 피아노 학원",
+            "detail": "픽업 차량 이용 이동",
+            "badge": "학원",
+        },
+        {
+            "time": "15:00 ~ 17:30",
+            "name": "🏠 할아버지 댁 여유시간",
+            "detail": "💡 독서, 역사 책 읽기 및 숙제 해결",
+            "badge": "여유시간",
+        },
+        {
+            "time": "17:30 ~ 18:30",
+            "name": "🥋 합기도 학원",
+            "detail": "할아버지 댁에서 도보 3분",
+            "badge": "운동",
+        },
+        {
+            "time": "18:30 ~ 19:15",
+            "name": "🚘 하원 픽업 & 집 이동",
+            "detail": "18:40 픽업 ➡️ 19:15 집 도착",
+            "badge": "픽업",
+        },
+    ],
+    "금요일": [
+        {
+            "time": "14:00 ~ 16:00",
+            "name": "🎨 미술 학원",
+            "detail": "픽업 차량 이용 이동",
+            "badge": "학원",
+        },
+        {
+            "time": "16:00 ~ 17:30",
+            "name": "🏠 할아버지 댁 휴식 & 간식",
+            "detail": "자유시간 및 독서",
+            "badge": "휴식",
+        },
+        {
+            "time": "17:30 ~ 18:30",
+            "name": "🥋 합기도 학원",
+            "detail": "할아버지 댁에서 도보 3분",
+            "badge": "운동",
+        },
+        {
+            "time": "18:30 ~ 19:15",
+            "name": "🚘 하원 픽업 & 집 이동",
+            "detail": "18:40 픽업 ➡️ 19:15 집 도착",
+            "badge": "픽업",
+        },
+    ],
+}
+
+DEFAULT_EVENING = {
+    "Plan A": [
+        ("19:15 ~ 19:30", "귀가 및 정돈", "손 씻기, 알림장/가방 정리"),
+        ("19:30 ~ 20:10", "저녁 식사", "온 가족 식사 및 대화"),
+        (
+            "20:10 ~ 21:20",
+            "⚡ 자기주도 몰입 학습 (70분)",
+            "수학(30m) ➡️ 영어(15m) ➡️ 국어/어휘(15m) ➡️ 내일가방(10m)",
+        ),
+        ("21:20 ~ 21:50", "🚿 샤워 & 취침 준비", "21:20 샤워 들어가기 및 소등 준비"),
+        ("21:50 ~ 22:10", "🛌 잠자리 취침 완료", "22:00 ~ 22:10 사이 취침"),
+    ],
+    "Plan B": [
+        (
+            "19:15 ~ 19:40",
+            "자기 관리 시간",
+            "부모님 저녁 준비 동안 손 씻기 및 할 일 체크",
+        ),
+        (
+            "19:40 ~ 20:10",
+            "📖 선(先) 집중 학습 (30분)",
+            "영어 단어 + 독해 1장 먼저 끝내기",
+        ),
+        ("20:10 ~ 20:50", "저녁 식사", "식사 및 식탁 정돈"),
+        (
+            "20:50 ~ 21:20",
+            "📐 메인 학습: 수학 & 마무리",
+            "수학 숙제 마무리 & 책가방 챙기기",
+        ),
+        ("21:20 ~ 22:10", "🚿 샤워 및 취침", "21:20 샤워 ➡️ 22:00 전후 취침"),
+    ],
+}
+
+DEFAULT_WEEKEND = {
+    "토요일": [
+        ("06:30 ~ 07:00", "기상 및 아침 뇌 깨우기", "6시 30분~7시 사이 기상"),
+        (
+            "07:00 ~ 08:30",
+            "📝 [주말 모닝 학습] 90분 몰입 완주",
+            "수학+영어+독서",
+        ),
+        ("08:30 ~ 09:00", "🍚 아침 식사 및 정돈", "온 가족 아침 식사"),
+        ("10:00 ~ 12:00", "🎮 게임 & 자유시간 1차 (120분)", "학습 완주 후 자유시간"),
+        ("13:00 ~ 15:30", "⚾ [신체활동] 아빠와 야구", "햇빛 쬐며 신체 발달"),
+        ("16:30 ~ 18:00", "🎮 게임 & 자유시간 2차 (90분)", "게임 시간 쪼개기 수칙"),
+        ("20:00 ~ 21:00", "📖 밤 몰입 독서 1시간", "부모님 운동 시간 동안 독서"),
+        ("21:20 ~ 22:10", "🚿 샤워 및 취침", "22:00 전후 취침"),
+    ],
+    "일요일": [
+        ("06:30 ~ 07:00", "기상 및 아침 뇌 깨우기", "6시 30분~7시 사이 기상"),
+        ("07:00 ~ 08:30", "📝 [주말 모닝 학습] 90분 몰입 완주", "수학+영어+독서"),
+        ("09:00 ~ 10:00", "🙏 인터넷 예배", "가족 인터넷 예배 드리기"),
+        ("10:00 ~ 12:00", "🎮 게임 & 자유시간 1차 (120분)", "자유시간"),
+        ("13:00 ~ 15:30", "⚾ 야외활동 / 주말 외출", "야외활동"),
+        ("16:30 ~ 18:00", "🎮 게임 & 자유시간 2차 (90분)", "게임 마감"),
+        ("20:00 ~ 21:00", "📖 밤 몰입 독서 1시간", "차분한 독서 시간"),
+        ("21:20 ~ 22:10", "🚿 샤워 및 취침", "월요일 준비 및 취침"),
+    ],
+}
 
 
-# 구글 시트 데이터 불러오기 함수
-def load_sheet_data():
+# 구글 시트 전체 데이터 불러오기 (Read)
+def load_all_sheet_data():
     try:
         df = pd.read_csv(SHEET_CSV_URL)
         if not df.empty:
@@ -85,10 +292,76 @@ def load_sheet_data():
                     "아빠와 프로야구 직관 가기 & 갖고 싶던 선물!",
                 )
             )
-            return stk_cnt, goal
+
+            sch_raw = row.get("schedules_json", None)
+            eve_raw = row.get("evening_json", None)
+            wk_raw = row.get("weekend_json", None)
+            chk_raw = row.get("checklist_json", None)
+
+            sch = (
+                json.loads(sch_raw)
+                if pd.notna(sch_raw) and sch_raw
+                else DEFAULT_SCHEDULES
+            )
+            eve = (
+                json.loads(eve_raw)
+                if pd.notna(eve_raw) and eve_raw
+                else DEFAULT_EVENING
+            )
+            wk = (
+                json.loads(wk_raw)
+                if pd.notna(wk_raw) and wk_raw
+                else DEFAULT_WEEKEND
+            )
+
+            if pd.notna(chk_raw) and chk_raw:
+                chk_data = json.loads(chk_raw)
+                w_chk = chk_data.get("weekday", None)
+                wk_chk = chk_data.get("weekend", None)
+            else:
+                w_chk, wk_chk = None, None
+
+            return stk_cnt, goal, sch, eve, wk, w_chk, wk_chk
     except Exception:
         pass
-    return 0, "아빠와 프로야구 직관 가기 & 갖고 싶던 선물!"
+    return (
+        0,
+        "아빠와 프로야구 직관 가기 & 갖고 싶던 선물!",
+        DEFAULT_SCHEDULES,
+        DEFAULT_EVENING,
+        DEFAULT_WEEKEND,
+        None,
+        None,
+    )
+
+
+# 구글 시트 데이터 전송 (Write)
+def save_sheet_data(
+    stickers_count=None,
+    reward_goal=None,
+    schedules=None,
+    evening=None,
+    weekend=None,
+    checklist=None,
+):
+    params = {}
+    if stickers_count is not None:
+        params["stickers"] = stickers_count
+    if reward_goal is not None:
+        params["goal"] = reward_goal
+    if schedules is not None:
+        params["schedules"] = json.dumps(schedules, ensure_ascii=False)
+    if evening is not None:
+        params["evening"] = json.dumps(evening, ensure_ascii=False)
+    if weekend is not None:
+        params["weekend"] = json.dumps(weekend, ensure_ascii=False)
+    if checklist is not None:
+        params["checklist"] = json.dumps(checklist, ensure_ascii=False)
+
+    try:
+        requests.get(WEB_APP_URL, params=params, timeout=5)
+    except Exception:
+        pass
 
 
 # 4. API 키 가져오기 & Gemini 호출
@@ -118,228 +391,36 @@ def call_gemini_api(prompt):
         return f"통신 오류 발생: {e}"
 
 
-# 5. 세션 상태 초기화 & 데이터 연동
-initial_stk_cnt, initial_goal = load_sheet_data()
+# 5. 세션 상태 초기화 & 구글 시트 전체 동기화
+(
+    init_stk,
+    init_goal,
+    init_sch,
+    init_eve,
+    init_wk,
+    init_w_chk,
+    init_wk_chk,
+) = load_all_sheet_data()
 
 if "stickers" not in st.session_state:
     st.session_state.stickers = [
-        {"icon": "🏆", "msg": "목표 완수!", "date": ""}
-        for _ in range(initial_stk_cnt)
+        {"icon": "🏆", "msg": "목표 완수!", "date": ""} for _ in range(init_stk)
     ]
 
 if "reward_goal" not in st.session_state:
-    st.session_state.reward_goal = initial_goal
+    st.session_state.reward_goal = init_goal
 
 if "schedules" not in st.session_state:
-    st.session_state.schedules = {
-        "월요일": [
-            {
-                "time": "14:00 ~ 15:00",
-                "name": "하교 & 할아버지 댁 휴식",
-                "detail": "학교 수업 종료 후 이동",
-                "badge": "휴식",
-            },
-            {
-                "time": "15:00 ~ 17:00",
-                "name": "📐 수학학원",
-                "detail": "픽업 차량 이용 이동",
-                "badge": "학원",
-            },
-            {
-                "time": "17:00 ~ 17:30",
-                "name": "할아버지 댁 이동 & 간식",
-                "detail": "휴식 및 합기도 준비",
-                "badge": "이동",
-            },
-            {
-                "time": "17:30 ~ 18:30",
-                "name": "🥋 합기도 학원",
-                "detail": "할아버지 댁에서 도보 3분",
-                "badge": "운동",
-            },
-            {
-                "time": "18:30 ~ 19:15",
-                "name": "🚘 하원 픽업 & 집 이동",
-                "detail": "18:40 픽업 ➡️ 19:15 집 도착",
-                "badge": "픽업",
-            },
-        ],
-        "화요일": [
-            {
-                "time": "14:00 ~ 15:00",
-                "name": "🎹 피아노 학원",
-                "detail": "픽업 차량 이용 이동",
-                "badge": "학원",
-            },
-            {
-                "time": "15:00 ~ 17:30",
-                "name": "🏠 할아버지 댁 여유시간",
-                "detail": "💡 독서, 학교/학원 숙제 사전 해결",
-                "badge": "여유시간",
-            },
-            {
-                "time": "17:30 ~ 18:30",
-                "name": "🥋 합기도 학원",
-                "detail": "할아버지 댁에서 도보 3분",
-                "badge": "운동",
-            },
-            {
-                "time": "18:30 ~ 19:15",
-                "name": "🚘 하원 픽업 & 집 이동",
-                "detail": "18:40 픽업 ➡️ 19:15 집 도착",
-                "badge": "픽업",
-            },
-        ],
-        "수요일": [
-            {
-                "time": "14:00 ~ 15:00",
-                "name": "🎹 피아노 학원",
-                "detail": "픽업 차량 이용 이동",
-                "badge": "학원",
-            },
-            {
-                "time": "15:00 ~ 17:00",
-                "name": "📐 수학 학원",
-                "detail": "💡 피아노 학원 바로 옆 호실로 즉시 이동",
-                "badge": "바로연결",
-            },
-            {
-                "time": "17:00 ~ 17:30",
-                "name": "할아버지 댁 이동",
-                "detail": "잠시 휴식 후 이동",
-                "badge": "휴식",
-            },
-            {
-                "time": "17:30 ~ 18:30",
-                "name": "🥋 합기도 학원",
-                "detail": "할아버지 댁에서 도보 3분",
-                "badge": "운동",
-            },
-            {
-                "time": "18:30 ~ 19:15",
-                "name": "🚘 하원 픽업 & 집 이동",
-                "detail": "18:40 픽업 ➡️ 19:15 집 도착",
-                "badge": "픽업",
-            },
-        ],
-        "목요일": [
-            {
-                "time": "14:00 ~ 15:00",
-                "name": "🎹 피아노 학원",
-                "detail": "픽업 차량 이용 이동",
-                "badge": "학원",
-            },
-            {
-                "time": "15:00 ~ 17:30",
-                "name": "🏠 할아버지 댁 여유시간",
-                "detail": "💡 독서, 역사 책 읽기 및 숙제 해결",
-                "badge": "여유시간",
-            },
-            {
-                "time": "17:30 ~ 18:30",
-                "name": "🥋 합기도 학원",
-                "detail": "할아버지 댁에서 도보 3분",
-                "badge": "운동",
-            },
-            {
-                "time": "18:30 ~ 19:15",
-                "name": "🚘 하원 픽업 & 집 이동",
-                "detail": "18:40 픽업 ➡️ 19:15 집 도착",
-                "badge": "픽업",
-            },
-        ],
-        "금요일": [
-            {
-                "time": "14:00 ~ 16:00",
-                "name": "🎨 미술 학원",
-                "detail": "픽업 차량 이용 이동",
-                "badge": "학원",
-            },
-            {
-                "time": "16:00 ~ 17:30",
-                "name": "🏠 할아버지 댁 휴식 & 간식",
-                "detail": "자유시간 및 독서",
-                "badge": "휴식",
-            },
-            {
-                "time": "17:30 ~ 18:30",
-                "name": "🥋 합기도 학원",
-                "detail": "할아버지 댁에서 도보 3분",
-                "badge": "운동",
-            },
-            {
-                "time": "18:30 ~ 19:15",
-                "name": "🚘 하원 픽업 & 집 이동",
-                "detail": "18:40 픽업 ➡️ 19:15 집 도착",
-                "badge": "픽업",
-            },
-        ],
-    }
+    st.session_state.schedules = init_sch
 
 if "evening_plans" not in st.session_state:
-    st.session_state.evening_plans = {
-        "Plan A": [
-            ("19:15 ~ 19:30", "귀가 및 정돈", "손 씻기, 알림장/가방 정리"),
-            ("19:30 ~ 20:10", "저녁 식사", "온 가족 식사 및 대화"),
-            (
-                "20:10 ~ 21:20",
-                "⚡ 자기주도 몰입 학습 (70분)",
-                "수학(30m) ➡️ 영어(15m) ➡️ 국어/어휘(15m) ➡️ 내일가방(10m)",
-            ),
-            ("21:20 ~ 21:50", "🚿 샤워 & 취침 준비", "21:20 샤워 들어가기 및 소등 준비"),
-            ("21:50 ~ 22:10", "🛌 잠자리 취침 완료", "22:00 ~ 22:10 사이 취침"),
-        ],
-        "Plan B": [
-            (
-                "19:15 ~ 19:40",
-                "자기 관리 시간",
-                "부모님 저녁 준비 동안 손 씻기 및 할 일 체크",
-            ),
-            (
-                "19:40 ~ 20:10",
-                "📖 선(先) 집중 학습 (30분)",
-                "영어 단어 + 독해 1장 먼저 끝내기",
-            ),
-            ("20:10 ~ 20:50", "저녁 식사", "식사 및 식탁 정돈"),
-            (
-                "20:50 ~ 21:20",
-                "📐 메인 학습: 수학 & 마무리",
-                "수학 숙제 마무리 & 책가방 챙기기",
-            ),
-            ("21:20 ~ 22:10", "🚿 샤워 및 취침", "21:20 샤워 ➡️ 22:00 전후 취침"),
-        ],
-    }
+    st.session_state.evening_plans = init_eve
 
 if "weekend_plans" not in st.session_state:
-    st.session_state.weekend_plans = {
-        "토요일": [
-            ("06:30 ~ 07:00", "기상 및 아침 뇌 깨우기", "6시 30분~7시 사이 기상"),
-            (
-                "07:00 ~ 08:30",
-                "📝 [주말 모닝 학습] 90분 몰입 완주",
-                "수학+영어+독서",
-            ),
-            ("08:30 ~ 09:00", "🍚 아침 식사 및 정돈", "온 가족 아침 식사"),
-            ("10:00 ~ 12:00", "🎮 게임 & 자유시간 1차 (120분)", "학습 완주 후 자유시간"),
-            ("13:00 ~ 15:30", "⚾ [신체활동] 아빠와 야구", "햇빛 쬐며 신체 발달"),
-            ("16:30 ~ 18:00", "🎮 게임 & 자유시간 2차 (90분)", "게임 시간 쪼개기 수칙"),
-            ("20:00 ~ 21:00", "📖 밤 몰입 독서 1시간", "부모님 운동 시간 동안 독서"),
-            ("21:20 ~ 22:10", "🚿 샤워 및 취침", "22:00 전후 취침"),
-        ],
-        "일요일": [
-            ("06:30 ~ 07:00", "기상 및 아침 뇌 깨우기", "6시 30분~7시 사이 기상"),
-            ("07:00 ~ 08:30", "📝 [주말 모닝 학습] 90분 몰입 완주", "수학+영어+독서"),
-            ("09:00 ~ 10:00", "🙏 인터넷 예배", "가족 인터넷 예배 드리기"),
-            ("10:00 ~ 12:00", "🎮 게임 & 자유시간 1차 (120분)", "자유시간"),
-            ("13:00 ~ 15:30", "⚾ 야외활동 / 주말 외출", "야외활동"),
-            ("16:30 ~ 18:00", "🎮 게임 & 자유시간 2차 (90분)", "게임 마감"),
-            ("20:00 ~ 21:00", "📖 밤 몰입 독서 1시간", "차분한 독서 시간"),
-            ("21:20 ~ 22:10", "🚿 샤워 및 취침", "월요일 준비 및 취침"),
-        ],
-    }
+    st.session_state.weekend_plans = init_wk
 
 if "checklist_weekday" not in st.session_state:
-    st.session_state.checklist_weekday = {
+    st.session_state.checklist_weekday = init_w_chk if init_w_chk else {
         "w1": (
             "🌅 아침 뇌 깨우기: 06:50 최태성 한국사 시청 또는 스트레칭",
             False,
@@ -360,28 +441,33 @@ if "checklist_weekday" not in st.session_state:
     }
 
 if "checklist_weekend" not in st.session_state:
-    st.session_state.checklist_weekend = {
-        "wk1": (
-            "📝 주말 모닝 공부: 기상 직후 90분 학습 (수학+영어+독서) 완수",
-            False,
-        ),
-        "wk2": (
-            "⚾ 아빠와 야구: 13:00~15:30 햇빛 쬐며 신체활동 다녀오기",
-            False,
-        ),
-        "wk3": (
-            "🎮 게임 약속 준수: 3시간 쪼개기 규칙 (1.5시간 × 2회) 지키기",
-            False,
-        ),
-        "wk4": (
-            "📖 밤 몰입 독서: 20:00~21:00 부모님 운동 시간 동안 1시간 독서",
-            False,
-        ),
-        "wk5": (
-            "🌙 주말 취침 리듬 유지: 22:00~22:10 이전에 제자리에 눕기",
-            False,
-        ),
-    }
+    st.session_state.checklist_weekend = (
+        init_wk_chk
+        if init_wk_chk
+        else {
+            "wk1": (
+                "📝 주말 모닝 공부: 기상 직후 90분 학습 (수학+영어+독서)"
+                " 완수",
+                False,
+            ),
+            "wk2": (
+                "⚾ 아빠와 야구: 13:00~15:30 햇빛 쬐며 신체활동 다녀오기",
+                False,
+            ),
+            "wk3": (
+                "🎮 게임 약속 준수: 3시간 쪼개기 규칙 (1.5시간 × 2회) 지키기",
+                False,
+            ),
+            "wk4": (
+                "📖 밤 몰입 독서: 20:00~21:00 부모님 운동 시간 동안 1시간 독서",
+                False,
+            ),
+            "wk5": (
+                "🌙 주말 취침 리듬 유지: 22:00~22:10 이전에 제자리에 눕기",
+                False,
+            ),
+        }
+    )
 
 if "quiz_click_count" not in st.session_state:
     st.session_state.quiz_click_count = 0
@@ -656,7 +742,7 @@ with tab1:
             st.write("등록된 학원 일정이 없습니다.")
 
 # ==========================================
-# TAB 2: 요일별 학원
+# TAB 2: 요일별 학원 (수정 시 구글 시트 자동 저장)
 # ==========================================
 with tab2:
     st.subheader("🎒 방과 후 요일별 학원 일정 & 이동 동선")
@@ -702,7 +788,10 @@ with tab2:
 
         if st.button(f"💾 {day_choice} 수정 내용 저장"):
             st.session_state.schedules[day_choice] = new_items
-            st.success("저장되었습니다! 대시보드에도 자동 반영됩니다.")
+            save_sheet_data(schedules=st.session_state.schedules)
+            st.success(
+                "저장되었습니다! 구글 시트와 대시보드에 자동 연동됩니다."
+            )
             st.rerun()
     else:
         st.write(f"### 🗓️ {day_choice} 상세 일정")
@@ -713,7 +802,7 @@ with tab2:
             )
 
 # ==========================================
-# TAB 3: 저녁 루틴
+# TAB 3: 저녁 루틴 (수정 시 구글 시트 자동 저장)
 # ==========================================
 with tab3:
     st.subheader("🌙 저녁 시간대 루틴 시뮬레이션")
@@ -750,7 +839,8 @@ with tab3:
 
         if st.button(f"💾 {plan_key} 수정 내용 저장"):
             st.session_state.evening_plans[plan_key] = new_plan
-            st.success("저장되었습니다!")
+            save_sheet_data(evening=st.session_state.evening_plans)
+            st.success("구글 시트에 성공적으로 저장되었습니다!")
             st.rerun()
     else:
         st.write(f"### 🟢 {plan_key} 상세 단계")
@@ -760,7 +850,7 @@ with tab3:
             st.write(f"{idx+1}. **`{t}` | {n}** - {d}")
 
 # ==========================================
-# TAB 4: 주말 일과
+# TAB 4: 주말 일과 (수정 시 구글 시트 자동 저장)
 # ==========================================
 with tab4:
     st.subheader("☀️ 주말 알찬 타임라인 (토/일)")
@@ -798,7 +888,10 @@ with tab4:
 
         if st.button(f"💾 {wk_key} 수정 내용 저장"):
             st.session_state.weekend_plans[wk_key] = new_wk_plan
-            st.success("저장되었습니다! 대시보드에도 자동 반영됩니다.")
+            save_sheet_data(weekend=st.session_state.weekend_plans)
+            st.success(
+                "저장되었습니다! 구글 시트와 대시보드에 자동 반영됩니다."
+            )
             st.rerun()
     else:
         st.write(f"### 🗓️ {wk_key} 상세 일정")
@@ -806,7 +899,7 @@ with tab4:
             st.write(f"- **`{t}` | {n}** ({d})")
 
 # ==========================================
-# TAB 5: 체크 & 기록
+# TAB 5: 체크 & 기록 (수정 시 구글 시트 자동 저장)
 # ==========================================
 with tab5:
     st.subheader("✅ 일일 실천 체크리스트")
@@ -836,7 +929,12 @@ with tab5:
         if st.button("💾 체크리스트 문구 저장"):
             st.session_state.checklist_weekday = new_w_chk
             st.session_state.checklist_weekend = new_wk_chk
-            st.success("체크리스트 문구가 수정되었습니다!")
+            chk_payload = {
+                "weekday": new_w_chk,
+                "weekend": new_wk_chk,
+            }
+            save_sheet_data(checklist=chk_payload)
+            st.success("체크리스트 문구가 구글 시트에 저장되었습니다!")
             st.rerun()
     else:
         col_w, col_wk = st.columns(2)
@@ -995,7 +1093,9 @@ with tab6:
             "🎯 30개 스티커 완성 시 받고 싶은 보상을 적어보세요:",
             value=st.session_state.reward_goal,
         )
-        st.session_state.reward_goal = reward_in
+        if reward_in != st.session_state.reward_goal:
+            st.session_state.reward_goal = reward_in
+            save_sheet_data(reward_goal=reward_in)
 
         st.caption(
             f"📅 오늘 날짜: {today_str} | 스티커는 하루에 1개씩만 획득할 수"
@@ -1021,12 +1121,17 @@ with tab6:
                     st.session_state.stickers.append(sticker_item)
                     st.session_state.last_sticker_date = today_str
                     st.session_state.latest_draw_sticker = sticker_item
+
+                    save_sheet_data(
+                        stickers_count=len(st.session_state.stickers)
+                    )
                     st.balloons()
 
         with btn_c2:
             if st.button("🔄 스티커판 초기화"):
                 st.session_state.stickers = []
                 st.session_state.latest_draw_sticker = None
+                save_sheet_data(stickers_count=0)
                 st.success("스티커판이 0개로 리셋되었습니다!")
                 st.rerun()
 
