@@ -13,8 +13,8 @@ st.set_page_config(
     layout="wide",
 )
 
-# 2. PIN 번호 인증 시스템 (원하는 4자리 PIN 설정)
-SET_PIN = "1306"  # 👈 사용하실 PIN 번호 4자리를 설정하세요.
+# 2. PIN 번호 인증 시스템 (1306 설정)
+SET_PIN = "1306"
 
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
@@ -34,7 +34,7 @@ if not st.session_state.authenticated:
             st.rerun()
         else:
             st.error("PIN 번호가 일치하지 않습니다. 다시 입력해주세요.")
-    st.stop()  # 인증되지 않으면 아래 메인 코드 실행 중단
+    st.stop()
 
 # 3. API 키 가져오기
 api_key = st.secrets.get("GEMINI_API_KEY", "")
@@ -378,13 +378,17 @@ STICKER_MSG = [
 ]
 
 # 5. 상단 헤더 & 로그아웃
+days_kor = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"]
+today_idx = datetime.date.today().weekday()
+today_name = days_kor[today_idx]
 today_str = datetime.date.today().strftime("%Y년 %m월 %d일")
+
 h_col1, h_col2 = st.columns([8, 1])
 with h_col1:
     st.title("📅 초등 5학년 주간 일정표 & AI 대시보드")
     st.caption(
-        f"📅 **오늘 날짜:** {today_str} | 수면 22:00 전 • 아침 최태성 한국사 시청 • 저녁"
-        " 70분 스퍼트"
+        f"📅 **오늘 날짜:** {today_str} ({today_name}) | 수면 22:00 전 • 아침 최태성"
+        " 한국사 시청 • 저녁 70분 스퍼트"
     )
 with h_col2:
     if st.button("🔒 잠금"):
@@ -402,102 +406,189 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
 ])
 
 # ==========================================
-# TAB 1: 대시보드
+# TAB 1: 동적 연동 대시보드
 # ==========================================
 with tab1:
-    st.info(
-        "💡 **맞춤형 스마트 루틴 대시보드:** 학원 동선, 70분 저녁 집중 학습, 주말"
-        " 야외활동 및 독서 루틴이 통합 관리됩니다."
+    # 요일 선택 셀렉트박스 (기본값: 오늘 요일)
+    selected_day = st.selectbox(
+        "🗓️ 조회할 요일을 선택하세요 (선택에 따라 대시보드와 타임라인이 변경됩니다):",
+        days_kor,
+        index=today_idx,
     )
 
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        st.metric(
-            label="권장 수면 시간", value="8.5시간", delta="22:00 ~ 06:30"
-        )
-        st.caption("21:20 샤워 ➡️ 22:00 취침")
-    with col2:
-        st.metric(
-            label="평일 저녁 집중 학습", value="70분", delta="20:10 ~ 21:20"
-        )
-        st.caption("수학 30분 + 영어 15분 + 국어 15분")
-    with col3:
-        st.metric(
-            label="주말 야외/신체 활동",
-            value="2.5시간",
-            delta="오후 13:00~",
-        )
-        st.caption("아빠와 야구 & 야외활동")
-    with col4:
-        st.metric(
-            label="주말 게임 시간 관리",
-            value="3시간",
-            delta="1.5h × 2회 쪼개기",
-        )
-        st.caption("오전 1차 + 해질녘 2차")
+    is_weekend = selected_day in ["토요일", "일요일"]
 
-    st.divider()
-
-    c1, c2 = st.columns(2)
-    with c1:
-        st.subheader("📊 평일 하루 시간 배분 비율")
-        df_pie = pd.DataFrame({
-            "항목": [
-                "수면 (8.5시간)",
-                "학교/학원 (8시간)",
-                "여유/이동/식사 (6.3시간)",
-                "저녁몰입학습 (1.1시간)",
-            ],
-            "시간": [8.5, 8.0, 6.3, 1.1],
-        })
-        fig_pie = px.pie(
-            df_pie,
-            values="시간",
-            names="항목",
-            color_discrete_sequence=px.colors.qualitative.Pastel,
-        )
-        fig_pie.update_traces(textposition="inside", textinfo="percent+label")
-        st.plotly_chart(fig_pie, use_container_width=True)
-
-    with c2:
-        st.subheader("🎯 저녁 70분 몰입 학습 과목 구성")
-        df_bar = pd.DataFrame({
-            "과목": [
-                "수학 (학원숙제)",
-                "영어 (단어+학습지)",
-                "국어 (어휘/독해)",
-                "마무리 (가방/책상)",
-            ],
-            "시간(분)": [30, 15, 15, 10],
-        })
-        fig_bar = px.bar(
-            df_bar, x="과목", y="시간(분)", color="과목", text="시간(분)"
-        )
-        st.plotly_chart(fig_bar, use_container_width=True)
-
-    st.divider()
-    st.subheader("⚡ 하루 핵심 타임라인 한눈에 보기")
-    t1, t2, t3, t4 = st.columns(4)
-    with t1:
-        st.success(
-            "🌅 **06:30 ~ 08:30 [아침]**\n\n기상 & 한국사 강의 시청\n\n할아버지 댁"
-            " 이동 후 식사 ➡️ 08:22 등교"
-        )
-    with t2:
+    if is_weekend:
         st.info(
-            "🏫 **08:30 ~ 18:30 [방과후]**\n\n학교 수업 & 학원 동선\n\n수학/피아노/미술"
-            " 픽업 ➡️ 17:30 합기도"
+            f"💡 **[{selected_day} 주말 루틴 대시보드]** 주말 모닝 90분 몰입"
+            " 학습, 아빠와 신체활동, 게임 3시간 쪼개기 규칙이 적용됩니다."
         )
-    with t3:
-        st.warning(
-            "🚘 **18:30 ~ 20:10 [귀가&식사]**\n\n부모님 픽업 & 저녁 식사\n\n18:40"
-            " 픽업 ➡️ 19:15 집 도착 후 식사"
+
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric(
+                label="권장 수면 시간", value="8.5시간", delta="22:00 ~ 06:30"
+            )
+            st.caption("21:20 샤워 ➡️ 22:00 취침")
+        with col2:
+            st.metric(
+                label="주말 모닝 학습", value="90분", delta="07:00 ~ 08:30"
+            )
+            st.caption("수학 + 영어 + 독서 완주")
+        with col3:
+            st.metric(
+                label="야외 / 신체활동", value="2.5시간", delta="13:00 ~ 15:30"
+            )
+            st.caption("아빠와 야구 & 햇빛 쬐기")
+        with col4:
+            st.metric(
+                label="게임 시간 관리", value="3시간", delta="1.5h × 2회 쪼개기"
+            )
+            st.caption("오전 1차 + 해질녘 2차")
+
+        st.divider()
+
+        c1, c2 = st.columns(2)
+        with c1:
+            st.subheader(f"📊 {selected_day} 시간 배분 비율")
+            df_pie = pd.DataFrame({
+                "항목": [
+                    "수면 (8.5시간)",
+                    "모닝학습 & 독서 (2.5시간)",
+                    "야외활동 & 게임 (5.5시간)",
+                    "식사 & 여유 (7.5시간)",
+                ],
+                "시간": [8.5, 2.5, 5.5, 7.5],
+            })
+            fig_pie = px.pie(
+                df_pie,
+                values="시간",
+                names="항목",
+                color_discrete_sequence=px.colors.qualitative.Set3,
+            )
+            fig_pie.update_traces(
+                textposition="inside", textinfo="percent+label"
+            )
+            st.plotly_chart(fig_pie, use_container_width=True)
+
+        with c2:
+            st.subheader(f"🎯 {selected_day} 주요 활동 시간 구성")
+            df_bar = pd.DataFrame({
+                "활동": [
+                    "모닝 학습",
+                    "게임 1차",
+                    "야외/야구",
+                    "게임 2차",
+                    "밤 독서",
+                ],
+                "시간(분)": [90, 120, 150, 90, 60],
+            })
+            fig_bar = px.bar(
+                df_bar,
+                x="활동",
+                y="시간(분)",
+                color="활동",
+                text="시간(분)",
+                color_discrete_sequence=px.colors.qualitative.Bold,
+            )
+            st.plotly_chart(fig_bar, use_container_width=True)
+
+        st.divider()
+        st.subheader(f"⚡ {selected_day} 실시간 타임라인")
+
+        wk_items = st.session_state.weekend_plans.get(selected_day, [])
+        cols = st.columns(min(len(wk_items), 4))
+        for idx, (t, n, d) in enumerate(wk_items[:4]):
+            with cols[idx]:
+                st.success(f"**`{t}`**\n\n**{n}**\n\n{d}")
+
+    else:
+        st.info(
+            f"💡 **[{selected_day} 평일 루틴 대시보드]** 학교/학원 동선 및 저녁"
+            " 70분 몰입 학습 루틴이 적용됩니다."
         )
-    with t4:
-        st.error(
-            "🌙 **20:10 ~ 22:10 [저녁&취침]**\n\n70분 학습 & 22시 전 취침\n\n20:10"
-            " 학습 ➡️ 21:20 샤워 ➡️ 22:00 취침"
+
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric(
+                label="권장 수면 시간", value="8.5시간", delta="22:00 ~ 06:30"
+            )
+            st.caption("21:20 샤워 ➡️ 22:00 취침")
+        with col2:
+            st.metric(
+                label="저녁 집중 학습", value="70분", delta="20:10 ~ 21:20"
+            )
+            st.caption("수학 30분 + 영어 15분 + 국어 15분")
+        with col3:
+            sch_list = st.session_state.schedules.get(selected_day, [])
+            st.metric(
+                label=f"{selected_day} 일정 개수",
+                value=f"{len(sch_list)}개",
+                delta="학원 및 동선",
+            )
+            st.caption("요일별 학원 탭 연동")
+        with col4:
+            st.metric(
+                label="목표 취침 시간", value="22:00 전", delta="소등 준비"
+            )
+            st.caption("수면 골든타임 준수")
+
+        st.divider()
+
+        c1, c2 = st.columns(2)
+        with c1:
+            st.subheader(f"📊 {selected_day} 평일 시간 배분 비율")
+            df_pie = pd.DataFrame({
+                "항목": [
+                    "수면 (8.5시간)",
+                    "학교/학원 (8시간)",
+                    "여유/이동/식사 (6.3시간)",
+                    "저녁몰입학습 (1.1시간)",
+                ],
+                "시간": [8.5, 8.0, 6.3, 1.1],
+            })
+            fig_pie = px.pie(
+                df_pie,
+                values="시간",
+                names="항목",
+                color_discrete_sequence=px.colors.qualitative.Pastel,
+            )
+            fig_pie.update_traces(
+                textposition="inside", textinfo="percent+label"
+            )
+            st.plotly_chart(fig_pie, use_container_width=True)
+
+        with c2:
+            st.subheader("🎯 저녁 70분 몰입 학습 과목 구성")
+            df_bar = pd.DataFrame({
+                "과목": [
+                    "수학 (학원숙제)",
+                    "영어 (단어+학습지)",
+                    "국어 (어휘/독해)",
+                    "마무리 (가방/책상)",
+                ],
+                "시간(분)": [30, 15, 15, 10],
+            })
+            fig_bar = px.bar(
+                df_bar, x="과목", y="시간(분)", color="과목", text="시간(분)"
+            )
+            st.plotly_chart(fig_bar, use_container_width=True)
+
+        st.divider()
+        st.subheader(
+            f"⚡ {selected_day} 학원 & 이동 동선 타임라인 (수정 내용 자동 반영)"
         )
+
+        day_scheds = st.session_state.schedules.get(selected_day, [])
+        if day_scheds:
+            cols = st.columns(len(day_scheds))
+            for idx, item in enumerate(day_scheds):
+                with cols[idx]:
+                    st.info(
+                        f"**`{item['time']}`**\n\n**{item['name']}**\n\n{item['detail']}\n\n`[{item['badge']}]`"
+                    )
+        else:
+            st.write("등록된 학원 일정이 없습니다.")
 
 # ==========================================
 # TAB 2: 요일별 학원
@@ -545,7 +636,7 @@ with tab2:
 
         if st.button(f"💾 {day_choice} 수정 내용 저장"):
             st.session_state.schedules[day_choice] = new_items
-            st.success("저장되었습니다!")
+            st.success("저장되었습니다! 대시보드에도 자동 반영됩니다.")
             st.rerun()
     else:
         st.write(f"### 🗓️ {day_choice} 상세 일정")
@@ -640,7 +731,7 @@ with tab4:
 
         if st.button(f"💾 {wk_key} 수정 내용 저장"):
             st.session_state.weekend_plans[wk_key] = new_wk_plan
-            st.success("저장되었습니다!")
+            st.success("저장되었습니다! 대시보드에도 자동 반영됩니다.")
             st.rerun()
     else:
         st.write(f"### 🗓️ {wk_key} 상세 일정")
@@ -713,7 +804,7 @@ with tab5:
         )
 
 # ==========================================
-# TAB 6: AI 코치 & 퀴즈 (스티커판 초기화 버튼 포함)
+# TAB 6: AI 코치 & 퀴즈
 # ==========================================
 with tab6:
     st.subheader("✨ Gemini AI 스마트 학습 코치")
@@ -821,7 +912,7 @@ with tab6:
                 """
                 st.components.v1.html(tts_script, height=0)
 
-    # 3. 칭찬 스티커 (초기화 버튼 추가)
+    # 3. 칭찬 스티커
     elif "칭찬 스티커" in ai_tool:
         st.write("### 🏆 칭찬 스티커 & 보상 스티커북")
 
@@ -858,7 +949,6 @@ with tab6:
                     st.balloons()
 
         with btn_c2:
-            # 🔄 스티커판 리셋 버튼
             if st.button("🔄 스티커판 초기화"):
                 st.session_state.stickers = []
                 st.session_state.latest_draw_sticker = None
@@ -883,7 +973,6 @@ with tab6:
             f"🏆 **내 칭찬 스티커북 ({len(st.session_state.stickers)}/30개 모음)**"
         )
 
-        # 30개 전부 다 모았을 때 나오는 보상 축하 메시지
         if len(st.session_state.stickers) >= 30:
             st.balloons()
             st.success(
