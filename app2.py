@@ -444,7 +444,7 @@ def save_sheet_data(
         pass
 
 
-# 5. API 키 설정 (기존 작동 코딩 파일 모델인 gemini-3.6-flash 적용)
+# 5. API 키 설정 (gemini-3.6-flash + timeout 60초 적용)
 api_key = st.secrets.get("GEMINI_API_KEY", "")
 
 
@@ -452,12 +452,12 @@ def call_gemini_api(prompt):
     if not api_key:
         return "Secrets에 GEMINI_API_KEY가 설정되어 있지 않습니다."
 
-    # 제공해주신 기존 작동 파일(gemini-code-1789457956767_3.py)의 정식 모델명 적용
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key={api_key}"
     headers = {"Content-Type": "application/json"}
     payload = {"contents": [{"parts": [{"text": prompt}]}]}
 
     try:
+        # 타임아웃 60초로 변경
         response = requests.post(
             url, headers=headers, data=json.dumps(payload), timeout=60
         )
@@ -1364,7 +1364,7 @@ with tab5:
             )
 
 # ==========================================
-# TAB 6: AI 코치 & 퀴즈 (달성률 핑크 + 📌 핀버튼 + 2배 높이 결과상자 + gemini-3.6-flash 연동)
+# TAB 6: AI 코치 & 퀴즈 (연한 레몬/크림 파스텔 배경 적용)
 # ==========================================
 with tab6:
     st.markdown(
@@ -1523,14 +1523,14 @@ with tab6:
                     )
                     st.balloons()
 
-            # 시원하게 높이를 2배 조절한 스티커 결과 상자
+            # 높이 2배 + 연한 파스텔 레몬/크림 배경 적용
             if st.session_state.latest_draw_sticker:
                 lstk = st.session_state.latest_draw_sticker
                 st.markdown(
                     f"""
-                    <div style="text-align:center; padding: 24px 16px; background: linear-gradient(135deg, #fbcfe8, #e0e7ff); border-radius:14px; margin-top: 10px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
+                    <div style="text-align:center; padding: 24px 16px; background: linear-gradient(135deg, #fef9c3, #fef08a); border: 1px solid #fde047; border-radius:14px; margin-top: 10px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
                         <div style="font-size: 38px; line-height: 1.2;">{lstk['icon']}</div>
-                        <div style="font-size: 14px; font-weight: 800; color: #4338ca; margin-top: 6px;">"{lstk['msg']}"</div>
+                        <div style="font-size: 14px; font-weight: 800; color: #854d0e; margin-top: 6px;">"{lstk['msg']}"</div>
                     </div>
                     """,
                     unsafe_allow_html=True,
