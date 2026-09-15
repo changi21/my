@@ -13,7 +13,7 @@ st.set_page_config(
     layout="wide",
 )
 
-# 2. CSS 구조 개편: 바탕화면(흰색) vs 큰 네모 박스(불투명 파스텔 블루/슬레이트)
+# 2. Pretendard 폰트 + 바탕화면/큰박스 색상 완전 분리 + 높이 자동 맞춤 CSS
 st.markdown(
     """
 <style>
@@ -23,9 +23,9 @@ st.markdown(
         font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif !important;
     }
     
-    /* 1. 바탕 화면 전체: 완전한 순백색 고정 */
-    .stApp, .main, [data-testid="stMainBlockContainer"], .block-container {
-        background-color: #ffffff !important;
+    /* 1. 전체 바탕화면: 명확한 연한 슬레이트 회색 (#e2e8f0) */
+    .stApp {
+        background-color: #e2e8f0 !important;
         color: #1e293b;
     }
     
@@ -35,9 +35,9 @@ st.markdown(
         max-width: 1180px;
     }
 
-    /* 2. 큰 네모 박스 껍데기: 조금 더 진하고 명확한 파스텔 블루/슬레이트 (#e2e8f0) */
+    /* 2. 큰 네모 박스: 완벽한 순백색 (#ffffff) 고정 및 테두리 명확화 */
     div[data-testid="stVerticalBlockBorderWrapper"] {
-        background-color: #e2e8f0 !important;
+        background-color: #ffffff !important;
         border: 1.5px solid #cbd5e1 !important;
         border-radius: 16px !important;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
@@ -45,13 +45,12 @@ st.markdown(
         margin-bottom: 18px !important;
     }
 
-    /* 3. [핵심] 큰 네모 박스 내부 알맹이: 투명 속성 제거 후 불투명 색상 강제 지정 */
-    div[data-testid="stVerticalBlockBorderWrapper"] > div,
-    div[data-testid="stVerticalBlockBorderWrapper"] [data-testid="stVerticalBlock"] {
-        background-color: #e2e8f0 !important;
+    /* 네모 박스 내부 영역 투명화 방지 */
+    div[data-testid="stVerticalBlockBorderWrapper"] > div {
+        background-color: #ffffff !important;
     }
 
-    /* 4. 가로 라인 및 높이 수평 맞춤 */
+    /* 열(Column) 내부 컨테이너 높이 100% 동일 맞춤 */
     [data-testid="stColumn"] > div {
         height: 100%;
     }
@@ -74,7 +73,7 @@ st.markdown(
     }
 
     .metric-card-tw {
-        background-color: #ffffff;
+        background-color: #f8fafc;
         border: 1px solid #cbd5e1;
         border-radius: 16px;
         padding: 14px 16px;
@@ -113,7 +112,7 @@ st.markdown(
     }
 
     .tl-item-box {
-        background-color: #ffffff !important;
+        background-color: #f8fafc !important;
         border: 1px solid #cbd5e1 !important;
         border-radius: 12px;
         padding: 14px 14px;
@@ -886,7 +885,7 @@ with tab1:
                 ),
                 yaxis=dict(
                     showgrid=True,
-                    gridcolor="#cbd5e1",
+                    gridcolor="#f8fafc",
                     tickfont=dict(size=10, color="#94a3b8"),
                     title=None,
                     range=[0, 38],
@@ -1023,7 +1022,7 @@ with tab2:
             for item in items:
                 st.markdown(
                     f"""
-                    <div style="display:flex; justify-content:space-between; align-items:center; padding: 12px 16px; background-color:#ffffff; border-radius:12px; margin-bottom:8px; border:1px solid #cbd5e1;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding: 12px 16px; background-color:#f8fafc; border-radius:12px; margin-bottom:8px; border:1px solid #cbd5e1;">
                         <div style="display:flex; align-items:center; gap:12px;">
                             <span style="font-size:12px; font-weight:700; color:#64748b;">⏰ {item['time']}</span>
                             <span style="font-size:14px; font-weight:700; color:#1e293b;">{item['name']}</span>
@@ -1100,7 +1099,7 @@ with tab3:
             ):
                 st.markdown(
                     f"""
-                    <div style="padding: 12px 16px; background-color:#ffffff; border-radius:12px; margin-bottom:8px; border:1px solid #cbd5e1;">
+                    <div style="padding: 12px 16px; background-color:#f8fafc; border-radius:12px; margin-bottom:8px; border:1px solid #cbd5e1;">
                         <div style="display:flex; align-items:center; gap:10px;">
                             <span style="font-size:11px; font-weight:700; color:#ef4444; background:#fee2e2; padding:2px 6px; border-radius:6px;">{t}</span>
                             <span style="font-size:14px; font-weight:700; color:#1e293b;">{n}</span>
@@ -1173,7 +1172,7 @@ with tab4:
             for t, n, d in st.session_state.weekend_plans[wk_key]:
                 st.markdown(
                     f"""
-                    <div style="display:flex; justify-content:space-between; align-items:center; padding: 12px 16px; background-color:#ffffff; border-radius:12px; margin-bottom:8px; border:1px solid #cbd5e1;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding: 12px 16px; background-color:#f8fafc; border-radius:12px; margin-bottom:8px; border:1px solid #cbd5e1;">
                         <div style="display:flex; align-items:center; gap:12px;">
                             <span style="font-size:12px; font-weight:700; color:#d97706;">⏰ {t}</span>
                             <span style="font-size:14px; font-weight:700; color:#1e293b;">{n}</span>
@@ -1352,7 +1351,7 @@ with tab5:
                                 "background-color:#eff6ff; border:1px solid"
                                 " #bfdbfe; color:#1e40af;"
                                 if is_success
-                                else "background-color:#ffffff; border:1px solid"
+                                else "background-color:#f8fafc; border:1px solid"
                                 " #cbd5e1; color:#475569;"
                             )
 
@@ -1369,7 +1368,7 @@ with tab5:
                         else:
                             st.markdown(
                                 """
-                                <div style="background-color:#ffffff; border:1px dashed #cbd5e1; border-radius:12px; padding:10px 4px; text-align:center; color:#94a3b8; margin-bottom:4px;">
+                                <div style="background-color:#f8fafc; border:1px dashed #cbd5e1; border-radius:12px; padding:10px 4px; text-align:center; color:#94a3b8; margin-bottom:4px;">
                                     <div style="font-size:10px;">대기</div>
                                     <div style="font-size:16px; font-weight:700; margin:4px 0;">-</div>
                                     <div style="font-size:10px;">-</div>
@@ -1382,7 +1381,7 @@ with tab5:
             )
 
 # ==========================================
-# TAB 6: AI 코치 & 퀴즈
+# TAB 6: AI 코치 & 퀴즈 (높이/가로라인 100% 동일 맞춤)
 # ==========================================
 with tab6:
     st.markdown(
@@ -1396,7 +1395,7 @@ with tab6:
         unsafe_allow_html=True,
     )
 
-    # 1행: 퀴즈 생성기 & 음성 응원
+    # 1행: 퀴즈 생성기 & 음성 응원 (완벽한 상단 가로 라인 수평 맞춤)
     row1_col1, row1_col2 = st.columns(2)
 
     with row1_col1:
@@ -1411,6 +1410,7 @@ with tab6:
                 unsafe_allow_html=True,
             )
             
+            # Selectbox 라벨을 동일하게 부여하여 높이 통일
             subject = st.selectbox(
                 "과목 선택",
                 [
@@ -1499,7 +1499,7 @@ with tab6:
                     """
                     st.components.v1.html(tts_script, height=0)
 
-    # 2행: 스티커 카운터 & 질의응답
+    # 2행: 스티커 카운터 & 질의응답 (하단 높이 100% 수평 맞춤)
     row2_col1, row2_col2 = st.columns(2)
 
     with row2_col1:
@@ -1633,7 +1633,7 @@ with tab6:
                         else:
                             st.markdown(
                                 f"""
-                                <div style="height:54px; display:flex; align-items:center; justify-content:center; border:1px dashed #cbd5e1; border-radius:8px; color:#94a3b8; font-size:11px; margin-bottom:4px; background-color:#ffffff;">
+                                <div style="height:54px; display:flex; align-items:center; justify-content:center; border:1px dashed #cbd5e1; border-radius:8px; color:#94a3b8; font-size:11px; margin-bottom:4px; background-color:#f8fafc;">
                                     {i+1}
                                 </div>
                                 """,
