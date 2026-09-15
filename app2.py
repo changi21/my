@@ -34,21 +34,9 @@ if not st.session_state.authenticated:
             text-align: center;
             color: #f8fafc;
         }
-        .pin-icon {
-            font-size: 54px;
-            margin-bottom: 10px;
-        }
-        .pin-title {
-            font-size: 24px;
-            font-weight: 700;
-            color: #38bdf8;
-            margin-bottom: 8px;
-        }
-        .pin-sub {
-            font-size: 13px;
-            color: #94a3b8;
-            margin-bottom: 25px;
-        }
+        .pin-icon { font-size: 54px; margin-bottom: 10px; }
+        .pin-title { font-size: 24px; font-weight: 700; color: #38bdf8; margin-bottom: 8px; }
+        .pin-sub { font-size: 13px; color: #94a3b8; margin-bottom: 25px; }
         </style>
         <div class="pin-box">
             <div class="pin-icon">🔒</div>
@@ -77,7 +65,33 @@ if not st.session_state.authenticated:
                 st.error("PIN 번호가 일치하지 않습니다. 다시 입력해 주세요.")
     st.stop()
 
-# 3. API 키 가져오기
+# 3. 구글 시트 동기화 설정 (제공해주신 시트 ID 적용)
+SHEET_ID = "1x5A3X2lGb5SFpHE5qspuetmdOsWMiP_mfnWY0ZqD6rc"
+SHEET_CSV_URL = (
+    f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sheet=data"
+)
+
+
+# 구글 시트 데이터 불러오기 함수
+def load_sheet_data():
+    try:
+        df = pd.read_csv(SHEET_CSV_URL)
+        if not df.empty:
+            row = df.iloc[0]
+            stk_cnt = int(row.get("stickers_count", 0))
+            goal = str(
+                row.get(
+                    "reward_goal",
+                    "아빠와 프로야구 직관 가기 & 갖고 싶던 선물!",
+                )
+            )
+            return stk_cnt, goal
+    except Exception:
+        pass
+    return 0, "아빠와 프로야구 직관 가기 & 갖고 싶던 선물!"
+
+
+# 4. API 키 가져오기 & Gemini 호출
 api_key = st.secrets.get("GEMINI_API_KEY", "")
 
 
@@ -85,10 +99,7 @@ def call_gemini_api(prompt):
     if not api_key:
         return "Secrets에 GEMINI_API_KEY가 설정되어 있지 않습니다."
 
-    url = (
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key="
-        + api_key
-    )
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key={api_key}"
     headers = {"Content-Type": "application/json"}
     payload = {"contents": [{"parts": [{"text": prompt}]}]}
 
@@ -101,15 +112,24 @@ def call_gemini_api(prompt):
         if response.status_code == 200:
             return res_json["candidates"][0]["content"]["parts"][0]["text"]
         else:
-            err_msg = res_json.get("error", {}).get(
-                "message", "알 수 없는 오류"
-            )
+            err_msg = res_json.get("error", {}).get("message", "알 수 없는 오류")
             return f"API 오류 ({response.status_code}): {err_msg}"
     except Exception as e:
         return f"통신 오류 발생: {e}"
 
 
-# 4. 세션 상태 초기화
+# 5. 세션 상태 초기화 & 데이터 연동
+initial_stk_cnt, initial_goal = load_sheet_data()
+
+if "stickers" not in st.session_state:
+    st.session_state.stickers = [
+        {"icon": "🏆", "msg": "목표 완수!", "date": ""}
+        for _ in range(initial_stk_cnt)
+    ]
+
+if "reward_goal" not in st.session_state:
+    st.session_state.reward_goal = initial_goal
+
 if "schedules" not in st.session_state:
     st.session_state.schedules = {
         "월요일": [
@@ -264,16 +284,9 @@ if "evening_plans" not in st.session_state:
             (
                 "20:10 ~ 21:20",
                 "⚡ 자기주도 몰입 학습 (70분)",
-                (
-                    "수학(30m) ➡️ 영어(15m) ➡️ 국어/어휘(15m) ➡️"
-                    " 내일가방(10m)"
-                ),
+                "수학(30m) ➡️ 영어(15m) ➡️ 국어/어휘(15m) ➡️ 내일가방(10m)",
             ),
-            (
-                "21:20 ~ 21:50",
-                "🚿 샤워 & 취침 준비",
-                "21:20 샤워 들어가기 및 소등 준비",
-            ),
+            ("21:20 ~ 21:50", "🚿 샤워 & 취침 준비", "21:20 샤워 들어가기 및 소등 준비"),
             ("21:50 ~ 22:10", "🛌 잠자리 취침 완료", "22:00 ~ 22:10 사이 취침"),
         ],
         "Plan B": [
@@ -293,57 +306,29 @@ if "evening_plans" not in st.session_state:
                 "📐 메인 학습: 수학 & 마무리",
                 "수학 숙제 마무리 & 책가방 챙기기",
             ),
-            (
-                "21:20 ~ 22:10",
-                "🚿 샤워 및 취침",
-                "21:20 샤워 ➡️ 22:00 전후 취침",
-            ),
+            ("21:20 ~ 22:10", "🚿 샤워 및 취침", "21:20 샤워 ➡️ 22:00 전후 취침"),
         ],
     }
 
 if "weekend_plans" not in st.session_state:
     st.session_state.weekend_plans = {
         "토요일": [
-            (
-                "06:30 ~ 07:00",
-                "기상 및 아침 뇌 깨우기",
-                "6시 30분~7시 사이 기상",
-            ),
+            ("06:30 ~ 07:00", "기상 및 아침 뇌 깨우기", "6시 30분~7시 사이 기상"),
             (
                 "07:00 ~ 08:30",
                 "📝 [주말 모닝 학습] 90분 몰입 완주",
                 "수학+영어+독서",
             ),
             ("08:30 ~ 09:00", "🍚 아침 식사 및 정돈", "온 가족 아침 식사"),
-            (
-                "10:00 ~ 12:00",
-                "🎮 게임 & 자유시간 1차 (120분)",
-                "학습 완주 후 자유시간",
-            ),
+            ("10:00 ~ 12:00", "🎮 게임 & 자유시간 1차 (120분)", "학습 완주 후 자유시간"),
             ("13:00 ~ 15:30", "⚾ [신체활동] 아빠와 야구", "햇빛 쬐며 신체 발달"),
-            (
-                "16:30 ~ 18:00",
-                "🎮 게임 & 자유시간 2차 (90분)",
-                "게임 시간 쪼개기 수칙",
-            ),
-            (
-                "20:00 ~ 21:00",
-                "📖 밤 몰입 독서 1시간",
-                "부모님 운동 시간 동안 독서",
-            ),
+            ("16:30 ~ 18:00", "🎮 게임 & 자유시간 2차 (90분)", "게임 시간 쪼개기 수칙"),
+            ("20:00 ~ 21:00", "📖 밤 몰입 독서 1시간", "부모님 운동 시간 동안 독서"),
             ("21:20 ~ 22:10", "🚿 샤워 및 취침", "22:00 전후 취침"),
         ],
         "일요일": [
-            (
-                "06:30 ~ 07:00",
-                "기상 및 아침 뇌 깨우기",
-                "6시 30분~7시 사이 기상",
-            ),
-            (
-                "07:00 ~ 08:30",
-                "📝 [주말 모닝 학습] 90분 몰입 완주",
-                "수학+영어+독서",
-            ),
+            ("06:30 ~ 07:00", "기상 및 아침 뇌 깨우기", "6시 30분~7시 사이 기상"),
+            ("07:00 ~ 08:30", "📝 [주말 모닝 학습] 90분 몰입 완주", "수학+영어+독서"),
             ("09:00 ~ 10:00", "🙏 인터넷 예배", "가족 인터넷 예배 드리기"),
             ("10:00 ~ 12:00", "🎮 게임 & 자유시간 1차 (120분)", "자유시간"),
             ("13:00 ~ 15:30", "⚾ 야외활동 / 주말 외출", "야외활동"),
@@ -401,16 +386,8 @@ if "checklist_weekend" not in st.session_state:
 if "quiz_click_count" not in st.session_state:
     st.session_state.quiz_click_count = 0
 
-if "stickers" not in st.session_state:
-    st.session_state.stickers = []
-
 if "last_sticker_date" not in st.session_state:
     st.session_state.last_sticker_date = ""
-
-if "reward_goal" not in st.session_state:
-    st.session_state.reward_goal = (
-        "아빠와 프로야구 직관 가기 & 갖고 싶던 선물!"
-    )
 
 if "latest_draw_sticker" not in st.session_state:
     st.session_state.latest_draw_sticker = None
@@ -460,7 +437,7 @@ STICKER_MSG = [
     "내일 더 멋지게 날아오르자!",
 ]
 
-# 5. 상단 헤더 & 로그아웃
+# 6. 상단 헤더 & 로그아웃
 days_kor = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"]
 today_idx = datetime.date.today().weekday()
 today_name = days_kor[today_idx]
@@ -478,7 +455,7 @@ with h_col2:
         st.session_state.authenticated = False
         st.rerun()
 
-# 6. 메인 탭 구성
+# 7. 메인 탭 구성
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "📊 대시보드",
     "🎒 요일별 학원",
@@ -895,7 +872,7 @@ with tab5:
         )
 
 # ==========================================
-# TAB 6: AI 코치 & 퀴즈 (응원 상황 10개 원클릭 라디오로 변경)
+# TAB 6: AI 코치 & 퀴즈
 # ==========================================
 with tab6:
     st.subheader("✨ Gemini AI 스마트 학습 코치")
@@ -942,7 +919,7 @@ with tab6:
                 st.success(f"회차 #{idx} 퀴즈 생성 완료!")
                 st.markdown(res_text)
 
-    # 2. AI 응원 멘트 (📌 10개 중 1개 클릭 선택으로 깔끔 단일화)
+    # 2. AI 응원 멘트
     elif "AI 응원 멘트" in ai_tool:
         sit_target = st.radio(
             "💬 현재 상황이나 기분을 선택하세요 (10가지):",
