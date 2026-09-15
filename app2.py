@@ -1,9 +1,10 @@
 import datetime
+import json
 import random
 import pandas as pd
 import plotly.express as px
+import requests
 import streamlit as st
-from google import genai
 
 # 1. 페이지 기본 설정
 st.set_page_config(
@@ -12,13 +13,36 @@ st.set_page_config(
     layout="wide",
 )
 
-# 2. Gemini Client 설정
+# 2. API 키 가져오기
 api_key = st.secrets.get("GEMINI_API_KEY", "")
-client = None
-if api_key:
-    client = genai.Client(api_key=api_key)
 
-# 3. 세션 상태 (메모리 저장소) 초기화
+
+# REST API 방식으로 Gemini 호출하는 함수 (SDK 에러 원천 차단)
+def call_gemini_api(prompt):
+    if not api_key:
+        return "Secrets에 GEMINI_API_KEY가 설정되어 있지 않습니다."
+
+    # 최신 모델 gemini-2.5-flash 엔드포인트
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
+    headers = {"Content-Type": "application/json"}
+    payload = {"contents": [{"parts": [{"text": prompt}]}]}
+
+    try:
+        response = requests.post(
+            url, headers=headers, data=json.dumps(payload), timeout=15
+        )
+        res_json = response.json()
+
+        if response.status_code == 200:
+            return res_json["candidates"][0]["content"]["parts"][0]["text"]
+        else:
+            err_msg = res_json.get("error", {}).get("message", "알 수 없는 오류")
+            return f"API 오류 ({response.status_code}): {err_msg}"
+    except Exception as e:
+        return f"통신 오류 발생: {e}"
+
+
+# 3. 세션 상태 초기화
 if "schedules" not in st.session_state:
     st.session_state.schedules = {
         "월요일": [
@@ -287,7 +311,6 @@ if "reward_goal" not in st.session_state:
 if "latest_draw_sticker" not in st.session_state:
     st.session_state.latest_draw_sticker = None
 
-# 100종 스티커 아이콘 및 응원 문구 라이브러리
 STICKER_ICONS = [
     "🏆",
     "⭐",
@@ -461,7 +484,6 @@ with tab2:
         ["월요일", "화요일", "수요일", "목요일", "금요일"],
         horizontal=True,
     )
-
     items = st.session_state.schedules[day_choice]
 
     if edit_weekday:
@@ -630,7 +652,6 @@ with tab5:
             st.session_state.checklist_weekend = new_wk_chk
             st.success("체크리스트 문구가 수정되었습니다!")
             st.rerun()
-
     else:
         col_w, col_wk = st.columns(2)
         with col_w:
@@ -665,7 +686,7 @@ with tab5:
         )
 
 # ==========================================
-# TAB 6: AI 코치 & 퀴즈 (gemini-2.5-flash 표준 적용)
+# TAB 6: AI 코치 & 퀴즈 (REST API 호출 방식)
 # ==========================================
 with tab6:
     st.subheader("✨ Gemini AI 스마트 학습 코치")
@@ -696,25 +717,17 @@ with tab6:
             st.session_state.quiz_click_count += 1
             idx = st.session_state.quiz_click_count
 
-            if not client:
-                st.error("Secrets에 GEMINI_API_KEY가 설정되어 있지 않습니다.")
-            else:
-                with st.spinner("중복되지 않는 기출 퀴즈를 가져오는 중입니다..."):
-                    try:
-                        prompt = (
-                            f"당신은 한국사능력검정시험 출제위원입니다. {subject} 주제에 대해"
-                            f" 최신 기출문제 회차 중 {idx}번째 문제 스타일로 중복"
-                            " 없이 4지선다형 객관식 퀴즈 1개를 출제하세요."
-                            " [문제] ➡️ [보기 1,2,3,4] ➡️ 💡 [해설] ➡️ 🔒 [정답] 순서로"
-                            " 명확히 출력하세요."
-                        )
-                        response = client.models.generate_content(
-                            model="gemini-2.5-flash", contents=prompt
-                        )
-                        st.success(f"회차 #{idx} 퀴즈 생성 완료!")
-                        st.markdown(response.text)
-                    except Exception as e:
-                        st.error(f"오류 발생: {e}")
+            with st.spinner("중복되지 않는 퀴즈를 가져오는 중입니다..."):
+                prompt = (
+                    f"당신은 초등 5학년 학습 출제위원입니다. {subject} 주제에 대해"
+                    f" 최신 기출 및 교과 과정 중 {idx}번째 문제 스타일로 중복"
+                    " 없이 4지선다형 객관식 퀴즈 1개를 출제하세요. [문제] ➡️"
+                    " [보기 1,2,3,4] ➡️ 💡 [해설] ➡️ 🔒 [정답] 순서로 명확히"
+                    " 출력하세요."
+                )
+                res_text = call_gemini_api(prompt)
+                st.success(f"회차 #{idx} 퀴즈 생성 완료!")
+                st.markdown(res_text)
 
     # 2. AI 응원 멘트
     elif "AI 응원 멘트" in ai_tool:
@@ -735,36 +748,27 @@ with tab6:
         )
 
         if st.button("🎙️ AI 응원 메시지 생성 & 음성 재생"):
-            if not client:
-                st.error("Secrets에 GEMINI_API_KEY가 설정되어 있지 않습니다.")
-            else:
-                with st.spinner("AI 멘토가 응원 메시지를 작성 중입니다..."):
-                    try:
-                        prompt = (
-                            f"초등 5학년 학생의 현재 상황: '{sit_choice}'. 이 상황에 맞게"
-                            " 학생의 이름을 따스하게 부르듯 50자~100자 사이로 다정하고"
-                            " 힘이 나는 응원 문구를 작성해줘."
-                        )
-                        response = client.models.generate_content(
-                            model="gemini-2.5-flash", contents=prompt
-                        )
-                        msg_text = response.text.strip()
+            with st.spinner("AI 멘토가 응원 메시지를 작성 중입니다..."):
+                prompt = (
+                    f"초등 5학년 학생의 현재 상황: '{sit_choice}'. 이 상황에 맞게"
+                    " 학생의 이름을 따스하게 부르듯 50자~100자 사이로 다정하고"
+                    " 힘이 나는 응원 문구를 작성해줘."
+                )
+                msg_text = call_gemini_api(prompt)
 
-                        st.balloons()
-                        st.info(f"💬 **AI 멘토의 응원:**\n\n{msg_text}")
+                st.balloons()
+                st.info(f"💬 **AI 멘토의 응원:**\n\n{msg_text}")
 
-                        tts_script = f"""
-                        <script>
-                            var msg = new SpeechSynthesisUtterance("{msg_text.replace('\n', ' ')}");
-                            msg.lang = 'ko-KR';
-                            msg.rate = 1.0;
-                            msg.pitch = 1.1;
-                            window.speechSynthesis.speak(msg);
-                        </script>
-                        """
-                        st.components.v1.html(tts_script, height=0)
-                    except Exception as e:
-                        st.error(f"오류 발생: {e}")
+                tts_script = f"""
+                <script>
+                    var msg = new SpeechSynthesisUtterance("{msg_text.replace('\n', ' ')}");
+                    msg.lang = 'ko-KR';
+                    msg.rate = 1.0;
+                    msg.pitch = 1.1;
+                    window.speechSynthesis.speak(msg);
+                </script>
+                """
+                st.components.v1.html(tts_script, height=0)
 
     # 3. 칭찬 스티커
     elif "칭찬 스티커" in ai_tool:
@@ -852,24 +856,16 @@ with tab6:
         )
 
         if st.button("🔍 AI 백과에 질문하기"):
-            if not client:
-                st.error("Secrets에 GEMINI_API_KEY가 설정되어 있지 않습니다.")
-            else:
-                with st.spinner(
-                    "초등 고학년~중학생 눈높이에 맞춰 정리하는 중입니다..."
-                ):
-                    try:
-                        prompt = (
-                            "당신은 친절한 학습 백과 튜터입니다. 질문:"
-                            f" '{q_input}'에 대해 초등학교 고학년에서 중학교 1학년"
-                            " 학생들이 이해하기 쉽도록 1) 핵심 요약, 2) 상세"
-                            " 설명, 3) 💡 기억할 점 3단계 구조로 깔끔하게"
-                            " 정리해 주세요."
-                        )
-                        response = client.models.generate_content(
-                            model="gemini-2.5-flash", contents=prompt
-                        )
-                        st.success("답변 완료!")
-                        st.markdown(response.text)
-                    except Exception as e:
-                        st.error(f"오류 발생: {e}")
+            with st.spinner(
+                "초등 고학년~중학생 눈높이에 맞춰 정리하는 중입니다..."
+            ):
+                prompt = (
+                    "당신은 친절한 학습 백과 튜터입니다. 질문:"
+                    f" '{q_input}'에 대해 초등학교 고학년에서 중학교 1학년"
+                    " 학생들이 이해하기 쉽도록 1) 핵심 요약, 2) 상세"
+                    " 설명, 3) 💡 기억할 점 3단계 구조로 깔끔하게 정리해"
+                    " 주세요."
+                )
+                res_text = call_gemini_api(prompt)
+                st.success("답변 완료!")
+                st.markdown(res_text)
