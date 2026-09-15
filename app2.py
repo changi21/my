@@ -21,7 +21,10 @@ if "authenticated" not in st.session_state:
 
 if not st.session_state.authenticated:
     st.title("🔒 비밀번호 입력")
-    st.caption("초등 5학년 스마트 루틴 대시보드에 접속하려면 PIN 번호를 입력하세요.")
+    st.caption(
+        "초등 5학년 스마트 루틴 대시보드에 접속하려면 PIN 번호를"
+        " 입력하세요."
+    )
 
     pin_input = st.text_input(
         "PIN 번호 4자리를 입력하세요:", type="password", max_chars=4
@@ -44,7 +47,10 @@ def call_gemini_api(prompt):
     if not api_key:
         return "Secrets에 GEMINI_API_KEY가 설정되어 있지 않습니다."
 
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key={api_key}"
+    url = (
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key="
+        + api_key
+    )
     headers = {"Content-Type": "application/json"}
     payload = {"contents": [{"parts": [{"text": prompt}]}]}
 
@@ -57,7 +63,9 @@ def call_gemini_api(prompt):
         if response.status_code == 200:
             return res_json["candidates"][0]["content"]["parts"][0]["text"]
         else:
-            err_msg = res_json.get("error", {}).get("message", "알 수 없는 오류")
+            err_msg = res_json.get("error", {}).get(
+                "message", "알 수 없는 오류"
+            )
             return f"API 오류 ({response.status_code}): {err_msg}"
     except Exception as e:
         return f"통신 오류 발생: {e}"
@@ -218,9 +226,16 @@ if "evening_plans" not in st.session_state:
             (
                 "20:10 ~ 21:20",
                 "⚡ 자기주도 몰입 학습 (70분)",
-                "수학(30m) ➡️ 영어(15m) ➡️ 국어/어휘(15m) ➡️ 내일가방(10m)",
+                (
+                    "수학(30m) ➡️ 영어(15m) ➡️ 국어/어휘(15m) ➡️"
+                    " 내일가방(10m)"
+                ),
             ),
-            ("21:20 ~ 21:50", "🚿 샤워 & 취침 준비", "21:20 샤워 들어가기 및 소등 준비"),
+            (
+                "21:20 ~ 21:50",
+                "🚿 샤워 & 취침 준비",
+                "21:20 샤워 들어가기 및 소등 준비",
+            ),
             ("21:50 ~ 22:10", "🛌 잠자리 취침 완료", "22:00 ~ 22:10 사이 취침"),
         ],
         "Plan B": [
@@ -240,29 +255,57 @@ if "evening_plans" not in st.session_state:
                 "📐 메인 학습: 수학 & 마무리",
                 "수학 숙제 마무리 & 책가방 챙기기",
             ),
-            ("21:20 ~ 22:10", "🚿 샤워 및 취침", "21:20 샤워 ➡️ 22:00 전후 취침"),
+            (
+                "21:20 ~ 22:10",
+                "🚿 샤워 및 취침",
+                "21:20 샤워 ➡️ 22:00 전후 취침",
+            ),
         ],
     }
 
 if "weekend_plans" not in st.session_state:
     st.session_state.weekend_plans = {
         "토요일": [
-            ("06:30 ~ 07:00", "기상 및 아침 뇌 깨우기", "6시 30분~7시 사이 기상"),
+            (
+                "06:30 ~ 07:00",
+                "기상 및 아침 뇌 깨우기",
+                "6시 30분~7시 사이 기상",
+            ),
             (
                 "07:00 ~ 08:30",
                 "📝 [주말 모닝 학습] 90분 몰입 완주",
                 "수학+영어+독서",
             ),
             ("08:30 ~ 09:00", "🍚 아침 식사 및 정돈", "온 가족 아침 식사"),
-            ("10:00 ~ 12:00", "🎮 게임 & 자유시간 1차 (120분)", "학습 완주 후 자유시간"),
+            (
+                "10:00 ~ 12:00",
+                "🎮 게임 & 자유시간 1차 (120분)",
+                "학습 완주 후 자유시간",
+            ),
             ("13:00 ~ 15:30", "⚾ [신체활동] 아빠와 야구", "햇빛 쬐며 신체 발달"),
-            ("16:30 ~ 18:00", "🎮 게임 & 자유시간 2차 (90분)", "게임 시간 쪼개기 수칙"),
-            ("20:00 ~ 21:00", "📖 밤 몰입 독서 1시간", "부모님 운동 시간 동안 독서"),
+            (
+                "16:30 ~ 18:00",
+                "🎮 게임 & 자유시간 2차 (90분)",
+                "게임 시간 쪼개기 수칙",
+            ),
+            (
+                "20:00 ~ 21:00",
+                "📖 밤 몰입 독서 1시간",
+                "부모님 운동 시간 동안 독서",
+            ),
             ("21:20 ~ 22:10", "🚿 샤워 및 취침", "22:00 전후 취침"),
         ],
         "일요일": [
-            ("06:30 ~ 07:00", "기상 및 아침 뇌 깨우기", "6시 30분~7시 사이 기상"),
-            ("07:00 ~ 08:30", "📝 [주말 모닝 학습] 90분 몰입 완주", "수학+영어+독서"),
+            (
+                "06:30 ~ 07:00",
+                "기상 및 아침 뇌 깨우기",
+                "6시 30분~7시 사이 기상",
+            ),
+            (
+                "07:00 ~ 08:30",
+                "📝 [주말 모닝 학습] 90분 몰입 완주",
+                "수학+영어+독서",
+            ),
             ("09:00 ~ 10:00", "🙏 인터넷 예배", "가족 인터넷 예배 드리기"),
             ("10:00 ~ 12:00", "🎮 게임 & 자유시간 1차 (120분)", "자유시간"),
             ("13:00 ~ 15:30", "⚾ 야외활동 / 주말 외출", "야외활동"),
@@ -327,7 +370,9 @@ if "last_sticker_date" not in st.session_state:
     st.session_state.last_sticker_date = ""
 
 if "reward_goal" not in st.session_state:
-    st.session_state.reward_goal = "아빠와 프로야구 직관 가기 & 갖고 싶던 선물!"
+    st.session_state.reward_goal = (
+        "아빠와 프로야구 직관 가기 & 갖고 싶던 선물!"
+    )
 
 if "latest_draw_sticker" not in st.session_state:
     st.session_state.latest_draw_sticker = None
@@ -406,12 +451,12 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
 ])
 
 # ==========================================
-# TAB 1: 동적 연동 대시보드
+# TAB 1: 대시보드
 # ==========================================
 with tab1:
-    # 요일 선택 셀렉트박스 (기본값: 오늘 요일)
     selected_day = st.selectbox(
-        "🗓️ 조회할 요일을 선택하세요 (선택에 따라 대시보드와 타임라인이 변경됩니다):",
+        "🗓️ 조회할 요일을 선택하세요 (선택에 따라 대시보드와 타임라인이"
+        " 변경됩니다):",
         days_kor,
         index=today_idx,
     )
@@ -437,12 +482,16 @@ with tab1:
             st.caption("수학 + 영어 + 독서 완주")
         with col3:
             st.metric(
-                label="야외 / 신체활동", value="2.5시간", delta="13:00 ~ 15:30"
+                label="야외 / 신체활동",
+                value="2.5시간",
+                delta="13:00 ~ 15:30",
             )
             st.caption("아빠와 야구 & 햇빛 쬐기")
         with col4:
             st.metric(
-                label="게임 시간 관리", value="3시간", delta="1.5h × 2회 쪼개기"
+                label="게임 시간 관리",
+                value="3시간",
+                delta="1.5h × 2회 쪼개기",
             )
             st.caption("오전 1차 + 해질녘 2차")
 
@@ -606,7 +655,8 @@ with tab2:
 
     if edit_weekday:
         st.warning(
-            f"✏️ **{day_choice} 수정을 완료한 후 '수정 내용 저장' 버튼을 누르세요.**"
+            f"✏️ **{day_choice} 수정을 완료한 후 '수정 내용 저장' 버튼을"
+            " 누르세요.**"
         )
         new_items = []
         for idx, item in enumerate(items):
@@ -708,7 +758,8 @@ with tab4:
 
     if edit_weekend:
         st.warning(
-            f"✏️ **{wk_key} 수정을 완료한 후 '수정 내용 저장' 버튼을 누르세요.**"
+            f"✏️ **{wk_key} 수정을 완료한 후 '수정 내용 저장' 버튼을"
+            " 누르세요.**"
         )
         new_wk_plan = []
         for idx, (t, n, d) in enumerate(
@@ -747,7 +798,8 @@ with tab5:
 
     if edit_chk:
         st.warning(
-            "✏️ **체크리스트 미션 문구를 자유롭게 수정한 뒤 저장 버튼을 누르세요.**"
+            "✏️ **체크리스트 미션 문구를 자유롭게 수정한 뒤 저장 버튼을"
+            " 누르세요.**"
         )
         col_ew, col_ewk = st.columns(2)
 
@@ -804,7 +856,7 @@ with tab5:
         )
 
 # ==========================================
-# TAB 6: AI 코치 & 퀴즈
+# TAB 6: AI 코치 & 퀴즈 (부드러운 해설 & 실전 모의 문제 튜닝)
 # ==========================================
 with tab6:
     st.subheader("✨ Gemini AI 스마트 학습 코치")
@@ -812,7 +864,7 @@ with tab6:
     ai_tool = st.radio(
         "원하는 AI 기능을 선택하세요:",
         [
-            "🧠 1분 AI 퀴즈 (중복방지)",
+            "🧠 1분 AI 퀴즈 (실전 모의 퀴즈)",
             "🔊 AI 응원 멘트 (10가지 상황)",
             "🎨 칭찬 스티커 (1일 1개 & 보상목표)",
             "🔍 AI 궁금증 질의응답",
@@ -820,12 +872,12 @@ with tab6:
         horizontal=True,
     )
 
-    # 1. 1분 AI 퀴즈
+    # 1. 1분 AI 퀴즈 (부드러운 해설 프롬프트 적용)
     if "1분 AI 퀴즈" in ai_tool:
         subject = st.selectbox(
             "퀴즈 과목 선택:",
             [
-                "📜 한국사능력검정시험 (한능검 최신 2년 기출 기반)",
+                "📜 한국사능력검정시험 (한능검 유형 반영 실전 모의 퀴즈)",
                 "🔬 초등 5학년 과학교과",
                 "🔤 초등 필수 영단어 & 표현",
             ],
@@ -835,13 +887,16 @@ with tab6:
             st.session_state.quiz_click_count += 1
             idx = st.session_state.quiz_click_count
 
-            with st.spinner("중복되지 않는 퀴즈를 가져오는 중입니다..."):
+            with st.spinner("알맞은 퀴즈를 생성하는 중입니다..."):
                 prompt = (
-                    f"당신은 초등 5학년 학습 출제위원입니다. {subject} 주제에 대해"
-                    f" 최신 기출 및 교과 과정 중 {idx}번째 문제 스타일로 중복"
-                    " 없이 4지선다형 객관식 퀴즈 1개를 출제하세요. [문제] ➡️"
-                    " [보기 1,2,3,4] ➡️ 💡 [해설] ➡️ 🔒 [정답] 순서로 명확히"
-                    " 출력하세요."
+                    f"당신은 초등 5학년 친절한 AI 튜터입니다. {subject} 주제에 대해"
+                    f" 한능검 기출 유형 및 교과 과정 스타일의 {idx}번째 모의"
+                    " 문제 1개를 출제하세요.\n\n[조건]\n- 4지선다형 객관식"
+                    " 문제로 만드세요.\n- 💡 해설 부분은 딱딱한 시험 문제집"
+                    " 말투가 아니라, '에릭 학생, 이 문제는 ~ 때문이야!'처럼"
+                    " 초등학생 눈높이에 맞춰 다정하고 이해하기 쉽게 부드러운"
+                    " 말투로 설명해 주세요.\n\n[출력 형식]\n[문제] ➡️ [보기"
+                    " 1,2,3,4] ➡️ 💡 [친절한 해설] ➡️ 🔒 [정답]"
                 )
                 res_text = call_gemini_api(prompt)
                 st.success(f"회차 #{idx} 퀴즈 생성 완료!")
@@ -1019,11 +1074,15 @@ with tab6:
                 "초등 고학년~중학생 눈높이에 맞춰 정리하는 중입니다..."
             ):
                 prompt = (
-                    "당신은 친절한 학습 백과 튜터입니다. 질문:"
-                    f" '{q_input}'에 대해 초등학교 고학년에서 중학교 1학년"
-                    " 학생들이 이해하기 쉽도록 1) 핵심 요약, 2) 상세"
-                    " 설명, 3) 💡 기억할 점 3단계 구조로 깔끔하게 정리해"
-                    " 주세요."
+                    "당신은 초등학생 및 중학생 대상의 지식 백과 튜터입니다."
+                    f" 질문: '{q_input}'.\n\n[주의사항]\n- 만약 질문이"
+                    " 실시간 시사 뉴스나 현재 정치인/대통령 등 시점에 따라"
+                    " 변하는 내용일 경우, 학습 데이터 시점 한계로 인해 실시간"
+                    " 변동될 수 있다는 점을 부드럽게 밝히고 가장 신뢰성 있는"
+                    " 역사/기본 개념 위주로 설명하세요.\n\n[출력"
+                    " 구조]\n초등학교 고학년에서 중학교 1학년이 이해하기"
+                    " 쉽게\n1) 핵심 요약\n2) 상세 설명\n3) 💡 기억할 점 3단계"
+                    " 구조로 깔끔하게 정리해 주세요."
                 )
                 res_text = call_gemini_api(prompt)
                 st.success("답변 완료!")
