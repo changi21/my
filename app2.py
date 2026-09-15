@@ -4,7 +4,6 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 from google import genai
-from google.genai import types
 
 # 1. 페이지 기본 설정
 st.set_page_config(
@@ -200,6 +199,34 @@ if "evening_plans" not in st.session_state:
         ],
     }
 
+if "weekend_plans" not in st.session_state:
+    st.session_state.weekend_plans = {
+        "토요일": [
+            ("06:30 ~ 07:00", "기상 및 아침 뇌 깨우기", "6시 30분~7시 사이 기상"),
+            (
+                "07:00 ~ 08:30",
+                "📝 [주말 모닝 학습] 90분 몰입 완주",
+                "수학+영어+독서",
+            ),
+            ("08:30 ~ 09:00", "🍚 아침 식사 및 정돈", "온 가족 아침 식사"),
+            ("10:00 ~ 12:00", "🎮 게임 & 자유시간 1차 (120분)", "학습 완주 후 자유시간"),
+            ("13:00 ~ 15:30", "⚾ [신체활동] 아빠와 야구", "햇빛 쬐며 신체 발달"),
+            ("16:30 ~ 18:00", "🎮 게임 & 자유시간 2차 (90분)", "게임 시간 쪼개기 수칙"),
+            ("20:00 ~ 21:00", "📖 밤 몰입 독서 1시간", "부모님 운동 시간 동안 독서"),
+            ("21:20 ~ 22:10", "🚿 샤워 및 취침", "22:00 전후 취침"),
+        ],
+        "일요일": [
+            ("06:30 ~ 07:00", "기상 및 아침 뇌 깨우기", "6시 30분~7시 사이 기상"),
+            ("07:00 ~ 08:30", "📝 [주말 모닝 학습] 90분 몰입 완주", "수학+영어+독서"),
+            ("09:00 ~ 10:00", "🙏 인터넷 예배", "가족 인터넷 예배 드리기"),
+            ("10:00 ~ 12:00", "🎮 게임 & 자유시간 1차 (120분)", "자유시간"),
+            ("13:00 ~ 15:30", "⚾ 야외활동 / 주말 외출", "야외활동"),
+            ("16:30 ~ 18:00", "🎮 게임 & 자유시간 2차 (90분)", "게임 마감"),
+            ("20:00 ~ 21:00", "📖 밤 몰입 독서 1시간", "차분한 독서 시간"),
+            ("21:20 ~ 22:10", "🚿 샤워 및 취침", "월요일 준비 및 취침"),
+        ],
+    }
+
 if "checklist_weekday" not in st.session_state:
     st.session_state.checklist_weekday = {
         "w1": (
@@ -250,6 +277,15 @@ if "quiz_click_count" not in st.session_state:
 
 if "stickers" not in st.session_state:
     st.session_state.stickers = []
+
+if "last_sticker_date" not in st.session_state:
+    st.session_state.last_sticker_date = ""
+
+if "reward_goal" not in st.session_state:
+    st.session_state.reward_goal = "아빠와 프로야구 직관 가기 & 갖고 싶던 선물!"
+
+if "latest_draw_sticker" not in st.session_state:
+    st.session_state.latest_draw_sticker = None
 
 # 100종 스티커 아이콘 및 응원 문구 라이브러리
 STICKER_ICONS = [
@@ -414,7 +450,7 @@ with tab1:
         )
 
 # ==========================================
-# TAB 2: 요일별 학원 (수정 기능 지원)
+# TAB 2: 요일별 학원 (수정 지원)
 # ==========================================
 with tab2:
     st.subheader("🎒 방과 후 요일별 학원 일정 & 이동 동선")
@@ -471,7 +507,7 @@ with tab2:
             )
 
 # ==========================================
-# TAB 3: 저녁 루틴 (수정 기능 지원)
+# TAB 3: 저녁 루틴 (수정 지원)
 # ==========================================
 with tab3:
     st.subheader("🌙 저녁 시간대 루틴 시뮬레이션")
@@ -518,82 +554,118 @@ with tab3:
             st.write(f"{idx+1}. **`{t}` | {n}** - {d}")
 
 # ==========================================
-# TAB 4: 주말 일과
+# TAB 4: 주말 일과 (수정 지원)
 # ==========================================
 with tab4:
     st.subheader("☀️ 주말 알찬 타임라인 (토/일)")
+    edit_weekend = st.toggle("✏️ 주말 일정 수정 모드 켜기/끄기", key="tog_weekend")
     weekend_choice = st.radio(
         "주말 요일 선택:",
         ["토요일 타임라인", "일요일 타임라인 (예배 포함)"],
         horizontal=True,
     )
-    st.info(
-        "💡 **주말 원칙:** 기상 직후 모닝 90분 학습 완주 ➡️ 게임은 1.5시간씩"
-        " 2회 쪼개기 ➡️ 밤 8시 몰입 독서!"
-    )
+    wk_key = "토요일" if "토요일" in weekend_choice else "일요일"
 
-    if "토요일" in weekend_choice:
-        st.write("- **06:30 ~ 07:00** : 기상 및 아침 뇌 깨우기")
-        st.write(
-            "- **07:00 ~ 08:30** : 📝 **[주말 모닝 학습] 90분 몰입 완주**"
-            " (수학+영어+독서)"
+    if edit_weekend:
+        st.warning(
+            f"✏️ **{wk_key} 수정을 완료한 후 '수정 내용 저장' 버튼을 누르세요.**"
         )
-        st.write("- **08:30 ~ 09:00** : 🍚 온 가족 아침 식사")
-        st.write("- **10:00 ~ 12:00** : 🎮 게임 & 자유시간 1차 (120분)")
-        st.write(
-            "- **13:00 ~ 15:30** : ⚾ **[신체활동] 아빠와 야구 다녀오기**"
-        )
-        st.write("- **16:30 ~ 18:00** : 🎮 게임 & 자유시간 2차 (90분)")
-        st.write(
-            "- **20:00 ~ 21:00** : 📖 밤 몰입 독서 1시간 (부모님 운동 시간)"
-        )
-        st.write("- **21:20 ~ 22:10** : 🚿 샤워 및 취침")
+        new_wk_plan = []
+        for idx, (t, n, d) in enumerate(
+            st.session_state.weekend_plans[wk_key]
+        ):
+            c1, c2, c3 = st.columns([2, 3, 4])
+            with c1:
+                t_val = st.text_input(
+                    f"시간 #{idx+1}", t, key=f"wt_{wk_key}_{idx}"
+                )
+            with c2:
+                n_val = st.text_input(
+                    f"할 일 #{idx+1}", n, key=f"wn_{wk_key}_{idx}"
+                )
+            with c3:
+                d_val = st.text_input(
+                    f"비고 #{idx+1}", d, key=f"wd_{wk_key}_{idx}"
+                )
+            new_wk_plan.append((t_val, n_val, d_val))
+
+        if st.button(f"💾 {wk_key} 수정 내용 저장"):
+            st.session_state.weekend_plans[wk_key] = new_wk_plan
+            st.success("저장되었습니다!")
+            st.rerun()
     else:
-        st.write("- **06:30 ~ 07:00** : 기상 및 아침 뇌 깨우기")
-        st.write(
-            "- **07:00 ~ 08:30** : 📝 **[주말 모닝 학습] 90분 몰입 완주**"
-        )
-        st.write("- **09:00 ~ 10:00** : 🙏 가족 인터넷 예배 드리기")
-        st.write("- **10:00 ~ 12:00** : 🎮 게임 & 자유시간 1차 (120분)")
-        st.write("- **13:00 ~ 15:30** : ⚾ 야외활동 / 주말 외출")
-        st.write("- **16:30 ~ 18:00** : 🎮 게임 & 자유시간 2차 (90분)")
-        st.write("- **20:00 ~ 21:00** : 📖 밤 몰입 독서 1시간")
-        st.write("- **21:20 ~ 22:10** : 🚿 샤워 및 취침")
+        st.write(f"### 🗓️ {wk_key} 상세 일정")
+        for t, n, d in st.session_state.weekend_plans[wk_key]:
+            st.write(f"- **`{t}` | {n}** ({d})")
 
 # ==========================================
-# TAB 5: 체크 & 기록
+# TAB 5: 체크 & 기록 (문구 수정 지원)
 # ==========================================
 with tab5:
     st.subheader("✅ 일일 실천 체크리스트")
-    col_w, col_wk = st.columns(2)
+    edit_chk = st.toggle("✏️ 미션 문구 수정 모드 켜기/끄기", key="tog_chk")
 
-    with col_w:
-        st.write("### 📅 평일 필수 미션")
-        for key, (text, val) in st.session_state.checklist_weekday.items():
-            checked = st.checkbox(text, value=val, key=f"check_{key}")
-            st.session_state.checklist_weekday[key] = (text, checked)
+    if edit_chk:
+        st.warning(
+            "✏️ **체크리스트 미션 문구를 자유롭게 수정한 뒤 저장 버튼을 누르세요.**"
+        )
+        col_ew, col_ewk = st.columns(2)
 
-    with col_wk:
-        st.write("### ☀️ 주말 필수 미션")
-        for key, (text, val) in st.session_state.checklist_weekend.items():
-            checked = st.checkbox(text, value=val, key=f"check_{key}")
-            st.session_state.checklist_weekend[key] = (text, checked)
+        with col_ew:
+            st.write("### 📅 평일 미션 문구 수정")
+            new_w_chk = {}
+            for k, (txt, val) in st.session_state.checklist_weekday.items():
+                ntxt = st.text_input(f"평일 미션 {k}", txt, key=f"etxt_w_{k}")
+                new_w_chk[k] = (ntxt, val)
 
-    w_count = sum(
-        1 for _, val in st.session_state.checklist_weekday.values() if val
-    )
-    wk_count = sum(
-        1 for _, val in st.session_state.checklist_weekend.values() if val
-    )
+        with col_ewk:
+            st.write("### ☀️ 주말 미션 문구 수정")
+            new_wk_chk = {}
+            for k, (txt, val) in st.session_state.checklist_weekend.items():
+                ntxt = st.text_input(f"주말 미션 {k}", txt, key=f"etxt_wk_{k}")
+                new_wk_chk[k] = (ntxt, val)
 
-    st.divider()
-    st.write(
-        f"🎉 **오늘의 미션 달성 상태:** 평일 ({w_count}/5 완료) | 주말"
-        f" ({wk_count}/5 완료)"
-    )
+        if st.button("💾 체크리스트 문구 저장"):
+            st.session_state.checklist_weekday = new_w_chk
+            st.session_state.checklist_weekend = new_wk_chk
+            st.success("체크리스트 문구가 수정되었습니다!")
+            st.rerun()
+
+    else:
+        col_w, col_wk = st.columns(2)
+        with col_w:
+            st.write("### 📅 평일 필수 미션")
+            for key, (
+                text,
+                val,
+            ) in st.session_state.checklist_weekday.items():
+                checked = st.checkbox(text, value=val, key=f"check_{key}")
+                st.session_state.checklist_weekday[key] = (text, checked)
+
+        with col_wk:
+            st.write("### ☀️ 주말 필수 미션")
+            for key, (
+                text,
+                val,
+            ) in st.session_state.checklist_weekend.items():
+                checked = st.checkbox(text, value=val, key=f"check_{key}")
+                st.session_state.checklist_weekend[key] = (text, checked)
+
+        w_count = sum(
+            1 for _, val in st.session_state.checklist_weekday.values() if val
+        )
+        wk_count = sum(
+            1 for _, val in st.session_state.checklist_weekend.values() if val
+        )
+
+        st.divider()
+        st.write(
+            f"🎉 **오늘의 미션 달성 상태:** 평일 ({w_count}/5 완료) | 주말"
+            f" ({wk_count}/5 완료)"
+        )
 
 # ==========================================
-# TAB 6: AI 코치 & 퀴즈 (완전 개편)
+# TAB 6: AI 코치 & 퀴즈 (에러 수정 & 스티커 보상 시스템)
 # ==========================================
 with tab6:
     st.subheader("✨ Gemini AI 스마트 학습 코치")
@@ -603,13 +675,13 @@ with tab6:
         [
             "🧠 1분 AI 퀴즈 (중복방지)",
             "🔊 AI 응원 멘트 (10가지 상황)",
-            "🎨 칭찬 스티커 (랜덤100종)",
+            "🎨 칭찬 스티커 (1일 1개 & 보상목표)",
             "🔍 AI 궁금증 질의응답",
         ],
         horizontal=True,
     )
 
-    # 1. 1분 AI 퀴즈 (회차별 중복 방지)
+    # 1. 1분 AI 퀴즈 (안정적인 모델 사용)
     if "1분 AI 퀴즈" in ai_tool:
         subject = st.selectbox(
             "퀴즈 과목 선택:",
@@ -631,20 +703,20 @@ with tab6:
                     try:
                         prompt = (
                             f"당신은 한국사능력검정시험 출제위원입니다. {subject} 주제에 대해"
-                            f" 한국사능력검정시험 최신 2개년 기출문제 회차 중 {idx}번째 문제"
-                            " 스타일로 중복 없이 4지선다형 객관식 퀴즈 1개를 출제하세요."
+                            f" 최신 기출문제 회차 중 {idx}번째 문제 스타일로 중복"
+                            " 없이 4지선다형 객관식 퀴즈 1개를 출제하세요."
                             " [문제] ➡️ [보기 1,2,3,4] ➡️ 💡 [해설] ➡️ 🔒 [정답] 순서로"
                             " 명확히 출력하세요."
                         )
                         response = client.models.generate_content(
-                            model="gemini-2.5-flash", contents=prompt
+                            model="gemini-1.5-flash", contents=prompt
                         )
                         st.success(f"회차 #{idx} 퀴즈 생성 완료!")
                         st.markdown(response.text)
                     except Exception as e:
                         st.error(f"오류 발생: {e}")
 
-    # 2. AI 응원 멘트 (10가지 구체적 상황 & TTS)
+    # 2. AI 응원 멘트 (안정적인 모델 사용)
     elif "AI 응원 멘트" in ai_tool:
         sit_choice = st.selectbox(
             "현재 내 상황이나 기분을 선택하세요 (10가지):",
@@ -674,14 +746,13 @@ with tab6:
                             " 힘이 나는 응원 문구를 작성해줘."
                         )
                         response = client.models.generate_content(
-                            model="gemini-2.5-flash", contents=prompt
+                            model="gemini-1.5-flash", contents=prompt
                         )
                         msg_text = response.text.strip()
 
                         st.balloons()
                         st.info(f"💬 **AI 멘토의 응원:**\n\n{msg_text}")
 
-                        # 웹 브라우저 음성(TTS) 재생 스크립트
                         tts_script = f"""
                         <script>
                             var msg = new SpeechSynthesisUtterance("{msg_text.replace('\n', ' ')}");
@@ -695,24 +766,60 @@ with tab6:
                     except Exception as e:
                         st.error(f"오류 발생: {e}")
 
-    # 3. 칭찬 스티커 (랜덤 100종 배지 & 1줄 문구)
+    # 3. 칭찬 스티커 (대형 심볼 연출 + 1일 1개 제한 + 30개 보상 목표)
     elif "칭찬 스티커" in ai_tool:
-        st.write(
-            "오늘 미션을 성공했다면 아래 버튼을 눌러 **랜덤 칭찬 배지**를"
-            " 뽑으세요!"
+        st.write("### 🏆 칭찬 스티커 & 보상 스티커북")
+
+        # 보상 목표 설정 입력 칸
+        reward_in = st.text_input(
+            "🎯 30개 스티커 완성 시 받고 싶은 보상을 적어보세요:",
+            value=st.session_state.reward_goal,
+        )
+        st.session_state.reward_goal = reward_in
+
+        st.caption(
+            f"📅 오늘 날짜: {today_str} | 스티커는 하루에 1개씩만 획득할 수"
+            " 있습니다."
         )
 
-        if st.button("🎲 칭찬 스티커 뽑기 (랜덤 100종)"):
-            rand_icon = random.choice(STICKER_ICONS)
-            rand_msg = random.choice(STICKER_MSG)
-            sticker_item = {"icon": rand_icon, "msg": rand_msg, "date": today_str}
-            st.session_state.stickers.append(sticker_item)
-            st.success(f"🎉 스티커 획득! [{rand_icon}] {rand_msg}")
+        if st.button("🎲 오늘의 칭찬 스티커 뽑기!"):
+            if st.session_state.last_sticker_date == today_str:
+                st.warning(
+                    "⚠️ 오늘의 칭찬 스티커는 이미 획득하셨습니다! 내일 미션을"
+                    " 완수하고 또 도전해 보세요."
+                )
+            else:
+                rand_icon = random.choice(STICKER_ICONS)
+                rand_msg = random.choice(STICKER_MSG)
+                sticker_item = {
+                    "icon": rand_icon,
+                    "msg": rand_msg,
+                    "date": today_str,
+                }
+                st.session_state.stickers.append(sticker_item)
+                st.session_state.last_sticker_date = today_str
+                st.session_state.latest_draw_sticker = sticker_item
+                st.balloons()
+
+        # 뽑았을 때 커다란 대형 심볼로 획득 연출 보여주기
+        if st.session_state.latest_draw_sticker:
+            lstk = st.session_state.latest_draw_sticker
+            st.markdown(
+                f"""
+                <div style="text-align:center; padding: 20px; background: linear-gradient(135deg, #fbcfe8, #e0e7ff); border-radius:20px; border:3px solid #ec4899; margin-bottom: 20px;">
+                    <div style="font-size: 70px; margin-bottom: 5px;">{lstk['icon']}</div>
+                    <div style="font-size: 18px; font-weight: bold; color: #831843;">🎉 축하합니다! 스티커를 획득했어요!</div>
+                    <div style="font-size: 14px; color: #4338ca; font-weight: bold; mt-1;">"{lstk['msg']}"</div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
         st.divider()
         st.write(
             f"🏆 **내 칭찬 스티커북 ({len(st.session_state.stickers)}/30개 모음)**"
         )
+        st.info(f"🎁 **30개 완수 보상:** {st.session_state.reward_goal}")
 
         cols = st.columns(6)
         for i in range(30):
@@ -722,9 +829,9 @@ with tab6:
                     stk = st.session_state.stickers[i]
                     st.markdown(
                         f"<div style='text-align:center; border:2px solid"
-                        " #ec4899; border-radius:12px; padding:6px;"
-                        " background-color:#fdf2f8;'>"
-                        f"<div style='font-size:24px;'>{stk['icon']}</div>"
+                        " #ec4899; border-radius:12px; padding:8px;"
+                        " background-color:#fdf2f8; margin-bottom:8px;'>"
+                        f"<div style='font-size:26px;'>{stk['icon']}</div>"
                         f"<div style='font-size:9px; color:#be185d;"
                         f" font-weight:bold;'>{stk['msg']}</div>"
                         "</div>",
@@ -733,14 +840,14 @@ with tab6:
                 else:
                     st.markdown(
                         "<div style='text-align:center; border:1px dashed"
-                        " #cbd5e1; border-radius:12px; padding:12px;"
-                        " color:#94a3b8; font-size:11px;'>"
+                        " #cbd5e1; border-radius:12px; padding:14px;"
+                        " color:#94a3b8; font-size:12px; margin-bottom:8px;'>"
                         f"{i+1}"
                         "</div>",
                         unsafe_allow_html=True,
                     )
 
-    # 4. AI 궁금증 질의응답 (초등고~중학생 수준 정리)
+    # 4. AI 궁금증 질의응답 (안정적인 모델 사용)
     elif "AI 궁금증 질의응답" in ai_tool:
         q_input = st.text_input(
             "궁금한 역사/과학 질문을 적어보세요:",
@@ -763,7 +870,7 @@ with tab6:
                             " 정리해 주세요."
                         )
                         response = client.models.generate_content(
-                            model="gemini-2.5-flash", contents=prompt
+                            model="gemini-1.5-flash", contents=prompt
                         )
                         st.success("답변 완료!")
                         st.markdown(response.text)
