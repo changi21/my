@@ -8,35 +8,73 @@ import streamlit as st
 
 # 1. 페이지 기본 설정
 st.set_page_config(
-    page_title="초등 5학년 스마트 루틴 & AI 코치",
+    page_title="스마트 루틴 & AI 대시보드",
     page_icon="📅",
     layout="wide",
 )
 
-# 2. PIN 번호 인증 시스템 (1306 설정)
+# 2. PIN 번호 인증 시스템 (1306 설정 & 커스텀 스타일 디자인)
 SET_PIN = "1306"
 
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
 if not st.session_state.authenticated:
-    st.title("🔒 비밀번호 입력")
-    st.caption(
-        "초등 5학년 스마트 루틴 대시보드에 접속하려면 PIN 번호를"
-        " 입력하세요."
+    st.markdown(
+        """
+        <style>
+        .pin-box {
+            max-width: 450px;
+            margin: 60px auto;
+            padding: 40px 30px;
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+            border: 1px solid #334155;
+            text-align: center;
+            color: #f8fafc;
+        }
+        .pin-icon {
+            font-size: 54px;
+            margin-bottom: 10px;
+        }
+        .pin-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #38bdf8;
+            margin-bottom: 8px;
+        }
+        .pin-sub {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-bottom: 25px;
+        }
+        </style>
+        <div class="pin-box">
+            <div class="pin-icon">🔒</div>
+            <div class="pin-title">스마트 루틴 & AI 대시보드</div>
+            <div class="pin-sub">보안된 개인 루틴에 접근하려면 PIN 4자리를 입력하세요.</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
 
-    pin_input = st.text_input(
-        "PIN 번호 4자리를 입력하세요:", type="password", max_chars=4
-    )
-
-    if st.button("확인"):
-        if pin_input == SET_PIN:
-            st.session_state.authenticated = True
-            st.success("인증 성공!")
-            st.rerun()
-        else:
-            st.error("PIN 번호가 일치하지 않습니다. 다시 입력해주세요.")
+    c1, c2, c3 = st.columns([1, 2, 1])
+    with c2:
+        pin_input = st.text_input(
+            "🔑 PIN 번호 4자리 입력",
+            type="password",
+            max_chars=4,
+            key="pin_in",
+            help="설정된 4자리 보안 비밀번호를 입력해 주세요.",
+        )
+        if st.button("🔓 인증하고 접속하기", use_container_width=True):
+            if pin_input == SET_PIN:
+                st.session_state.authenticated = True
+                st.success("인증 성공!")
+                st.rerun()
+            else:
+                st.error("PIN 번호가 일치하지 않습니다. 다시 입력해 주세요.")
     st.stop()
 
 # 3. API 키 가져오기
@@ -422,7 +460,7 @@ STICKER_MSG = [
     "내일 더 멋지게 날아오르자!",
 ]
 
-# 5. 상단 헤더 & 로그아웃
+# 5. 상단 헤더 & 로그아웃 (타이틀 변경 반영)
 days_kor = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"]
 today_idx = datetime.date.today().weekday()
 today_name = days_kor[today_idx]
@@ -430,7 +468,7 @@ today_str = datetime.date.today().strftime("%Y년 %m월 %d일")
 
 h_col1, h_col2 = st.columns([8, 1])
 with h_col1:
-    st.title("📅 초등 5학년 주간 일정표 & AI 대시보드")
+    st.title("📅 주간 일정표 & AI 대시보드")
     st.caption(
         f"📅 **오늘 날짜:** {today_str} ({today_name}) | 수면 22:00 전 • 아침 최태성"
         " 한국사 시청 • 저녁 70분 스퍼트"
@@ -454,11 +492,12 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
 # TAB 1: 대시보드
 # ==========================================
 with tab1:
-    selected_day = st.selectbox(
-        "🗓️ 조회할 요일을 선택하세요 (선택에 따라 대시보드와 타임라인이"
-        " 변경됩니다):",
+    selected_day = st.radio(
+        "요일을 선택하세요:",
         days_kor,
         index=today_idx,
+        horizontal=True,
+        key="dash_day_radio",
     )
 
     is_weekend = selected_day in ["토요일", "일요일"]
@@ -856,7 +895,7 @@ with tab5:
         )
 
 # ==========================================
-# TAB 6: AI 코치 & 퀴즈 (부드러운 해설 & 실전 모의 문제 튜닝)
+# TAB 6: AI 코치 & 퀴즈
 # ==========================================
 with tab6:
     st.subheader("✨ Gemini AI 스마트 학습 코치")
@@ -872,15 +911,16 @@ with tab6:
         horizontal=True,
     )
 
-    # 1. 1분 AI 퀴즈 (부드러운 해설 프롬프트 적용)
+    # 1. 1분 AI 퀴즈
     if "1분 AI 퀴즈" in ai_tool:
-        subject = st.selectbox(
-            "퀴즈 과목 선택:",
+        subject = st.radio(
+            "퀴즈 과목을 선택하세요:",
             [
                 "📜 한국사능력검정시험 (한능검 유형 반영 실전 모의 퀴즈)",
-                "🔬 초등 5학년 과학교과",
+                "🔬 초등 과학교과",
                 "🔤 초등 필수 영단어 & 표현",
             ],
+            horizontal=True,
         )
 
         if st.button("✨ 다음 문제 출제하기"):
@@ -889,14 +929,14 @@ with tab6:
 
             with st.spinner("알맞은 퀴즈를 생성하는 중입니다..."):
                 prompt = (
-                    f"당신은 초등 5학년 친절한 AI 튜터입니다. {subject} 주제에 대해"
-                    f" 한능검 기출 유형 및 교과 과정 스타일의 {idx}번째 모의"
-                    " 문제 1개를 출제하세요.\n\n[조건]\n- 4지선다형 객관식"
-                    " 문제로 만드세요.\n- 💡 해설 부분은 딱딱한 시험 문제집"
-                    " 말투가 아니라, '에릭 학생, 이 문제는 ~ 때문이야!'처럼"
-                    " 초등학생 눈높이에 맞춰 다정하고 이해하기 쉽게 부드러운"
-                    " 말투로 설명해 주세요.\n\n[출력 형식]\n[문제] ➡️ [보기"
-                    " 1,2,3,4] ➡️ 💡 [친절한 해설] ➡️ 🔒 [정답]"
+                    f"당신은 친절한 AI 튜터입니다. {subject} 주제에 대해 한능검"
+                    f" 기출 유형 및 교과 과정 스타일의 {idx}번째 모의 문제 1개를"
+                    " 출제하세요.\n\n[조건]\n- 4지선다형 객관식 문제로"
+                    " 만드세요.\n- 💡 해설 부분은 딱딱한 시험 문제집 말투가"
+                    " 아니라, '에릭 학생, 이 문제는 ~ 때문이야!'처럼 눈높이에"
+                    " 맞춰 다정하고 이해하기 쉽게 부드러운 말투로 설명해"
+                    " 주세요.\n\n[출력 형식]\n[문제] ➡️ [보기 1,2,3,4] ➡️ 💡"
+                    " [친절한 해설] ➡️ 🔒 [정답]"
                 )
                 res_text = call_gemini_api(prompt)
                 st.success(f"회차 #{idx} 퀴즈 생성 완료!")
@@ -904,37 +944,60 @@ with tab6:
 
     # 2. AI 응원 멘트
     elif "AI 응원 멘트" in ai_tool:
-        sit_choice = st.selectbox(
-            "현재 내 상황이나 기분을 선택하세요 (10가지):",
-            [
-                "🌅 1. 아침 일찍 일어나 기상 미션을 완수했을 때",
-                "🏫 2. 방과 후 학원 3곳을 모두 무사히 다녀왔을 때",
-                "⚡ 3. 저녁 70분 몰입 학습(수학+영어+국어)을 다 끝냈을 때",
-                "⚾ 4. 주말 아빠와 야구/운동 활동을 완수했을 때",
-                "📖 5. 밤 1시간 몰입 독서를 마쳤을 때",
-                "😊 6. 기분이 아주 좋고 자신감이 넘칠 때",
-                "🌧️ 7. 공부나 문제 풀이가 잘 안되어 속상할 때",
-                "😴 8. 하루 일과가 끝나고 너무 피곤하고 지칠 때",
-                "🔥 9. 시험이나 퀴즈를 앞두고 의욕을 다질 때",
-                "🛌 10. 밤 22시 전 샤워 후 잠자리에 누울 때",
-            ],
+        st.write("### 💬 현재 상황이나 기분을 선택하세요:")
+
+        s_col1, s_col2 = st.columns(2)
+        with s_col1:
+            st.caption("📌 **[1~5] 학원 및 일상 미션 상황**")
+            sit_group1 = st.radio(
+                "선택 그룹 A:",
+                [
+                    "🌅 1. 아침 일찍 일어나 기상 미션을 완수했을 때",
+                    "🏫 2. 방과 후 학원 3곳을 모두 무사히 다녀왔을 때",
+                    "⚡ 3. 저녁 70분 몰입 학습(수학+영어+국어)을 다 끝냈을 때",
+                    "⚾ 4. 주말 아빠와 야구/운동 활동을 완수했을 때",
+                    "📖 5. 밤 1시간 몰입 독서를 마쳤을 때",
+                ],
+                key="sit_g1",
+            )
+
+        with s_col2:
+            st.caption("📌 **[6~10] 기분 및 지침/취침 상황**")
+            sit_group2 = st.radio(
+                "선택 그룹 B:",
+                [
+                    "😊 6. 기분이 아주 좋고 자신감이 넘칠 때",
+                    "🌧️ 7. 공부나 문제 풀이가 잘 안되어 속상할 때",
+                    "😴 8. 하루 일과가 끝나고 너무 피곤하고 지칠 때",
+                    "🔥 9. 시험이나 퀴즈를 앞두고 의욕을 다질 때",
+                    "🛌 10. 밤 22시 전 샤워 후 잠자리에 누울 때",
+                ],
+                key="sit_g2",
+            )
+
+        sit_target = st.radio(
+            "🎯 최종 적용할 상황 선택:",
+            [sit_group1, sit_group2],
+            horizontal=True,
         )
 
-        voice_style = st.selectbox(
+        st.divider()
+        voice_style = st.radio(
             "🗣️ 목소리 톤을 선택하세요:",
             [
                 "🌸 상냥하고 다정한 선생님 (보통 톤)",
                 "🔥 신나고 활기찬 친구 (높고 빠른 톤)",
                 "🐻 든든하고 따뜻한 멘토 (낮고 부드러운 톤)",
             ],
+            horizontal=True,
         )
 
         if st.button("🎙️ AI 응원 메시지 생성 & 음성 재생"):
             with st.spinner("AI 멘토가 응원 메시지를 작성 중입니다..."):
                 prompt = (
-                    f"초등 5학년 학생 '에릭'의 현재 상황: '{sit_choice}'. 이 상황에"
-                    " 맞게 학생의 이름을 '에릭'으로 부르거나 자연스럽게 잇고,"
-                    " '[학생 이름]'이나 'OO야' 같은 템플릿 문구를 절대 사용하지"
+                    f"학생 '에릭'의 현재 상황: '{sit_target}'. 이 상황에 맞게"
+                    " 학생의 이름을 '에릭'으로 부르거나 자연스럽게 잇고, '[학생"
+                    " 이름]'이나 'OO야' 같은 템플릿 문구를 절대 사용하지"
                     " 마세요. 50자~100자 사이로 따스하고 다정한 응원 문구를"
                     " 완성해줘."
                 )
@@ -1070,19 +1133,16 @@ with tab6:
         )
 
         if st.button("🔍 AI 백과에 질문하기"):
-            with st.spinner(
-                "초등 고학년~중학생 눈높이에 맞춰 정리하는 중입니다..."
-            ):
+            with st.spinner("눈높이에 맞춰 정리하는 중입니다..."):
                 prompt = (
-                    "당신은 초등학생 및 중학생 대상의 지식 백과 튜터입니다."
-                    f" 질문: '{q_input}'.\n\n[주의사항]\n- 만약 질문이"
-                    " 실시간 시사 뉴스나 현재 정치인/대통령 등 시점에 따라"
-                    " 변하는 내용일 경우, 학습 데이터 시점 한계로 인해 실시간"
-                    " 변동될 수 있다는 점을 부드럽게 밝히고 가장 신뢰성 있는"
-                    " 역사/기본 개념 위주로 설명하세요.\n\n[출력"
-                    " 구조]\n초등학교 고학년에서 중학교 1학년이 이해하기"
-                    " 쉽게\n1) 핵심 요약\n2) 상세 설명\n3) 💡 기억할 점 3단계"
-                    " 구조로 깔끔하게 정리해 주세요."
+                    "당신은 학생 대상의 지식 백과 튜터입니다. 질문:"
+                    f" '{q_input}'.\n\n[주의사항]\n- 만약 질문이 실시간 시사"
+                    " 뉴스나 현재 정치인/대통령 등 시점에 따라 변하는 내용일"
+                    " 경우, 학습 데이터 시점 한계로 인해 실시간 변동될 수"
+                    " 있다는 점을 부드럽게 밝히고 가장 신뢰성 있는 역사/기본"
+                    " 개념 위주로 설명하세요.\n\n[출력 구조]\n이해하기 쉽게\n1)"
+                    " 핵심 요약\n2) 상세 설명\n3) 💡 기억할 점 3단계 구조로"
+                    " 깔끔하게 정리해 주세요."
                 )
                 res_text = call_gemini_api(prompt)
                 st.success("답변 완료!")
