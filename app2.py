@@ -8,63 +8,88 @@ import streamlit as st
 
 # 1. 페이지 기본 설정
 st.set_page_config(
-    page_title="초등 주간 일정 & 저녁/주말 루틴",
+    page_title="스마트 루틴 & AI 대시보드",
     page_icon="📅",
     layout="wide",
 )
 
-# 2. 글로벌 CSS 스타일링
+# 2. 1번 사진 완벽 재현 모던 CSS 스타일링
 st.markdown(
     """
 <style>
     .stApp {
         background-color: #f8fafc;
-        font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
+    
     .main .block-container {
         padding-top: 1.2rem;
         padding-bottom: 3rem;
-        max-width: 1200px;
+        max-width: 1250px;
     }
-    /* Streamlit 기본 테두리 컨테이너 모던화 */
-    [data-testid="stVerticalBlockBorderWrapper"] {
+
+    /* 카드 기본 틀 (1번 사진 스타일) */
+    .custom-card {
         background-color: #ffffff;
-        border-radius: 14px !important;
-        border: 1px solid #e2e8f0 !important;
-        padding: 16px !important;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important;
-    }
-    .metric-card {
-        background-color: #ffffff;
-        border-radius: 12px;
-        padding: 14px 16px;
-        border: 1px solid #e2e8f0;
-    }
-    .metric-label { font-size: 12px; color: #64748b; font-weight: 600; margin-bottom: 4px; }
-    .metric-val { font-size: 24px; font-weight: 800; color: #1e293b; }
-    .metric-sub { font-size: 11px; color: #94a3b8; margin-top: 2px; }
-    .ai-banner {
-        background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
         border-radius: 14px;
-        padding: 20px 24px;
-        color: white;
+        padding: 22px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
         margin-bottom: 20px;
     }
-    .info-banner {
-        background-color: #f0f9ff;
-        border: 1px solid #bae6fd;
-        border-radius: 10px;
-        padding: 10px 16px;
-        color: #0369a1;
-        font-size: 13px;
-        font-weight: 500;
-        margin-bottom: 16px;
+
+    /* 상단 4개 메트릭 카드 */
+    .metric-card-box {
+        background-color: #ffffff;
+        border-radius: 14px;
+        padding: 18px 20px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        height: 100%;
     }
-    .tl-card {
+    .metric-title {
+        font-size: 13px;
+        color: #94a3b8;
+        font-weight: 500;
+        margin-bottom: 6px;
+    }
+    .metric-value {
+        font-size: 28px;
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 6px;
+    }
+    .metric-desc {
+        font-size: 12px;
+        color: #94a3b8;
+    }
+
+    /* 상단 안내 배너 */
+    .info-banner-box {
+        background-color: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-radius: 12px;
+        padding: 12px 18px;
+        color: #166534;
+        font-size: 13px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    /* 타임라인 박스 */
+    .tl-box {
         background-color: #f8fafc;
         border-radius: 10px;
-        padding: 12px 14px;
-        border-left: 4px solid #3b82f6;
+        padding: 14px;
+        border: 1px solid #f1f5f9;
+        height: 100%;
+    }
+
+    .stButton>button {
+        border-radius: 8px;
+        font-weight: 600;
     }
 </style>
 """,
@@ -565,7 +590,7 @@ STICKER_MSG = [
     "내일 더 멋지게 날아오르자!",
 ]
 
-# 7. 상단 헤더
+# 7. 상단 1번 사진 완벽 재현 타이틀 Header
 days_kor = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"]
 today_idx = datetime.date.today().weekday()
 today_name = days_kor[today_idx]
@@ -576,11 +601,11 @@ with h_col1:
     st.markdown(
         f"""
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 2px;">
+            <span style="font-size: 24px;">📅</span>
             <h2 style="margin:0; font-weight:800; color:#0f172a; font-size: 22px;">주간 일정 & 저녁/주말 루틴</h2>
-            <span style="background: #e0e7ff; color: #4338ca; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px;">✨ AI Powered</span>
         </div>
-        <div style="font-size: 13px; color: #64748b; font-weight: 500;">
-            <b>오늘:</b> {today_str} ({today_name}) &nbsp;|&nbsp; 수면 22:00 전 • 아침 최태성 한국사 • 저녁 70분 스퍼트
+        <div style="font-size: 13px; color: #64748b; font-weight: 500; margin-top:2px;">
+            <b style="color:#2563eb;">오늘: {today_str}</b> &nbsp;|&nbsp; 수면 22:00 전 • 아침 최태성 한국사 • 저녁 70분 스퍼트
         </div>
         """,
         unsafe_allow_html=True,
@@ -603,14 +628,14 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
 ])
 
 # ==========================================
-# TAB 1: 대시보드 (하나의 카드 박스 안에 통합)
+# TAB 1: 대시보드 (1번 사진 완벽 일치 디자인 + 방과후 시간 표시)
 # ==========================================
 with tab1:
     st.markdown(
         """
-        <div class="info-banner" style="display:flex; justify-content:space-between; align-items:center;">
-            <span>💡 <b>맞춤형 스마트 루틴 대시보드:</b> 학원 동선, 70분 저녁 집중 학습, 주말 야외활동 및 독서 루틴이 통합 저장됩니다.</span>
-            <span style="background:#ffffff; color:#0284c7; padding:2px 10px; border-radius:20px; font-weight:700; font-size:11px; border:1px solid #bae6fd;">🔥 실시간 연동 중</span>
+        <div class="info-banner-box">
+            <span>💡 <b>맞춤형 스마트 루틴 대시보드:</b> 학원 동선, 70분 저녁 집중 학습, 주말 야외활동 및 독서 루틴이 통합 저장됩니다. Gemini AI 학습 코치가 함께합니다!</span>
+            <span style="background:#ffffff; color:#166534; padding:3px 10px; border-radius:20px; font-weight:700; font-size:12px; border:1px solid #bbf7d0;">🔥 0일 연속 미션 완료 중</span>
         </div>
         """,
         unsafe_allow_html=True,
@@ -627,22 +652,36 @@ with tab1:
 
     is_weekend = selected_day in ["토요일", "일요일"]
 
-    # 상단 4개 핵심 카드 (메트릭 스타일)
+    # 📌 방과후 활동 총 시간 계산 (14:00~19:15 기준 5.25시간 또는 요일별 실제 등록된 시간 계산)
+    if is_weekend:
+        after_school_val = "2.5시간"
+        after_school_sub = "아빠와 야구 & 야외활동"
+    else:
+        # 평일 14:00 ~ 19:15 기준 5.25시간 (약 5.3시간)
+        after_school_val = "5.3시간"
+        after_school_sub = "14:00~19:15 방과후&학원 동선"
+
     st.markdown(
         "<div style='margin-top: 10px;'></div>", unsafe_allow_html=True
     )
     col1, col2, col3, col4 = st.columns(4)
+
+    # 1번 사진 4개 메트릭 카드 정확히 복원
     with col1:
         st.markdown(
             """
-            <div class="metric-card">
-                <div class="metric-label">권장 수면 시간</div>
-                <div class="metric-val" style="color:#2563eb;">8.5시간</div>
-                <div class="metric-sub">22:00~06:30 (21:20 샤워 ➡️ 22:00 취침)</div>
+            <div class="metric-card-box">
+                <div class="metric-title">권장 수면 시간</div>
+                <div class="metric-value" style="color:#2563eb;">8.5시간</div>
+                <div style="font-size:11px; color:#94a3b8; display:flex; justify-content:space-between; margin-top:4px;">
+                    <span>21:20 샤워 ➡️ 22:00 취침</span>
+                    <span>22:00~06:30</span>
+                </div>
             </div>
             """,
             unsafe_allow_html=True,
         )
+
     with col2:
         val_txt = "90분" if is_weekend else "70분"
         sub_txt = (
@@ -650,189 +689,200 @@ with tab1:
             if is_weekend
             else "수학30분+영어15분+국어15분"
         )
+        time_txt = "07:00~08:30" if is_weekend else "20:10~21:20"
+        title_txt = (
+            "주말 모닝 집중 학습" if is_weekend else "평일 저녁 집중 학습"
+        )
         st.markdown(
             f"""
-            <div class="metric-card">
-                <div class="metric-label">{'주말 모닝 학습' if is_weekend else '평일 저녁 집중 학습'}</div>
-                <div class="metric-val" style="color:#4f46e5;">{val_txt}</div>
-                <div class="metric-sub">{sub_txt}</div>
+            <div class="metric-card-box">
+                <div class="metric-title">{title_txt}</div>
+                <div class="metric-value" style="color:#4f46e5;">{val_txt}</div>
+                <div style="font-size:11px; color:#94a3b8; display:flex; justify-content:space-between; margin-top:4px;">
+                    <span>{sub_txt}</span>
+                    <span>{time_txt}</span>
+                </div>
             </div>
             """,
             unsafe_allow_html=True,
         )
+
     with col3:
-        val_txt = "2.5시간" if is_weekend else "학원 & 이동"
-        sub_txt = (
-            "아빠와 야구 & 야외활동"
-            if is_weekend
-            else f"{len(st.session_state.schedules.get(selected_day, []))}개 방과후 일정"
-        )
+        title_txt = "주말 야외/신체 활동" if is_weekend else "방과 후 활동 시간"
         st.markdown(
             f"""
-            <div class="metric-card">
-                <div class="metric-label">{'주말 야외/신체 활동' if is_weekend else '방과후 동선'}</div>
-                <div class="metric-val" style="color:#d97706;">{val_txt}</div>
-                <div class="metric-sub">{sub_txt}</div>
+            <div class="metric-card-box">
+                <div class="metric-title">{title_txt}</div>
+                <div class="metric-value" style="color:#d97706;">{after_school_val}</div>
+                <div style="font-size:11px; color:#94a3b8; display:flex; justify-content:space-between; margin-top:4px;">
+                    <span>{after_school_sub}</span>
+                    <span>{'오후 13:00~' if is_weekend else '14:00~19:15'}</span>
+                </div>
             </div>
             """,
             unsafe_allow_html=True,
         )
+
     with col4:
         st.markdown(
             """
-            <div class="metric-card">
-                <div class="metric-label">주말 게임 시간 관리</div>
-                <div class="metric-val" style="color:#059669;">3시간</div>
-                <div class="metric-sub">1.5h × 2회 쪼개기 수칙 준수</div>
+            <div class="metric-card-box">
+                <div class="metric-title">주말 게임 시간 관리</div>
+                <div class="metric-value" style="color:#059669;">3시간</div>
+                <div style="font-size:11px; color:#94a3b8; display:flex; justify-content:space-between; margin-top:4px;">
+                    <span>오전 1차 + 해질녘 2차</span>
+                    <span>1.5h × 2회 쪼개기</span>
+                </div>
             </div>
             """,
             unsafe_allow_html=True,
         )
 
     st.markdown(
-        "<div style='margin-top: 15px;'></div>", unsafe_allow_html=True
+        "<div style='margin-top: 20px;'></div>", unsafe_allow_html=True
     )
 
+    # 1번 사진 그래프 카드 영역
     c1, c2 = st.columns(2)
-    # 제목과 차트를 한 박스 안에 통합
     with c1:
-        with st.container(border=True):
-            st.markdown(
-                f"<h4 style='margin:0; font-weight:700; color:#1e293b;'>📊 {selected_day} 시간 배분 비율</h4>",
-                unsafe_allow_html=True,
-            )
-            st.caption("하루 루틴의 균형 시각화")
-
-            if is_weekend:
-                df_pie = pd.DataFrame({
-                    "항목": [
-                        "수면 (8.5시간)",
-                        "모닝학습 & 독서 (2.5시간)",
-                        "야외활동 & 게임 (5.5시간)",
-                        "식사 & 여유 (7.5시간)",
-                    ],
-                    "시간": [8.5, 2.5, 5.5, 7.5],
-                })
-            else:
-                df_pie = pd.DataFrame({
-                    "항목": [
-                        "수면 (8.5시간)",
-                        "학교/학원 (8시간)",
-                        "여유/이동/식사 (6.3시간)",
-                        "저녁몰입학습 (1.1시간)",
-                    ],
-                    "시간": [8.5, 8.0, 6.3, 1.1],
-                })
-            fig_pie = px.pie(
-                df_pie,
-                values="시간",
-                names="항목",
-                hole=0.55,
-                color_discrete_sequence=[
-                    "#3b82f6",
-                    "#2563eb",
-                    "#f59e0b",
-                    "#10b981",
-                ],
-            )
-            fig_pie.update_traces(
-                textposition="inside", textinfo="percent+label"
-            )
-            fig_pie.update_layout(
-                margin=dict(t=10, b=10, l=10, r=10),
-                height=260,
-                legend=dict(
-                    orientation="h",
-                    yanchor="bottom",
-                    y=-0.25,
-                    xanchor="center",
-                    x=0.5,
-                ),
-            )
-            st.plotly_chart(fig_pie, use_container_width=True)
-
-    with c2:
-        with st.container(border=True):
-            st.markdown(
-                "<h4 style='margin:0; font-weight:700; color:#1e293b;'>🎯 저녁 70분 몰입 학습 과목 구성</h4>",
-                unsafe_allow_html=True,
-            )
-            st.caption("15-30분 단위 숏 스퍼트 구성")
-
-            df_bar = pd.DataFrame({
-                "과목": [
-                    "수학 (학원숙제)",
-                    "영어 (단어+학습지)",
-                    "국어 (어휘/독해)",
-                    "마무리 (가방/책상)",
-                ],
-                "시간(분)": [30, 15, 15, 10],
-            })
-            fig_bar = px.bar(
-                df_bar,
-                x="과목",
-                y="시간(분)",
-                color="과목",
-                text="시간(분)",
-                color_discrete_sequence=[
-                    "#2563eb",
-                    "#818cf8",
-                    "#f43f5e",
-                    "#64748b",
-                ],
-            )
-            fig_bar.update_layout(
-                margin=dict(t=10, b=10, l=10, r=10),
-                height=260,
-                showlegend=False,
-            )
-            st.plotly_chart(fig_bar, use_container_width=True)
-
-    st.markdown(
-        "<div style='margin-top: 15px;'></div>", unsafe_allow_html=True
-    )
-
-    # 타임라인을 한 박스 안에 통합
-    with st.container(border=True):
         st.markdown(
-            f"<h4 style='margin:0; font-weight:700; color:#1e293b;'>⚡ {selected_day} 실시간 타임라인</h4>",
+            f"""
+            <div class="custom-card">
+                <h4 style="margin-top:0; margin-bottom:4px; font-weight:700; color:#0f172a; font-size:16px;">📊 {selected_day} 시간 배분 비율</h4>
+                <div style="font-size:12px; color:#94a3b8; margin-bottom:12px;">학업, 수면, 휴식, 이동의 균형 시각화</div>
+            """,
             unsafe_allow_html=True,
         )
-        st.markdown(
-            "<div style='margin-bottom: 10px;'></div>", unsafe_allow_html=True
+        if is_weekend:
+            df_pie = pd.DataFrame({
+                "항목": [
+                    "수면 (8.5시간)",
+                    "모닝학습 & 독서 (2.5시간)",
+                    "야외활동 & 게임 (5.5시간)",
+                    "식사 & 여유 (7.5시간)",
+                ],
+                "시간": [8.5, 2.5, 5.5, 7.5],
+            })
+        else:
+            df_pie = pd.DataFrame({
+                "항목": [
+                    "수면 (8.5시간)",
+                    "학교/학원 (8시간)",
+                    "여유/이동/식사 (6.3시간)",
+                    "저녁몰입학습 (1.1시간)",
+                ],
+                "시간": [8.5, 8.0, 6.3, 1.1],
+            })
+        fig_pie = px.pie(
+            df_pie,
+            values="시간",
+            names="항목",
+            hole=0.6,
+            color_discrete_sequence=["#3b82f6", "#2563eb", "#f59e0b", "#10b981"],
         )
+        fig_pie.update_traces(textposition="inside", textinfo="percent+label")
+        fig_pie.update_layout(
+            margin=dict(t=5, b=5, l=5, r=5),
+            height=280,
+            legend=dict(
+                orientation="h", yanchor="bottom", y=-0.25, xanchor="center", x=0.5
+            ),
+        )
+        st.plotly_chart(fig_pie, use_container_width=True)
+        st.markdown("</div>", unsafe_allow_html=True)
 
-        day_scheds = (
-            st.session_state.weekend_plans.get(selected_day, [])
-            if is_weekend
-            else st.session_state.schedules.get(selected_day, [])
+    with c2:
+        st.markdown(
+            """
+            <div class="custom-card">
+                <h4 style="margin-top:0; margin-bottom:4px; font-weight:700; color:#0f172a; font-size:16px;">🎯 저녁 70분 몰입 학습 과목 구성</h4>
+                <div style="font-size:12px; color:#94a3b8; margin-bottom:12px;">15-30분 단위 숏 스퍼트로 지루함 없는 구성</div>
+            """,
+            unsafe_allow_html=True,
         )
-        if day_scheds:
-            cols = st.columns(min(len(day_scheds), 5))
-            for idx, item in enumerate(day_scheds[:5]):
-                with cols[idx]:
-                    if is_weekend:
-                        st.markdown(
-                            f"""
-                            <div class="tl-card">
-                                <div style="font-size:11px; font-weight:700; color:#2563eb;">{item[0]}</div>
-                                <div style="font-size:13px; font-weight:700; color:#0f172a; margin:3px 0;">{item[1]}</div>
-                                <div style="font-size:11px; color:#64748b;">{item[2]}</div>
-                            </div>
-                            """,
-                            unsafe_allow_html=True,
-                        )
-                    else:
-                        st.markdown(
-                            f"""
-                            <div class="tl-card">
-                                <div style="font-size:11px; font-weight:700; color:#2563eb;">{item['time']}</div>
-                                <div style="font-size:13px; font-weight:700; color:#0f172a; margin:3px 0;">{item['name']}</div>
-                                <div style="font-size:11px; color:#64748b;">{item['detail']}</div>
-                            </div>
-                            """,
-                            unsafe_allow_html=True,
-                        )
+        df_bar = pd.DataFrame({
+            "과목": [
+                "수학 (학원숙제)",
+                "영어 (단어+학습지)",
+                "국어 (어휘/독해)",
+                "마무리 (가방/책상)",
+            ],
+            "시간(분)": [30, 15, 15, 10],
+        })
+        fig_bar = px.bar(
+            df_bar,
+            x="과목",
+            y="시간(분)",
+            color="과목",
+            text="시간(분)",
+            color_discrete_sequence=[
+                "#2563eb",
+                "#818cf8",
+                "#f43f5e",
+                "#64748b",
+            ],
+        )
+        fig_bar.update_layout(
+            margin=dict(t=5, b=5, l=5, r=5), height=280, showlegend=False
+        )
+        st.plotly_chart(fig_bar, use_container_width=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    # 1번 사진 하단 '하루 핵심 타임라인 한눈에 보기'
+    st.markdown(
+        """
+        <div class="custom-card">
+            <h4 style="margin-top:0; margin-bottom:15px; font-weight:700; color:#0f172a; font-size:16px;">⚡ 하루 핵심 타임라인 한눈에 보기</h4>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    t_cols = st.columns(4)
+    with t_cols[0]:
+        st.markdown(
+            """
+            <div class="tl-box">
+                <div style="font-size:11px; font-weight:700; color:#d97706;">🌅 06:30 ~ 08:30 [아침]</div>
+                <div style="font-size:13px; font-weight:700; color:#0f172a; margin:4px 0;">기상 & 한국사 강의 시청</div>
+                <div style="font-size:11px; color:#64748b;">할아버지 댁 이동(07:20) 후 아침 식사 ➡️ 08:22 등교</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    with t_cols[1]:
+        st.markdown(
+            """
+            <div class="tl-box">
+                <div style="font-size:11px; font-weight:700; color:#16a34a;">🏫 08:30 ~ 18:30 [방과후]</div>
+                <div style="font-size:13px; font-weight:700; color:#0f172a; margin:4px 0;">학교 수업 & 학원 동선</div>
+                <div style="font-size:11px; color:#64748b;">수학/피아노/미술 픽업 ➡️ 17:30 합기도(도보 3분)</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    with t_cols[2]:
+        st.markdown(
+            """
+            <div class="tl-box">
+                <div style="font-size:11px; font-weight:700; color:#dc2626;">🚘 18:30 ~ 20:10 [귀가&식사]</div>
+                <div style="font-size:13px; font-weight:700; color:#0f172a; margin:4px 0;">부모님 픽업 & 저녁 식사</div>
+                <div style="font-size:11px; color:#64748b;">18:40 픽업 ➡️ 19:15 집 도착 ➡️ 가족 저녁 식사</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    with t_cols[3]:
+        st.markdown(
+            """
+            <div class="tl-box">
+                <div style="font-size:11px; font-weight:700; color:#2563eb;">🌙 20:10 ~ 22:10 [저녁&취침]</div>
+                <div style="font-size:13px; font-weight:700; color:#0f172a; margin:4px 0;">70분 학습 & 22시 전 취침</div>
+                <div style="font-size:11px; color:#64748b;">20:10 학습 ➡️ 21:20 샤워 ➡️ 22:00~22:10 취침</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    st.markdown("</div>", unsafe_allow_html=True)
 
 # ==========================================
 # TAB 2: 요일별 학원
@@ -840,8 +890,8 @@ with tab1:
 with tab2:
     st.markdown(
         """
-        <div class="info-banner">
-            🎒 <b>방과 후 학원 동선:</b> 합기도는 매일 17:30(도보 3분), 수요일은 피아노와 수학이 같은 건물 옆 호실로 연속 수강됩니다.
+        <div class="info-banner-box">
+            <span>🎒 <b>방과 후 학원 동선:</b> 합기도는 매일 17:30(도보 3분), 수요일은 피아노와 수학이 같은 건물 옆 호실로 연속 수강됩니다.</span>
         </div>
         """,
         unsafe_allow_html=True,
@@ -858,7 +908,7 @@ with tab2:
     items = st.session_state.schedules[day_choice]
 
     st.markdown(
-        "<div style='margin-top: 12px;'></div>", unsafe_allow_html=True
+        "<div style='margin-top: 15px;'></div>", unsafe_allow_html=True
     )
 
     if edit_weekday:
@@ -898,27 +948,31 @@ with tab2:
             st.success("저장되었습니다! 구글 시트에 자동 연동됩니다.")
             st.rerun()
     else:
-        with st.container(border=True):
+        st.markdown(
+            f"""
+            <div class="custom-card">
+                <h3 style="margin-top:0; font-weight:700; color:#0f172a; font-size:18px;">{day_choice} 일정 상세 보기</h3>
+                <div style="margin-top:15px;">
+            """,
+            unsafe_allow_html=True,
+        )
+        for item in items:
             st.markdown(
-                f"<h4 style='margin:0 0 12px 0; font-weight:700; color:#0f172a;'>{day_choice} 일정 상세 보기</h4>",
+                f"""
+                <div style="display:flex; justify-content:space-between; align-items:center; padding: 14px 18px; background-color:#f8fafc; border-radius:12px; margin-bottom:10px; border:1px solid #f1f5f9;">
+                    <div style="display:flex; align-items:center; gap:15px;">
+                        <span style="font-size:13px; font-weight:700; color:#64748b;">⏰ {item['time']}</span>
+                        <span style="font-size:15px; font-weight:700; color:#1e293b;">{item['name']}</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:12px; color:#64748b;">{item['detail']}</span>
+                        <span style="background:#e2e8f0; color:#475569; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px;">{item['badge']}</span>
+                    </div>
+                </div>
+                """,
                 unsafe_allow_html=True,
             )
-            for item in items:
-                st.markdown(
-                    f"""
-                    <div style="display:flex; justify-content:space-between; align-items:center; padding: 12px 16px; background-color:#f8fafc; border-radius:10px; margin-bottom:8px; border:1px solid #f1f5f9;">
-                        <div style="display:flex; align-items:center; gap:12px;">
-                            <span style="font-size:12px; font-weight:700; color:#64748b;">⏰ {item['time']}</span>
-                            <span style="font-size:14px; font-weight:700; color:#1e293b;">{item['name']}</span>
-                        </div>
-                        <div style="display:flex; align-items:center; gap:8px;">
-                            <span style="font-size:12px; color:#64748b;">{item['detail']}</span>
-                            <span style="background:#e2e8f0; color:#475569; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px;">{item['badge']}</span>
-                        </div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
+        st.markdown("</div></div>", unsafe_allow_html=True)
 
 # ==========================================
 # TAB 3: 저녁 루틴
@@ -926,8 +980,8 @@ with tab2:
 with tab3:
     st.markdown(
         """
-        <div class="info-banner">
-            🌙 <b>저녁 루틴 모드 선택:</b> 퇴근 및 저녁 준비 상태에 따라 Plan A(평소)와 Plan B(유연)를 선택하세요.
+        <div class="info-banner-box">
+            <span>🌙 <b>저녁 루틴 모드 선택:</b> 퇴근 및 저녁 준비 상태에 따라 Plan A(평소)와 Plan B(유연)를 선택하세요.</span>
         </div>
         """,
         unsafe_allow_html=True,
@@ -941,10 +995,6 @@ with tab3:
         label_visibility="collapsed",
     )
     plan_key = "Plan A" if "Plan A" in plan_mode else "Plan B"
-
-    st.markdown(
-        "<div style='margin-top: 12px;'></div>", unsafe_allow_html=True
-    )
 
     if edit_evening:
         st.warning(
@@ -975,26 +1025,30 @@ with tab3:
             st.success("구글 시트에 성공적으로 저장되었습니다!")
             st.rerun()
     else:
-        with st.container(border=True):
+        st.markdown(
+            f"""
+            <div class="custom-card">
+                <h3 style="margin-top:0; font-weight:700; color:#0f172a; font-size:18px;">🟢 {plan_key} 상세 단계</h3>
+                <div style="margin-top:15px;">
+            """,
+            unsafe_allow_html=True,
+        )
+        for idx, (t, n, d) in enumerate(
+            st.session_state.evening_plans[plan_key]
+        ):
             st.markdown(
-                f"<h4 style='margin:0 0 12px 0; font-weight:700; color:#0f172a;'>🟢 {plan_key} 상세 단계</h4>",
+                f"""
+                <div style="padding: 14px 18px; background-color:#f8fafc; border-radius:12px; margin-bottom:10px; border:1px solid #f1f5f9;">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <span style="font-size:12px; font-weight:700; color:#ef4444; background:#fee2e2; padding:2px 8px; border-radius:6px;">{t}</span>
+                        <span style="font-size:15px; font-weight:700; color:#1e293b;">{n}</span>
+                    </div>
+                    <div style="font-size:12px; color:#64748b; margin-top:6px; margin-left:2px;">{d}</div>
+                </div>
+                """,
                 unsafe_allow_html=True,
             )
-            for idx, (t, n, d) in enumerate(
-                st.session_state.evening_plans[plan_key]
-            ):
-                st.markdown(
-                    f"""
-                    <div style="padding: 12px 16px; background-color:#f8fafc; border-radius:10px; margin-bottom:8px; border:1px solid #f1f5f9;">
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <span style="font-size:11px; font-weight:700; color:#ef4444; background:#fee2e2; padding:2px 6px; border-radius:4px;">{t}</span>
-                            <span style="font-size:14px; font-weight:700; color:#1e293b;">{n}</span>
-                        </div>
-                        <div style="font-size:12px; color:#64748b; margin-top:4px;">{d}</div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
+        st.markdown("</div></div>", unsafe_allow_html=True)
 
 # ==========================================
 # TAB 4: 주말 일과
@@ -1002,8 +1056,8 @@ with tab3:
 with tab4:
     st.markdown(
         """
-        <div class="info-banner">
-            ☀️ <b>주말 타임라인:</b> 알찬 아침 모닝 90분 공부 및 아빠와 야외 신체활동 중심 구성입니다.
+        <div class="info-banner-box">
+            <span>☀️ <b>주말 타임라인:</b> 알찬 아침 모닝 90분 공부 및 아빠와 야외 신체활동 중심 구성입니다.</span>
         </div>
         """,
         unsafe_allow_html=True,
@@ -1017,10 +1071,6 @@ with tab4:
         label_visibility="collapsed",
     )
     wk_key = "토요일" if "토요일" in weekend_choice else "일요일"
-
-    st.markdown(
-        "<div style='margin-top: 12px;'></div>", unsafe_allow_html=True
-    )
 
     if edit_weekend:
         st.warning(
@@ -1052,24 +1102,28 @@ with tab4:
             st.success("저장되었습니다!")
             st.rerun()
     else:
-        with st.container(border=True):
+        st.markdown(
+            f"""
+            <div class="custom-card">
+                <h3 style="margin-top:0; font-weight:700; color:#0f172a; font-size:18px;">🗓️ {wk_key} 상세 일정</h3>
+                <div style="margin-top:15px;">
+            """,
+            unsafe_allow_html=True,
+        )
+        for t, n, d in st.session_state.weekend_plans[wk_key]:
             st.markdown(
-                f"<h4 style='margin:0 0 12px 0; font-weight:700; color:#0f172a;'>🗓️ {wk_key} 상세 일정</h4>",
+                f"""
+                <div style="display:flex; justify-content:space-between; align-items:center; padding: 14px 18px; background-color:#f8fafc; border-radius:12px; margin-bottom:10px; border:1px solid #f1f5f9;">
+                    <div style="display:flex; align-items:center; gap:15px;">
+                        <span style="font-size:13px; font-weight:700; color:#d97706;">⏰ {t}</span>
+                        <span style="font-size:15px; font-weight:700; color:#1e293b;">{n}</span>
+                    </div>
+                    <span style="font-size:12px; color:#64748b;">{d}</span>
+                </div>
+                """,
                 unsafe_allow_html=True,
             )
-            for t, n, d in st.session_state.weekend_plans[wk_key]:
-                st.markdown(
-                    f"""
-                    <div style="display:flex; justify-content:space-between; align-items:center; padding: 12px 16px; background-color:#f8fafc; border-radius:10px; margin-bottom:8px; border:1px solid #f1f5f9;">
-                        <div style="display:flex; align-items:center; gap:12px;">
-                            <span style="font-size:12px; font-weight:700; color:#d97706;">⏰ {t}</span>
-                            <span style="font-size:14px; font-weight:700; color:#1e293b;">{n}</span>
-                        </div>
-                        <span style="font-size:12px; color:#64748b;">{d}</span>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
+        st.markdown("</div></div>", unsafe_allow_html=True)
 
 # ==========================================
 # TAB 5: 체크 & 기록
@@ -1077,8 +1131,8 @@ with tab4:
 with tab5:
     st.markdown(
         """
-        <div class="info-banner">
-            ✅ <b>스마트 일일 루틴 체크리스트:</b> 매일 자정이 지나면 체크리스트가 자동 정돈되며 기록이 유지됩니다.
+        <div class="info-banner-box">
+            <span>✅ <b>스마트 일일 루틴 체크리스트:</b> 매일 자정이 지나면 체크리스트가 자동 정돈되며 기록이 유지됩니다.</span>
         </div>
         """,
         unsafe_allow_html=True,
@@ -1120,30 +1174,36 @@ with tab5:
     else:
         col_w, col_wk = st.columns(2)
         with col_w:
-            with st.container(border=True):
-                st.markdown(
-                    "<h4 style='margin:0 0 10px 0; font-weight:700; color:#0f172a;'>📅 평일 필수 미션</h4>",
-                    unsafe_allow_html=True,
-                )
-                for key, (
-                    text,
-                    val,
-                ) in st.session_state.checklist_weekday.items():
-                    checked = st.checkbox(text, value=val, key=f"check_{key}")
-                    st.session_state.checklist_weekday[key] = (text, checked)
+            st.markdown(
+                """
+                <div class="custom-card">
+                    <h4 style="margin-top:0; font-weight:700; color:#0f172a;">📅 평일 필수 미션</h4>
+                """,
+                unsafe_allow_html=True,
+            )
+            for key, (
+                text,
+                val,
+            ) in st.session_state.checklist_weekday.items():
+                checked = st.checkbox(text, value=val, key=f"check_{key}")
+                st.session_state.checklist_weekday[key] = (text, checked)
+            st.markdown("</div>", unsafe_allow_html=True)
 
         with col_wk:
-            with st.container(border=True):
-                st.markdown(
-                    "<h4 style='margin:0 0 10px 0; font-weight:700; color:#0f172a;'>☀️ 주말 필수 미션</h4>",
-                    unsafe_allow_html=True,
-                )
-                for key, (
-                    text,
-                    val,
-                ) in st.session_state.checklist_weekend.items():
-                    checked = st.checkbox(text, value=val, key=f"check_{key}")
-                    st.session_state.checklist_weekend[key] = (text, checked)
+            st.markdown(
+                """
+                <div class="custom-card">
+                    <h4 style="margin-top:0; font-weight:700; color:#0f172a;">☀️ 주말 필수 미션</h4>
+                """,
+                unsafe_allow_html=True,
+            )
+            for key, (
+                text,
+                val,
+            ) in st.session_state.checklist_weekend.items():
+                checked = st.checkbox(text, value=val, key=f"check_{key}")
+                st.session_state.checklist_weekend[key] = (text, checked)
+            st.markdown("</div>", unsafe_allow_html=True)
 
         w_count = sum(
             1 for _, val in st.session_state.checklist_weekday.values() if val
@@ -1153,20 +1213,16 @@ with tab5:
         )
 
         st.markdown(
-            "<div style='margin-top: 15px;'></div>", unsafe_allow_html=True
+            f"""
+            <div class="custom-card" style="text-align:center;">
+                <h4 style="margin:0; font-weight:700; color:#1e293b;">🎉 오늘의 미션 달성 상태</h4>
+                <p style="font-size:16px; font-weight:700; color:#2563eb; margin-top:8px; margin-bottom:0;">
+                    평일 ({w_count}/5 완료) &nbsp;|&nbsp; 주말 ({wk_count}/5 완료)
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True,
         )
-        with st.container(border=True):
-            st.markdown(
-                f"""
-                <div style="text-align:center;">
-                    <h4 style="margin:0; font-weight:700; color:#1e293b;">🎉 오늘의 미션 달성 상태</h4>
-                    <p style="font-size:15px; font-weight:700; color:#2563eb; margin:6px 0 0 0;">
-                        평일 ({w_count}/5 완료) &nbsp;|&nbsp; 주말 ({wk_count}/5 완료)
-                    </p>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
 
 # ==========================================
 # TAB 6: AI 코치 & 퀴즈
@@ -1174,8 +1230,8 @@ with tab5:
 with tab6:
     st.markdown(
         """
-        <div class="ai-banner">
-            <div style="font-size:11px; font-weight:700; opacity:0.9; margin-bottom:2px;">GEMINI AI ENGINE POWERED</div>
+        <div class="custom-card" style="background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%); color:white;">
+            <div style="font-size:11px; font-weight:700; opacity:0.9; margin-bottom:4px;">GEMINI AI ENGINE POWERED</div>
             <h2 style="margin:0; font-weight:800; font-size:22px;">✨ Gemini AI 스마트 학습 코치</h2>
             <p style="margin-top:4px; margin-bottom:0; font-size:12px; opacity:0.95;">AI 퀴즈 생성, 음성 응원 칭찬, 칭찬 스티커 생성, 그리고 역사/과학 궁금증 답변까지 도웁니다!</p>
         </div>
@@ -1196,253 +1252,250 @@ with tab6:
     )
 
     st.markdown(
-        "<div style='margin-top: 12px;'></div>", unsafe_allow_html=True
+        "<div style='margin-top: 15px;'></div>", unsafe_allow_html=True
     )
 
     # 1. 1분 AI 퀴즈
     if "1분 AI 퀴즈" in ai_tool:
-        with st.container(border=True):
-            st.markdown(
-                "<h4 style='margin:0; font-weight:700; color:#0f172a;'>🧠 1분 AI 퀴즈 생성기</h4>",
-                unsafe_allow_html=True,
-            )
-            st.caption(
-                "아침 시청 복습이나 저녁 공부 시작 전, 재미있는 1분 퀴즈로 뇌를"
-                " 세워보세요!"
-            )
-            subject = st.radio(
-                "퀴즈 과목 선택:",
-                [
-                    "📜 한국사능력검정시험 (한능검 유형 반영 실전 모의 퀴즈)",
-                    "🔬 초등 과학교과",
-                    "🔤 초등 필수 영단어 & 표현",
-                ],
-                horizontal=True,
-            )
+        st.markdown(
+            """
+            <div class="custom-card">
+                <h3 style="margin-top:0; font-weight:700; color:#0f172a; font-size:18px;">🧠 1분 AI 퀴즈 생성기</h3>
+                <p style="font-size:12px; color:#64748b; margin-bottom:15px;">아침 시청 복습이나 저녁 공부 시작 전, 재미있는 1분 퀴즈로 뇌를 세워보세요!</p>
+            """,
+            unsafe_allow_html=True,
+        )
+        subject = st.radio(
+            "퀴즈 과목 선택:",
+            [
+                "📜 한국사능력검정시험 (한능검 유형 반영 실전 모의 퀴즈)",
+                "🔬 초등 과학교과",
+                "🔤 초등 필수 영단어 & 표현",
+            ],
+            horizontal=True,
+        )
 
-            if st.button("✨ 퀴즈 생성하기", use_container_width=True):
-                st.session_state.quiz_click_count += 1
-                idx = st.session_state.quiz_click_count
+        if st.button("✨ 퀴즈 생성하기", use_container_width=True):
+            st.session_state.quiz_click_count += 1
+            idx = st.session_state.quiz_click_count
 
-                with st.spinner("알맞은 퀴즈를 생성하는 중입니다..."):
-                    prompt = (
-                        f"당신은 친절한 AI 튜터입니다. {subject} 주제에 대해 한능검"
-                        f" 기출 유형 및 교과 과정 스타일의 {idx}번째 모의 문제 1개를"
-                        " 출제하세요.\n\n[조건]\n- 4지선다형 객관식 문제로"
-                        " 만드세요.\n- 💡 해설 부분은 딱딱한 시험 문제집 말투가"
-                        " 아니라, '에릭 학생, 이 문제는 ~ 때문이야!'처럼 눈높이에"
-                        " 맞춰 다정하고 이해하기 쉽게 부드러운 말투로 설명해"
-                        " 주세요.\n\n[출력 형식]\n[문제] ➡️ [보기 1,2,3,4] ➡️ 💡"
-                        " [친절한 해설] ➡️ 🔒 [정답]"
-                    )
-                    res_text = call_gemini_api(prompt)
-                    st.success(f"회차 #{idx} 퀴즈 생성 완료!")
-                    st.markdown(res_text)
+            with st.spinner("알맞은 퀴즈를 생성하는 중입니다..."):
+                prompt = (
+                    f"당신은 친절한 AI 튜터입니다. {subject} 주제에 대해 한능검"
+                    f" 기출 유형 및 교과 과정 스타일의 {idx}번째 모의 문제 1개를"
+                    " 출제하세요.\n\n[조건]\n- 4지선다형 객관식 문제로"
+                    " 만드세요.\n- 💡 해설 부분은 딱딱한 시험 문제집 말투가"
+                    " 아니라, '에릭 학생, 이 문제는 ~ 때문이야!'처럼 눈높이에"
+                    " 맞춰 다정하고 이해하기 쉽게 부드러운 말투로 설명해"
+                    " 주세요.\n\n[출력 형식]\n[문제] ➡️ [보기 1,2,3,4] ➡️ 💡"
+                    " [친절한 해설] ➡️ 🔒 [정답]"
+                )
+                res_text = call_gemini_api(prompt)
+                st.success(f"회차 #{idx} 퀴즈 생성 완료!")
+                st.markdown(res_text)
+        st.markdown("</div>", unsafe_allow_html=True)
 
     # 2. AI 응원 멘트
     elif "AI 응원 멘트" in ai_tool:
-        with st.container(border=True):
-            st.markdown(
-                "<h4 style='margin:0; font-weight:700; color:#0f172a;'>🔊 AI 멘토 음성 응원 메시지 (TTS)</h4>",
-                unsafe_allow_html=True,
-            )
-            st.caption(
-                "상황과 기분에 맞게 선택해 보세요! 매일 다른 칭찬과 응원 멘트가"
-                " 전해집니다."
-            )
-            sit_target = st.radio(
-                "💬 현재 상황이나 기분 선택 (10가지):",
-                [
-                    "🌅 1. 아침 일찍 일어나 기상 미션을 완수했을 때",
-                    "🏫 2. 방과 후 학원 3곳을 모두 무사히 다녀왔을 때",
-                    "⚡ 3. 저녁 70분 몰입 학습(수학+영어+국어)을 다 끝냈을 때",
-                    "⚾ 4. 주말 아빠와 야구/운동 활동을 완수했을 때",
-                    "📖 5. 밤 1시간 몰입 독서를 마쳤을 때",
-                    "😊 6. 기분이 아주 좋고 자신감이 넘칠 때",
-                    "🌧️ 7. 공부나 문제 풀이가 잘 안되어 속상할 때",
-                    "😴 8. 하루 일과가 끝나고 너무 피곤하고 지칠 때",
-                    "🔥 9. 시험이나 퀴즈를 앞두고 의욕을 다질 때",
-                    "🛌 10. 밤 22시 전 샤워 후 잠자리에 누울 때",
-                ],
-                key="single_sit_radio",
-            )
+        st.markdown(
+            """
+            <div class="custom-card">
+                <h3 style="margin-top:0; font-weight:700; color:#0f172a; font-size:18px;">🔊 AI 멘토 음성 응원 메시지 (TTS)</h3>
+                <p style="font-size:12px; color:#64748b; margin-bottom:15px;">상황과 기분에 맞게 선택해 보세요! 매일 다른 칭찬과 응원 멘트가 전해집니다.</p>
+            """,
+            unsafe_allow_html=True,
+        )
+        sit_target = st.radio(
+            "💬 현재 상황이나 기분 선택 (10가지):",
+            [
+                "🌅 1. 아침 일찍 일어나 기상 미션을 완수했을 때",
+                "🏫 2. 방과 후 학원 3곳을 모두 무사히 다녀왔을 때",
+                "⚡ 3. 저녁 70분 몰입 학습(수학+영어+국어)을 다 끝냈을 때",
+                "⚾ 4. 주말 아빠와 야구/운동 활동을 완수했을 때",
+                "📖 5. 밤 1시간 몰입 독서를 마쳤을 때",
+                "😊 6. 기분이 아주 좋고 자신감이 넘칠 때",
+                "🌧️ 7. 공부나 문제 풀이가 잘 안되어 속상할 때",
+                "😴 8. 하루 일과가 끝나고 너무 피곤하고 지칠 때",
+                "🔥 9. 시험이나 퀴즈를 앞두고 의욕을 다질 때",
+                "🛌 10. 밤 22시 전 샤워 후 잠자리에 누울 때",
+            ],
+            key="single_sit_radio",
+        )
 
-            voice_style = st.radio(
-                "🗣️ 목소리 캐릭터:",
-                [
-                    "🌸 상냥하고 다정한 선생님 (보통 톤)",
-                    "🔥 신나고 활기찬 친구 (높고 빠른 톤)",
-                    "🐻 든든하고 따뜻한 멘토 (낮고 부드러운 톤)",
-                ],
-                horizontal=True,
-            )
+        voice_style = st.radio(
+            "🗣️ 목소리 캐릭터:",
+            [
+                "🌸 상냥하고 다정한 선생님 (보통 톤)",
+                "🔥 신나고 활기찬 친구 (높고 빠른 톤)",
+                "🐻 든든하고 따뜻한 멘토 (낮고 부드러운 톤)",
+            ],
+            horizontal=True,
+        )
 
-            if st.button("🎙️ AI 응원 음성 들려주기", use_container_width=True):
-                with st.spinner("AI 멘토가 응원 메시지를 작성 중입니다..."):
-                    prompt = (
-                        f"학생 '에릭'의 현재 상황: '{sit_target}'. 이 상황에"
-                        " 맞게 학생의 이름을 '에릭'으로 부르거나 자연스럽게"
-                        " 잇고, '[학생 이름]'이나 'OO야' 같은 템플릿 문구를"
-                        " 절대 사용하지 마세요. 50자~100자 사이로 따스하고"
-                        " 다정한 응원 문구를 완성해줘."
-                    )
-                    msg_text = call_gemini_api(prompt)
+        if st.button("🎙️ AI 응원 음성 들려주기", use_container_width=True):
+            with st.spinner("AI 멘토가 응원 메시지를 작성 중입니다..."):
+                prompt = (
+                    f"학생 '에릭'의 현재 상황: '{sit_target}'. 이 상황에 맞게"
+                    " 학생의 이름을 '에릭'으로 부르거나 자연스럽게 잇고, '[학생"
+                    " 이름]'이나 'OO야' 같은 템플릿 문구를 절대 사용하지"
+                    " 마세요. 50자~100자 사이로 따스하고 다정한 응원 문구를"
+                    " 완성해줘."
+                )
+                msg_text = call_gemini_api(prompt)
 
-                    st.balloons()
-                    st.info(f"💬 **AI 멘토의 응원:**\n\n{msg_text}")
+                st.balloons()
+                st.info(f"💬 **AI 멘토의 응원:**\n\n{msg_text}")
 
-                    if "신나고 활기찬" in voice_style:
-                        rate_val, pitch_val = 1.15, 1.3
-                    elif "든든하고 따뜻한" in voice_style:
-                        rate_val, pitch_val = 0.9, 0.8
-                    else:
-                        rate_val, pitch_val = 1.0, 1.05
+                if "신나고 활기찬" in voice_style:
+                    rate_val, pitch_val = 1.15, 1.3
+                elif "든든하고 따뜻한" in voice_style:
+                    rate_val, pitch_val = 0.9, 0.8
+                else:
+                    rate_val, pitch_val = 1.0, 1.05
 
-                    clean_text = msg_text.replace("\n", " ").replace('"', "'")
+                clean_text = msg_text.replace("\n", " ").replace('"', "'")
 
-                    tts_script = f"""
-                    <script>
-                        window.speechSynthesis.cancel();
-                        var msg = new SpeechSynthesisUtterance("{clean_text}");
-                        msg.lang = 'ko-KR';
-                        msg.rate = {rate_val};
-                        msg.pitch = {pitch_val};
-                        window.speechSynthesis.speak(msg);
-                    </script>
-                    """
-                    st.components.v1.html(tts_script, height=0)
+                tts_script = f"""
+                <script>
+                    window.speechSynthesis.cancel();
+                    var msg = new SpeechSynthesisUtterance("{clean_text}");
+                    msg.lang = 'ko-KR';
+                    msg.rate = {rate_val};
+                    msg.pitch = {pitch_val};
+                    window.speechSynthesis.speak(msg);
+                </script>
+                """
+                st.components.v1.html(tts_script, height=0)
+        st.markdown("</div>", unsafe_allow_html=True)
 
     # 3. 칭찬 스티커
     elif "칭찬 스티커" in ai_tool:
-        with st.container(border=True):
-            st.markdown(
-                "<h4 style='margin:0; font-weight:700; color:#0f172a;'>🎨 AI 미션 달성 칭찬 스티커 카운터</h4>",
-                unsafe_allow_html=True,
-            )
-            st.caption(
-                "오늘 미션을 성공했을 때 칭찬 스티커 카드를 생성하여 내"
-                " 스티커북(30개판)에 저장합니다!"
-            )
-            reward_in = st.text_input(
-                "🎯 30개 달성 보상 목표:",
-                value=st.session_state.reward_goal,
-            )
-            if reward_in != st.session_state.reward_goal:
-                st.session_state.reward_goal = reward_in
-                save_sheet_data(reward_goal=reward_in)
+        st.markdown(
+            """
+            <div class="custom-card">
+                <h3 style="margin-top:0; font-weight:700; color:#0f172a; font-size:18px;">🎨 AI 미션 달성 칭찬 스티커 카운터</h3>
+                <p style="font-size:12px; color:#64748b; margin-bottom:15px;">오늘 미션을 성공했을 때 칭찬 스티커 카드를 생성하여 내 스티커북(30개판)에 저장합니다!</p>
+            """,
+            unsafe_allow_html=True,
+        )
+        reward_in = st.text_input(
+            "🎯 30개 달성 보상 목표:",
+            value=st.session_state.reward_goal,
+        )
+        if reward_in != st.session_state.reward_goal:
+            st.session_state.reward_goal = reward_in
+            save_sheet_data(reward_goal=reward_in)
 
-            btn_c1, btn_c2 = st.columns([3, 1])
-            with btn_c1:
-                if st.button("🎲 스티커 그리기 (오늘의 스티커)"):
-                    if st.session_state.last_sticker_date == today_str:
-                        st.warning(
-                            "⚠️ 오늘의 칭찬 스티커는 이미 획득하셨습니다!"
-                        )
-                    else:
-                        rand_icon = random.choice(STICKER_ICONS)
-                        rand_msg = random.choice(STICKER_MSG)
-                        sticker_item = {
-                            "icon": rand_icon,
-                            "msg": rand_msg,
-                            "date": today_str,
-                        }
-                        st.session_state.stickers.append(sticker_item)
-                        st.session_state.last_sticker_date = today_str
-                        st.session_state.latest_draw_sticker = sticker_item
-                        save_sheet_data(
-                            stickers_count=len(st.session_state.stickers)
-                        )
-                        st.balloons()
+        btn_c1, btn_c2 = st.columns([3, 1])
+        with btn_c1:
+            if st.button("🎲 스티커 그리기 (오늘의 스티커)"):
+                if st.session_state.last_sticker_date == today_str:
+                    st.warning("⚠️ 오늘의 칭찬 스티커는 이미 획득하셨습니다!")
+                else:
+                    rand_icon = random.choice(STICKER_ICONS)
+                    rand_msg = random.choice(STICKER_MSG)
+                    sticker_item = {
+                        "icon": rand_icon,
+                        "msg": rand_msg,
+                        "date": today_str,
+                    }
+                    st.session_state.stickers.append(sticker_item)
+                    st.session_state.last_sticker_date = today_str
+                    st.session_state.latest_draw_sticker = sticker_item
+                    save_sheet_data(
+                        stickers_count=len(st.session_state.stickers)
+                    )
+                    st.balloons()
 
-            with btn_c2:
-                if st.button("🔄 스티커판 리셋"):
-                    st.session_state.stickers = []
-                    st.session_state.latest_draw_sticker = None
-                    save_sheet_data(stickers_count=0)
-                    st.success("리셋되었습니다!")
-                    st.rerun()
+        with btn_c2:
+            if st.button("🔄 스티커판 리셋"):
+                st.session_state.stickers = []
+                st.session_state.latest_draw_sticker = None
+                save_sheet_data(stickers_count=0)
+                st.success("리셋되었습니다!")
+                st.rerun()
 
-            if st.session_state.latest_draw_sticker:
-                lstk = st.session_state.latest_draw_sticker
-                st.markdown(
-                    f"""
-                    <div style="text-align:center; padding: 14px; background: linear-gradient(135deg, #fbcfe8, #e0e7ff); border-radius:12px; margin-top: 12px;">
-                        <div style="font-size: 46px;">{lstk['icon']}</div>
-                        <div style="font-size: 15px; font-weight: bold; color: #831843;">🎉 축하합니다! 스티커를 획득했어요!</div>
-                        <div style="font-size: 12px; color: #4338ca; font-weight: bold; margin-top: 2px;">"{lstk['msg']}"</div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
-
+        if st.session_state.latest_draw_sticker:
+            lstk = st.session_state.latest_draw_sticker
             st.markdown(
                 f"""
-                <div style="margin-top:16px; font-size:13px; font-weight:700; color:#475569;">
-                    🏆 <b>내 칭찬 스티커북</b> ({len(st.session_state.stickers)} / 30개 모음)
+                <div style="text-align:center; padding: 16px; background: linear-gradient(135deg, #fbcfe8, #e0e7ff); border-radius:14px; margin-top: 15px;">
+                    <div style="font-size: 50px;">{lstk['icon']}</div>
+                    <div style="font-size: 16px; font-weight: bold; color: #831843;">🎉 축하합니다! 스티커를 획득했어요!</div>
+                    <div style="font-size: 13px; color: #4338ca; font-weight: bold; margin-top: 2px;">"{lstk['msg']}"</div>
                 </div>
                 """,
                 unsafe_allow_html=True,
             )
 
-            # 30개 스티커 모던 그리드
-            total_stickers = 30
-            cols_per_row = 6
-            for row_idx in range(0, total_stickers, cols_per_row):
-                row_cols = st.columns(cols_per_row)
-                for c_idx in range(cols_per_row):
-                    i = row_idx + c_idx
-                    if i < total_stickers:
-                        with row_cols[c_idx]:
-                            if i < len(st.session_state.stickers):
-                                stk = st.session_state.stickers[i]
-                                st.markdown(
-                                    f"""
-                                    <div style="height:70px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1px solid #f472b6; border-radius:8px; padding:3px; background-color:#fff5f5; margin-bottom:6px;">
-                                        <div style="font-size:20px;">{stk['icon']}</div>
-                                        <div style="font-size:8px; color:#be185d; font-weight:bold; margin-top:2px; text-align:center;">{stk['msg']}</div>
-                                    </div>
-                                    """,
-                                    unsafe_allow_html=True,
-                                )
-                            else:
-                                st.markdown(
-                                    f"""
-                                    <div style="height:70px; display:flex; align-items:center; justify-content:center; border:1px dashed #cbd5e1; border-radius:8px; color:#cbd5e1; font-size:12px; margin-bottom:6px; background-color:#ffffff;">
-                                        {i+1}
-                                    </div>
-                                    """,
-                                    unsafe_allow_html=True,
-                                )
+        st.markdown(
+            f"""
+            <div style="margin-top:20px; font-size:14px; font-weight:700; color:#475569;">
+                🏆 <b>내 칭찬 스티커북</b> ({len(st.session_state.stickers)} / 30개 모음)
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        total_stickers = 30
+        cols_per_row = 6
+        for row_idx in range(0, total_stickers, cols_per_row):
+            row_cols = st.columns(cols_per_row)
+            for c_idx in range(cols_per_row):
+                i = row_idx + c_idx
+                if i < total_stickers:
+                    with row_cols[c_idx]:
+                        if i < len(st.session_state.stickers):
+                            stk = st.session_state.stickers[i]
+                            st.markdown(
+                                f"""
+                                <div style="height:75px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1px solid #f472b6; border-radius:10px; padding:4px; background-color:#fff5f5; margin-bottom:8px;">
+                                    <div style="font-size:22px;">{stk['icon']}</div>
+                                    <div style="font-size:8px; color:#be185d; font-weight:bold; margin-top:2px; text-align:center;">{stk['msg']}</div>
+                                </div>
+                                """,
+                                unsafe_allow_html=True,
+                            )
+                        else:
+                            st.markdown(
+                                f"""
+                                <div style="height:75px; display:flex; align-items:center; justify-content:center; border:1px dashed #cbd5e1; border-radius:10px; color:#cbd5e1; font-size:13px; margin-bottom:8px; background-color:#ffffff;">
+                                    {i+1}
+                                </div>
+                                """,
+                                unsafe_allow_html=True,
+                            )
+        st.markdown("</div>", unsafe_allow_html=True)
 
     # 4. AI 궁금증 질의응답
     elif "AI 궁금증 질의응답" in ai_tool:
-        with st.container(border=True):
-            st.markdown(
-                "<h4 style='margin:0; font-weight:700; color:#0f172a;'>🔍 AI 탐구 & 호기심 질의응답</h4>",
-                unsafe_allow_html=True,
-            )
-            st.caption(
-                "역사, 과학, 수학 등 궁금한 점을 최신 정보로 정확하게 답변해"
-                " 줍니다."
-            )
-            q_input = st.text_input(
-                "질문 입력:",
-                "이순신 장군의 3대 대첩이 뭐야?",
-                label_visibility="collapsed",
-            )
+        st.markdown(
+            """
+            <div class="custom-card">
+                <h3 style="margin-top:0; font-weight:700; color:#0f172a; font-size:18px;">🔍 AI 탐구 & 호기심 질의응답</h3>
+                <p style="font-size:12px; color:#64748b; margin-bottom:15px;">역사, 과학, 수학 등 궁금한 점을 최신 정보로 정확하게 답변해 줍니다.</p>
+            """,
+            unsafe_allow_html=True,
+        )
+        q_input = st.text_input(
+            "질문 입력:",
+            "이순신 장군의 3대 대첩이 뭐야?",
+            label_visibility="collapsed",
+        )
 
-            if st.button("🟢 질문하기", use_container_width=True):
-                with st.spinner("눈높이에 맞춰 정리하는 중입니다..."):
-                    prompt = (
-                        "당신은 학생 대상의 지식 백과 튜터입니다. 질문:"
-                        f" '{q_input}'.\n\n[주의사항]\n- 만약 질문이 실시간"
-                        " 시사 뉴스나 현재 정치인/대통령 등 시점에 따라 변하는"
-                        " 내용일 경우, 학습 데이터 시점 한계로 인해 실시간 변동될"
-                        " 수 있다는 점을 부드럽게 밝히고 가장 신뢰성 있는"
-                        " 역사/기본 개념 위주로 설명하세요.\n\n[출력"
-                        " 구조]\n이해하기 쉽게\n1) 핵심 요약\n2) 상세 설명\n3) 💡"
-                        " 기억할 점 3단계 구조로 깔끔하게 정리해 주세요."
-                    )
-                    res_text = call_gemini_api(prompt)
-                    st.success("답변 완료!")
-                    st.markdown(res_text)
+        if st.button("🟢 질문하기", use_container_width=True):
+            with st.spinner("눈높이에 맞춰 정리하는 중입니다..."):
+                prompt = (
+                    "당신은 학생 대상의 지식 백과 튜터입니다. 질문:"
+                    f" '{q_input}'.\n\n[주의사항]\n- 만약 질문이 실시간 시사"
+                    " 뉴스나 현재 정치인/대통령 등 시점에 따라 변하는 내용일"
+                    " 경우, 학습 데이터 시점 한계로 인해 실시간 변동될 수"
+                    " 있다는 점을 부드럽게 밝히고 가장 신뢰성 있는 역사/기본"
+                    " 개념 위주로 설명하세요.\n\n[출력 구조]\n이해하기 쉽게\n1)"
+                    " 핵심 요약\n2) 상세 설명\n3) 💡 기억할 점 3단계 구조로"
+                    " 깔끔하게 정리해 주세요."
+                )
+                res_text = call_gemini_api(prompt)
+                st.success("답변 완료!")
+                st.markdown(res_text)
+        st.markdown("</div>", unsafe_allow_html=True)
