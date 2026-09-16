@@ -810,7 +810,7 @@ with tab1:
         with st.container(border=True):
             st.markdown(
                 """
-                <h3 style="margin:0; font-size:15px; font-weight:800; color:#0f172a;">🎯 저녁 70분 몰입 학습 과목 구성</h3>
+                <h3 style="margin-top:0; font-size:15px; font-weight:800; color:#0f172a;">🎯 저녁 70분 몰입 학습 과목 구성</h3>
                 <div style="font-size:11px; color:#64748b; margin-top:2px; margin-bottom:4px;">15~30분 단위 숏 스퍼트로 지루함 없는 구성</div>
                 """,
                 unsafe_allow_html=True,
@@ -866,11 +866,23 @@ with tab1:
 
     with st.container(border=True):
         st.markdown(
-            """
-            <h3 style="margin:0; font-size:15px; font-weight:800; color:#0f172a; margin-bottom:12px;">⚡ 하루 핵심 타임라인 한눈에 보기</h3>
+            f"""
+            <h3 style="margin:0; font-size:15px; font-weight:800; color:#0f172a; margin-bottom:12px;">⚡ {selected_day} 핵심 타임라인 한눈에 보기</h3>
             """,
             unsafe_allow_html=True,
         )
+
+        # [실시간 연동 로직] 선택된 요일의 학원 일정 동적 조합
+        if not is_weekend:
+            sch_items = st.session_state.schedules.get(selected_day, [])
+            # 주요 학원/활동 요약 스트링 조합
+            if sch_items:
+                sch_summary_list = [f"{item['time'].split('~')[0].strip()} {item['name']}" for item in sch_items]
+                sch_detail_txt = " ➡️ ".join(sch_summary_list)
+            else:
+                sch_detail_txt = "등록된 학원 일정이 없습니다."
+        else:
+            sch_detail_txt = "주말 야외활동 & 모닝 학습 일과 진행"
 
         t_cols = st.columns(4)
         with t_cols[0]:
@@ -886,11 +898,11 @@ with tab1:
             )
         with t_cols[1]:
             st.markdown(
-                """
+                f"""
                 <div class="tl-item-box">
-                    <div style="font-size:11px; font-weight:700; color:#059669;">🏫 08:30 ~ 18:30 [방과후]</div>
+                    <div style="font-size:11px; font-weight:700; color:#059669;">🏫 08:30 ~ 18:30 [{selected_day} 방과후]</div>
                     <div style="font-size:12px; font-weight:700; color:#0f172a; margin:3px 0;">학교 수업 & 학원 동선</div>
-                    <div style="font-size:10px; color:#64748b;">수학/피아노/미술 픽업 ➡️ 17:30 합기도(도보3분)</div>
+                    <div style="font-size:10px; color:#64748b; line-height:1.4;">{sch_detail_txt}</div>
                 </div>
                 """,
                 unsafe_allow_html=True,
@@ -978,7 +990,7 @@ with tab2:
         if st.button(f"💾 {day_choice} 수정 내용 저장"):
             st.session_state.schedules[day_choice] = new_items
             save_sheet_data(schedules=st.session_state.schedules)
-            st.success("저장되었습니다! 구글 시트에 자동 연동됩니다.")
+            st.success("저장되었습니다! 대시보드 타임라인에 즉시 반영됩니다.")
             st.rerun()
     else:
         with st.container(border=True):
@@ -1527,7 +1539,7 @@ with tab6:
                     unsafe_allow_html=True,
                 )
 
-            # 🎯 달성 보상 목표: 입력창 넓게 확장 및 두 버튼 가로 폭 반으로 축소
+            # 🎯 달성 보상 목표: 입력창 넓게 확장 및 두 버튼 가로 폭 슬림하게 유지
             st.markdown(
                 """
                 <div style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
