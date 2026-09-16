@@ -3,7 +3,6 @@ import json
 import random
 import re
 import pandas as pd
-import plotly.express as px
 import requests
 import streamlit as st
 
@@ -468,7 +467,7 @@ def save_sheet_data(
         pass
 
 
-# 5. API 키 설정 (gemini-3.1-flash-lite 모델 적용으로 일일 500회 제한 적용)
+# 5. API 키 설정 (gemini-3.1-flash-lite 모델 적용)
 api_key = st.secrets.get("GEMINI_API_KEY", "")
 
 
@@ -653,7 +652,7 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
 ])
 
 # ==========================================
-# TAB 1: 대시보드
+# TAB 1: 대시보드 (스티커 현황판 상단 이동)
 # ==========================================
 with tab1:
     st.markdown(
@@ -751,132 +750,81 @@ with tab1:
 
     st.markdown("<div style='margin-top: 12px;'></div>", unsafe_allow_html=True)
 
-    c1, c2 = st.columns(2)
+    # 대시보드 기존 그래프 위치 ➡️ 30개 스티커 모음 현황판 (한줄 픽스 목표 바 포함)
+    with st.container(border=True):
+        current_cnt = len(st.session_state.stickers)
+        pct_val = int(current_cnt / 30 * 100)
 
-    with c1:
-        with st.container(border=True):
-            st.markdown(
-                f"""
-                <h3 style="margin:0; font-size:15px; font-weight:800; color:#0f172a;">📊 {'평일' if not is_weekend else selected_day} 하루 시간 배분 비율</h3>
-                <div style="font-size:11px; color:#64748b; margin-top:2px; margin-bottom:4px;">학업, 수면, 휴식, 이동의 균형 시각화</div>
-                """,
-                unsafe_allow_html=True,
-            )
+        # 상단 헤더 & 한줄 픽스 목표 수정 영역
+        st.markdown(
+            f"""
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+                <h3 style="margin:0; font-weight:800; color:#0f172a; font-size:15px;">
+                    🏆 칭찬 스티커 달성 현황판 <span style="color:#ec4899; font-weight:900; font-size:14px;">({current_cnt}/30개, {pct_val}%)</span>
+                </h3>
+                <span style="font-size:11px; color:#64748b;">AI 탭에서 오늘 미션 완수 후 스티커를 뽑을 수 있습니다</span>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
-            if is_weekend:
-                df_pie = pd.DataFrame({
-                    "항목": [
-                        "수면 (8.5시간)",
-                        "모닝학습 & 독서 (2.5시간)",
-                        "야외활동 & 외출 (5.0시간)",
-                        "가족시간 & 식사 (8.0시간)",
-                    ],
-                    "시간": [8.5, 2.5, 5.0, 8.0],
-                })
-            else:
-                df_pie = pd.DataFrame({
-                    "항목": [
-                        "수면 (8.5시간)",
-                        "학교/학원 (8시간)",
-                        "여유/이동/식사 (6.3시간)",
-                        "저녁몰입학습 (1.1시간)",
-                    ],
-                    "시간": [8.5, 8.0, 6.3, 1.1],
-                })
+        # 🎯 한줄 픽스 달성 보상 목표 설정 바
+        c_in_dash, c_btn_pin_dash, c_btn_rst_dash = st.columns([7.5, 0.8, 1.2], vertical_alignment="center")
+        with c_in_dash:
+            new_goal_dash = st.text_input(
+                "달성 보상 목표",
+                value=st.session_state.reward_goal,
+                key="input_reward_goal_dash",
+                label_visibility="collapsed",
+            )
+        with c_btn_pin_dash:
+            if st.button("📌 저장", key="btn_save_goal_dash", use_container_width=True):
+                st.session_state.reward_goal = new_goal_dash
+                save_sheet_data(reward_goal=new_goal_dash)
+                st.success("완료!")
+                st.rerun()
+        with c_btn_rst_dash:
+            if st.button("🔄 초기화", key="btn_rst_stk_dash", use_container_width=True):
+                st.session_state.stickers = []
+                st.session_state.last_sticker_date = ""
+                st.session_state.latest_draw_sticker = None
+                save_sheet_data(stickers_count=0)
+                st.toast("스티커가 0개로 초기화되었습니다!")
+                st.rerun()
 
-            fig_pie = px.pie(
-                df_pie,
-                values="시간",
-                names="항목",
-                hole=0.55,
-                color_discrete_sequence=[
-                    "#6366f1",
-                    "#3b82f6",
-                    "#f59e0b",
-                    "#10b981",
-                ],
-            )
-            fig_pie.update_traces(
-                textposition="inside",
-                textinfo="percent",
-                marker=dict(line=dict(color="#ffffff", width=2)),
-            )
-            fig_pie.update_layout(
-                margin=dict(t=10, b=10, l=10, r=10),
-                height=210,
-                showlegend=True,
-                legend=dict(
-                    orientation="h",
-                    yanchor="bottom",
-                    y=-0.28,
-                    xanchor="center",
-                    x=0.5,
-                    font=dict(size=10, color="#64748b"),
-                ),
-                paper_bgcolor="rgba(0,0,0,0)",
-                plot_bgcolor="rgba(0,0,0,0)",
-            )
-            st.plotly_chart(fig_pie, use_container_width=True)
+        st.markdown("<div style='margin-bottom: 10px;'></div>", unsafe_allow_html=True)
 
-    with c2:
-        with st.container(border=True):
-            st.markdown(
-                """
-                <h3 style="margin-top:0; font-size:15px; font-weight:800; color:#0f172a;">🎯 저녁 70분 몰입 학습 과목 구성</h3>
-                <div style="font-size:11px; color:#64748b; margin-top:2px; margin-bottom:4px;">15~30분 단위 숏 스퍼트로 지루함 없는 구성</div>
-                """,
-                unsafe_allow_html=True,
-            )
-            df_bar = pd.DataFrame({
-                "과목": [
-                    "수학 (학원숙제)",
-                    "영어 (단어+학습지)",
-                    "국어 (어휘/독해)",
-                    "마무리 (가방/책상)",
-                ],
-                "시간(분)": [30, 15, 15, 10],
-            })
+        # 30개 스티커 모음판 요약
+        total_stickers = 30
+        cols_per_row = 10
+        for row_idx in range(0, total_stickers, cols_per_row):
+            row_cols = st.columns(cols_per_row)
+            for c_idx in range(cols_per_row):
+                i = row_idx + c_idx
+                if i < total_stickers:
+                    with row_cols[c_idx]:
+                        if i < len(st.session_state.stickers):
+                            stk = st.session_state.stickers[i]
+                            st.markdown(
+                                f"""
+                                <div style="height:52px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1px solid #f472b6; border-radius:8px; background-color:#fff5f5; margin-bottom:4px;">
+                                    <div style="font-size:16px;">{stk['icon']}</div>
+                                    <div style="font-size:7px; color:#be185d; font-weight:bold; margin-top:1px; text-align:center;">{stk['msg'][:5]}..</div>
+                                </div>
+                                """,
+                                unsafe_allow_html=True,
+                            )
+                        else:
+                            st.markdown(
+                                f"""
+                                <div style="height:52px; display:flex; align-items:center; justify-content:center; border:1px dashed #cbd5e1; border-radius:8px; color:#94a3b8; font-size:11px; margin-bottom:4px; background-color:#f8fafc;">
+                                    {i+1}
+                                </div>
+                                """,
+                                unsafe_allow_html=True,
+                            )
 
-            fig_bar = px.bar(
-                df_bar,
-                x="과목",
-                y="시간(분)",
-                color="과목",
-                text="시간(분)",
-                color_discrete_sequence=[
-                    "#3b82f6",
-                    "#8b5cf6",
-                    "#ec4899",
-                    "#64748b",
-                ],
-            )
-            fig_bar.update_traces(
-                textposition="outside",
-                marker_line_width=0,
-                width=0.45,
-            )
-            fig_bar.update_layout(
-                margin=dict(t=20, b=10, l=10, r=10),
-                height=210,
-                showlegend=False,
-                paper_bgcolor="rgba(0,0,0,0)",
-                plot_bgcolor="rgba(0,0,0,0)",
-                xaxis=dict(
-                    showgrid=False,
-                    tickfont=dict(size=10, color="#1e293b"),
-                    title=None,
-                ),
-                yaxis=dict(
-                    showgrid=True,
-                    gridcolor="#f8fafc",
-                    tickfont=dict(size=10, color="#94a3b8"),
-                    title=None,
-                    range=[0, 38],
-                ),
-            )
-            st.plotly_chart(fig_bar, use_container_width=True)
-
-    # 4단계 타임라인: 1~2줄 고정 + 3줄 연동 반영
+    # 4단계 핵심 타임라인
     with st.container(border=True):
         st.markdown(
             f"""
@@ -888,7 +836,6 @@ with tab1:
         t_cols = st.columns(4)
 
         if not is_weekend:
-            # 평일 타임라인 (3번째 줄: 요일별 학원 탭 연동)
             sch_items = st.session_state.schedules.get(selected_day, [])
             if sch_items:
                 sch_summary_list = [f"{item['time'].split('~')[0].strip()} {item['name']}" for item in sch_items]
@@ -949,7 +896,6 @@ with tab1:
                     unsafe_allow_html=True,
                 )
         else:
-            # 주말 4단계 핵심 타임라인
             with t_cols[0]:
                 st.markdown(
                     """
@@ -1501,7 +1447,7 @@ with tab5:
             )
 
 # ==========================================
-# TAB 6: AI 코치 & 퀴즈 (영어 퀴즈 순수 발음 음성 재생 기능 탑재)
+# TAB 6: AI 코치 & 퀴즈 (2x2 이쁜 균형 구조)
 # ==========================================
 with tab6:
     st.markdown(
@@ -1603,7 +1549,6 @@ with tab6:
                 st.markdown(st.session_state.last_quiz_text)
 
                 if "영단어 & 표현" in st.session_state.last_quiz_subject:
-                    # 영어 알파벳 텍스트만 추출하여 순수 원어 발음 재생
                     raw_txt = st.session_state.last_quiz_text.split("💡")[0]
                     english_words = re.findall(r"[a-zA-Z]+", raw_txt)
                     clean_en_text = " ".join(english_words)
@@ -1680,7 +1625,7 @@ with tab6:
                     """
                     st.components.v1.html(tts_script, height=0)
 
-    # 2행: 스티커 카운터 & 질의응답
+    # 2행: AI 스티커 뽑기 & 질의응답 (2x2 이쁜 대칭 배치)
     row2_col1, row2_col2 = st.columns(2)
 
     with row2_col1:
@@ -1692,7 +1637,7 @@ with tab6:
                 f"""
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
                     <h3 style="margin:0; font-weight:800; color:#0f172a; font-size:15px;">
-                        🎨 AI 미션 달성 칭찬 스티커 카운터 <span style="color:#ec4899; font-weight:900; font-size:14px;">({current_cnt}/30개, {pct_val}%)</span>
+                        🎨 AI 미션 달성 스티커 뽑기 <span style="color:#ec4899; font-weight:900; font-size:14px;">({current_cnt}/30개)</span>
                     </h3>
                     <span style="font-size:10px; background:#fce7f3; color:#be185d; font-weight:700; padding:2px 6px; border-radius:4px;">하루 1장 제한</span>
                 </div>
@@ -1701,12 +1646,12 @@ with tab6:
             )
 
             st.markdown(
-                '<p style="font-size:11px; color:#64748b; margin-top:2px; margin-bottom:12px;">오늘 미션을 성공했을 때 칭찬 스티커 카드를 생성하여 내 스티커북(30개판)에 저장합니다!</p>',
+                '<p style="font-size:11px; color:#64748b; margin-top:2px; margin-bottom:12px;">오늘 미션을 성공했을 때 스티커 카드를 뽑아 내 스티커북에 저장하세요!</p>',
                 unsafe_allow_html=True,
             )
 
             if st.button(
-                "🎲 스티커 그리기", key="btn_g_sticker", use_container_width=True
+                "🎲 스티커 뽑기", key="btn_g_sticker", use_container_width=True
             ):
                 if st.session_state.last_sticker_date == today_str:
                     st.warning("⚠️ 오늘의 칭찬 스티커는 이미 획득하셨습니다!")
@@ -1730,45 +1675,13 @@ with tab6:
                 lstk = st.session_state.latest_draw_sticker
                 st.markdown(
                     f"""
-                    <div style="text-align:center; padding: 18px 16px; background: linear-gradient(135deg, #fef9c3, #fef08a); border: 1px solid #fde047; border-radius:14px; margin-top: 10px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
-                        <div style="font-size: 32px; line-height: 1.1;">{lstk['icon']}</div>
-                        <div style="font-size: 13px; font-weight: 800; color: #854d0e; margin-top: 4px;">"{lstk['msg']}"</div>
+                    <div style="text-align:center; padding: 14px 12px; background: linear-gradient(135deg, #fef9c3, #fef08a); border: 1px solid #fde047; border-radius:12px; margin-top: 10px; margin-bottom: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
+                        <div style="font-size: 28px; line-height: 1.1;">{lstk['icon']}</div>
+                        <div style="font-size: 12px; font-weight: 800; color: #854d0e; margin-top: 4px;">"{lstk['msg']}"</div>
                     </div>
                     """,
                     unsafe_allow_html=True,
                 )
-
-            st.markdown(
-                """
-                <div style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
-                    <span style="font-size: 12px; font-weight: 700; color: #334155; white-space: nowrap;">🎯 달성 보상 목표 :</span>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-            
-            c_in, c_btn_pin, c_btn_rst = st.columns([4.1, 0.45, 0.65], vertical_alignment="center")
-            with c_in:
-                new_goal_val = st.text_input(
-                    "보상 목표",
-                    value=st.session_state.reward_goal,
-                    key="input_reward_goal",
-                    label_visibility="collapsed",
-                )
-            with c_btn_pin:
-                if st.button("📌", key="btn_save_goal", use_container_width=True):
-                    st.session_state.reward_goal = new_goal_val
-                    save_sheet_data(reward_goal=new_goal_val)
-                    st.success("완료!")
-                    st.rerun()
-            with c_btn_rst:
-                if st.button("🔄 초기화", key="btn_g_sticker_reset_next_to_pin", use_container_width=True):
-                    st.session_state.stickers = []
-                    st.session_state.last_sticker_date = ""
-                    st.session_state.latest_draw_sticker = None
-                    save_sheet_data(stickers_count=0)
-                    st.toast("스티커가 0개로 초기화되었습니다!")
-                    st.rerun()
 
     with row2_col2:
         with st.container(border=True):
@@ -1796,43 +1709,3 @@ with tab6:
                     res_text = call_gemini_api(prompt)
                     st.success("답변 완료!")
                     st.markdown(res_text)
-
-    # 3행: 내 칭찬 스티커북 (30개 모음판)
-    with st.container(border=True):
-        st.markdown(
-            f"""
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <h3 style="margin:0; font-size:14px; font-weight:800; color:#0f172a;">🏆 내 칭찬 스티커북 ({len(st.session_state.stickers)} / 30개 모음)</h3>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-        total_stickers = 30
-        cols_per_row = 10
-        for row_idx in range(0, total_stickers, cols_per_row):
-            row_cols = st.columns(cols_per_row)
-            for c_idx in range(cols_per_row):
-                i = row_idx + c_idx
-                if i < total_stickers:
-                    with row_cols[c_idx]:
-                        if i < len(st.session_state.stickers):
-                            stk = st.session_state.stickers[i]
-                            st.markdown(
-                                f"""
-                                <div style="height:54px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1px solid #f472b6; border-radius:8px; background-color:#fff5f5; margin-bottom:4px;">
-                                    <div style="font-size:16px;">{stk['icon']}</div>
-                                    <div style="font-size:7px; color:#be185d; font-weight:bold; margin-top:1px; text-align:center;">{stk['msg'][:5]}..</div>
-                                </div>
-                                """,
-                                unsafe_allow_html=True,
-                            )
-                        else:
-                            st.markdown(
-                                f"""
-                                <div style="height:54px; display:flex; align-items:center; justify-content:center; border:1px dashed #cbd5e1; border-radius:8px; color:#94a3b8; font-size:11px; margin-bottom:4px; background-color:#f8fafc;">
-                                    {i+1}
-                                </div>
-                                """,
-                                unsafe_allow_html=True,
-                            )
