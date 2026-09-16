@@ -6,14 +6,14 @@ import pandas as pd
 import requests
 import streamlit as st
 
-# 1. 페이지 기본 설정 (바로가기 생성 시 표시될 기본 이름 및 아이콘 설정)
+# 1. 페이지 기본 설정
 st.set_page_config(
     page_title="초등 5학년 주간 일정 & 저녁/주말 루틴",
     page_icon="📅",
     layout="wide",
 )
 
-# 2. Pretendard 폰트 + 태블릿 터치/데스크톱 모드 레이어 블로킹 완벽 해결 CSS
+# 2. CSS 스타일 설정
 st.markdown(
     """
 <style>
@@ -23,7 +23,6 @@ st.markdown(
         font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif !important;
     }
     
-    /* 1. 전체 바탕화면 */
     .stApp {
         background-color: #e2e8f0 !important;
         color: #1e293b;
@@ -35,7 +34,6 @@ st.markdown(
         max-width: 1180px;
     }
 
-    /* 2. 일반 큰 네모 박스 설정 (터치 신호 통과 지정) */
     div[data-testid="stVerticalBlockBorderWrapper"] {
         background-color: #ffffff !important;
         border: 1.5px solid #cbd5e1 !important;
@@ -51,7 +49,6 @@ st.markdown(
         background-color: #ffffff !important;
     }
 
-    /* ★ [태블릿 터치/데스크톱 모드 패치] 체크박스 및 버튼 클릭 레이어를 최상단(z-index: 999)으로 강제 승격 */
     div[data-testid="stCheckbox"], .stCheckbox {
         position: relative !important;
         z-index: 999 !important;
@@ -109,7 +106,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# 3. PIN 번호 인증 시스템 (1306 설정)
+# 3. PIN 번호 인증 시스템
 SET_PIN = "1306"
 
 if "authenticated" not in st.session_state:
@@ -147,9 +144,7 @@ if not st.session_state.authenticated:
 
 # 4. 구글 시트 연동 설정
 SHEET_ID = "1x5A3X2lGb5SFpHE5qspuetmdOsWMiP_mfnWY0ZqD6rc"
-SHEET_CSV_URL = (
-    f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sheet=data"
-)
+SHEET_CSV_URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sheet=data"
 WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxrG7rYb5WXHkbd20QsiWywCNM7GWbW7KVll2n88gP15kHVsCfAdF_Tcr7Uhc53eqRw/exec"
 
 DEFAULT_SCHEDULES = {
@@ -416,10 +411,9 @@ STICKER_MSG = [
     "차근차근 실력이 쌓이고 있어!", "약속을 지키는 네가 최고야!", "지치지 않고 완수한 스스로를 칭찬해!", "내일 더 멋지게 날아오르자!"
 ]
 
-# 7. 상단 헤더 (한국 표준시 KST 기준 날짜 자동 갱신 패치 적용)
+# 7. 상단 헤더 (KST 기준 날짜 자동 갱신 적용)
 days_kor = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"]
 
-# Streamlit Cloud 서버 시차(UTC)를 한국 시간(KST = UTC+9)으로 강제 변환
 utc_now = datetime.datetime.now(datetime.timezone.utc)
 kst_now = utc_now + datetime.timedelta(hours=9)
 
@@ -997,11 +991,15 @@ with tab6:
                     st.session_state.last_quiz_text = res_text
                     st.session_state.last_quiz_subject = subject
                     
-                    # ★ [영어 TTS 파싱 개선] 빈칸(____) 영역을 2초간 쉬어가는 쉼표(, , , , ) 구문으로 치환
+                    # ★ [수정 2] 영어 퀴즈 순수 영문 지문만 추출 + 빈칸 4초 일시정지(, , , , , , , , ) 적용
                     if "영단어 & 표현" in subject:
-                        quiz_main_txt = res_text.split("💡")[0]
-                        formatted_text = re.sub(r"_{2,}", ", , , , ", quiz_main_txt)
-                        st.session_state.clean_en_text = formatted_text.replace("\n", ", ").replace('"', "'")
+                        quiz_main_txt = res_text.split("💡")[0].split("①")[0]
+                        # 한글 텍스트 및 [문제] 문구 완벽 제거 (순수 영어 문장만 남김)
+                        en_lines = [line.strip() for line in quiz_main_txt.split("\n") if re.search(r'[a-zA-Z]', line)]
+                        pure_en_text = " ".join(en_lines)
+                        # 빈칸(____)을 쉼표 8개로 변경해 약 4초간 일시정지 효과 유도
+                        formatted_text = re.sub(r"_{2,}", ", , , , , , , , ", pure_en_text)
+                        st.session_state.clean_en_text = formatted_text.replace('"', "'")
                     else:
                         st.session_state.clean_en_text = ""
 
@@ -1010,16 +1008,24 @@ with tab6:
             if st.session_state.last_quiz_text:
                 st.markdown(st.session_state.last_quiz_text)
                 if "영단어 & 표현" in st.session_state.last_quiz_subject and st.session_state.clean_en_text:
-                    if st.button("🔊 영어 문제 발음 다시 듣기", key="btn_eng_tts"):
+                    # ★ [수정 3] 다시 듣기 버튼 무한 클릭 보장 로직 (HTML key 매번 갱신)
+                    if "tts_count" not in st.session_state:
+                        st.session_state.tts_count = 0
+                        
+                    if st.button("🔊 영어 지문 발음 다시 듣기", key="btn_eng_tts"):
+                        st.session_state.tts_count += 1
                         st.components.v1.html(
                             f"""
                             <script>
-                                window.speechSynthesis.cancel();
-                                var msg = new SpeechSynthesisUtterance("{st.session_state.clean_en_text}");
-                                msg.lang = "en-US";
-                                msg.rate = 0.8; // 아이가 편안하게 들을 수 있도록 속도 0.8 설정
-                                window.speechSynthesis.speak(msg);
+                                (function() {{
+                                    window.speechSynthesis.cancel();
+                                    var msg = new SpeechSynthesisUtterance("{st.session_state.clean_en_text}");
+                                    msg.lang = "en-US";
+                                    msg.rate = 0.8;
+                                    window.speechSynthesis.speak(msg);
+                                }})();
                             </script>
+                            <!-- {st.session_state.tts_count} -->
                             """,
                             height=0
                         )
@@ -1036,32 +1042,26 @@ with tab6:
                     st.balloons()
                     st.info(f"💬 **AI 멘토의 응원:**\n\n{msg_text}")
                     clean_text = msg_text.replace("\n", " ").replace('"', "'")
+                    
+                    # ★ [수정 1] 2번씩 재생되던 현상 방지: 중복 이벤트 제거 및 단일 1회 지정 출력
                     st.components.v1.html(
                         f"""
                         <script>
-                            window.speechSynthesis.cancel();
-                            var msg = new SpeechSynthesisUtterance("{clean_text}");
-                            msg.lang = "ko-KR";
-                            msg.rate = 1.0;
-                            msg.pitch = 1.05;
-                            
-                            // ★ 삼성 인터넷 등 브라우저 환경에서 한국어(ko) 보이스 검색 후 강제 지정하여 외국인 억양 현상 차단
-                            var voices = window.speechSynthesis.getVoices();
-                            var korVoice = voices.find(function(v) {{
-                                return v.lang.includes("ko") || v.lang.includes("KO");
-                            }});
-                            if(korVoice) {{ msg.voice = korVoice; }}
-                            
-                            window.speechSynthesis.speak(msg);
-                            
-                            window.speechSynthesis.onvoiceschanged = function() {{
-                                var voicesAsync = window.speechSynthesis.getVoices();
-                                var korVoiceAsync = voicesAsync.find(function(v) {{
+                            (function() {{
+                                window.speechSynthesis.cancel();
+                                var msg = new SpeechSynthesisUtterance("{clean_text}");
+                                msg.lang = "ko-KR";
+                                msg.rate = 1.0;
+                                msg.pitch = 1.05;
+                                
+                                var voices = window.speechSynthesis.getVoices();
+                                var korVoice = voices.find(function(v) {{
                                     return v.lang.includes("ko") || v.lang.includes("KO");
                                 }});
-                                if(korVoiceAsync) {{ msg.voice = korVoiceAsync; }}
+                                if(korVoice) {{ msg.voice = korVoice; }}
+                                
                                 window.speechSynthesis.speak(msg);
-                            }};
+                            }})();
                         </script>
                         """,
                         height=0,
