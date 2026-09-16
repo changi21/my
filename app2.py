@@ -13,7 +13,7 @@ st.set_page_config(
     layout="wide",
 )
 
-# 2. Pretendard 폰트 + 바탕화면/큰박스 색상 완전 분리 + 높이 자동 맞춤 CSS
+# 2. Pretendard 폰트 + 바탕화면/큰박스 색상 완전 분리 + 높이 고정 CSS
 st.markdown(
     """
 <style>
@@ -23,7 +23,7 @@ st.markdown(
         font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif !important;
     }
     
-    /* 1. 전체 바탕화면: 명확한 연한 슬레이트 회색 (#e2e8f0) */
+    /* 1. 전체 바탕화면 */
     .stApp {
         background-color: #e2e8f0 !important;
         color: #1e293b;
@@ -35,30 +35,35 @@ st.markdown(
         max-width: 1180px;
     }
 
-    /* 2. 큰 네모 박스: 완벽한 순백색 (#ffffff) 고정 및 테두리 명확화 */
+    /* 2. 큰 네모 박스 */
     div[data-testid="stVerticalBlockBorderWrapper"] {
         background-color: #ffffff !important;
         border: 1.5px solid #cbd5e1 !important;
         border-radius: 16px !important;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
-        padding: 20px 20px 20px 20px !important;
+        padding: 16px !important;
         margin-bottom: 18px !important;
     }
 
-    /* 네모 박스 내부 영역 투명화 방지 */
-    div[data-testid="stVerticalBlockBorderWrapper"] > div {
-        background-color: #ffffff !important;
+    /* 상단 D-Day & 명언 박스 높이 완벽 통일 (145px 고정) */
+    .top-card-wrapper [data-testid="stVerticalBlockBorderWrapper"] {
+        height: 145px !important;
+        min-height: 145px !important;
+        max-height: 145px !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
     }
 
-    /* 열(Column) 내부 컨테이너 높이 100% 동일 맞춤 */
+    div[data-testid="stVerticalBlockBorderWrapper"] > div {
+        background-color: #ffffff !important;
+        height: 100% !important;
+    }
+
+    /* 열(Column) 높이 100% 동일 맞춤 */
     [data-testid="stColumn"] > div {
         height: 100%;
-    }
-    [data-testid="stColumn"] [data-testid="stVerticalBlockBorderWrapper"] {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
     }
 
     .banner-blue {
@@ -81,7 +86,6 @@ st.markdown(
         box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
     }
 
-    /* 타임라인 박스 높이를 95px로 픽스하여 4개 칸의 균일함 유지 */
     .tl-item-box {
         background-color: #f8fafc !important;
         border: 1px solid #cbd5e1 !important;
@@ -654,7 +658,7 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
 ])
 
 # ==========================================
-# TAB 1: 대시보드 (좌우 높이 및 2줄 명언 대비 라인 재조정 완벽 적용)
+# TAB 1: 대시보드 (고정 높이 및 여백 수정)
 # ==========================================
 with tab1:
     st.markdown(
@@ -679,14 +683,15 @@ with tab1:
 
     st.markdown("<div style='margin-top: 6px;'></div>", unsafe_allow_html=True)
 
-    # 상단 2분할 영역: [D-Day 카드] + [AI 추천 명언 카드] (상단 라인 완벽 동기화)
+    # top-card-wrapper 클래스로 감싸서 CSS에서 145px 높이 완전 고정 적용
+    st.markdown('<div class="top-card-wrapper">', unsafe_allow_html=True)
     top_c1, top_c2 = st.columns([1, 1])
 
     with top_c1:
         with st.container(border=True):
             st.markdown(
                 """
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
                     <span style="font-size:11px; font-weight:700; color:#64748b;">🚩 다가오는 주요 일정 D-Day</span>
                 </div>
                 """,
@@ -714,9 +719,9 @@ with tab1:
                 d_day_txt = "D-DAY 🎉" if closest_diff == 0 else f"D-{closest_diff}"
                 st.markdown(
                     f"""
-                    <div style="padding:2px 0; min-height:68px;">
+                    <div style="padding:2px 0;">
                         <div style="font-size:22px; font-weight:900; color:#ef4444; line-height:1.1;">{d_day_txt}</div>
-                        <div style="font-size:14px; font-weight:800; color:#0f172a; margin-top:3px;">{closest_name}</div>
+                        <div style="font-size:13px; font-weight:800; color:#0f172a; margin-top:2px;">{closest_name}</div>
                         <div style="font-size:11px; color:#64748b; margin-top:1px;">일정 날짜: {closest_date}</div>
                     </div>
                     """,
@@ -725,7 +730,7 @@ with tab1:
             else:
                 st.markdown(
                     """
-                    <div style="padding:6px 0; color:#94a3b8; font-size:11px; min-height:68px;">
+                    <div style="padding:4px 0; color:#94a3b8; font-size:11px;">
                         등록된 D-Day 일정이 없거나 모두 지났습니다.<br>아래에서 새로 등록해 보세요!
                     </div>
                     """,
@@ -762,17 +767,18 @@ with tab1:
                 <div style="display:flex; flex-direction:column; justify-content:space-between; height:100%;">
                     <div>
                         <span style="font-size:11px; font-weight:700; color:#64748b;">✨ AI 매일 아침 추천 명언</span>
-                        <div style="font-size:14px; font-weight:800; color:#4f46e5; margin-top:4px; min-height:42px; line-height:1.35; display:flex; align-items:center;">
+                        <div style="font-size:13px; font-weight:800; color:#4f46e5; margin-top:3px; line-height:1.3;">
                             "{q_main}"
                         </div>
                     </div>
-                    <div style="font-size:11px; color:#475569; background:#f8fafc; padding:6px 10px; border-radius:8px; border:1px solid #e2e8f0; margin-bottom:2px; line-height:1.3;">
+                    <div style="font-size:11px; color:#475569; background:#f8fafc; padding:5px 8px; border-radius:8px; border:1px solid #e2e8f0; margin-bottom: 4px; line-height:1.25;">
                         💡 {q_sub}
                     </div>
                 </div>
                 """,
                 unsafe_allow_html=True,
             )
+    st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown("<div style='margin-top: 12px;'></div>", unsafe_allow_html=True)
 
@@ -1456,7 +1462,7 @@ with tab5:
             )
 
 # ==========================================
-# TAB 6: AI 코치 & 퀴즈 (첫번째 사진 유지)
+# TAB 6: AI 코치 & 퀴즈
 # ==========================================
 with tab6:
     st.markdown(
@@ -1634,7 +1640,7 @@ with tab6:
                     """
                     st.components.v1.html(tts_script, height=0)
 
-    # 2행: 스티커 카운터 박스 (목표 설정 + 📌 저장 + 🔄 초기화 버튼 포함)
+    # 2행: 스티커 카운터 박스
     row2_col1, row2_col2 = st.columns(2)
 
     with row2_col1:
