@@ -111,12 +111,17 @@ st.markdown(
         box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
     }
 
+    /* 타임라인 박스 높이를 95px로 픽스하여 4개 칸의 균일함 유지 */
     .tl-item-box {
         background-color: #f8fafc !important;
         border: 1px solid #cbd5e1 !important;
         border-radius: 12px;
-        padding: 14px 14px;
+        padding: 12px 14px;
+        min-height: 95px;
         height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
         margin-bottom: 4px;
     }
 
@@ -353,15 +358,11 @@ DEFAULT_EVENING = {
 DEFAULT_WEEKEND = {
     "토요일": [
         ("06:30 ~ 07:00", "기상 및 아침 뇌 깨우기", "6시 30분~7시 사이 기상"),
-        (
-            "07:00 ~ 08:30",
-            "📝 [주말 모닝 학습] 90분 몰입 완주",
-            "수학+영어+독서",
-        ),
+        ("07:00 ~ 08:30", "📝 [주말 모닝 학습] 90분 몰입 완주", "수학+영어+독서"),
         ("08:30 ~ 09:00", "🍚 아침 식사 및 정돈", "온 가족 아침 식사"),
         ("10:00 ~ 12:00", "🎮 게임 & 자유시간 1차 (120분)", "학습 완주 후 자유시간"),
-        ("13:00 ~ 15:30", "⚾ [신체활동] 아빠와 야구", "햇빛 쬐며 신체 발달"),
-        ("16:30 ~ 18:00", "🎮 게임 & 자유시간 2차 (90분)", "게임 시간 쪼개기 수칙"),
+        ("13:00 ~ 18:00", "⚾ [신체활동 & 외출] 야외 신체활동 및 자유시간", "햇빛 쬐며 신체 발달"),
+        ("19:00 ~ 20:00", "🎲 [가족 시간] 보드게임 & 온 가족 대화", "가족 소통 및 즐거운 시간"),
         ("20:00 ~ 21:00", "📖 밤 몰입 독서 1시간", "부모님 운동 시간 동안 독서"),
         ("21:20 ~ 22:10", "🚿 샤워 및 취침", "22:00 전후 취침"),
     ],
@@ -370,8 +371,8 @@ DEFAULT_WEEKEND = {
         ("07:00 ~ 08:30", "📝 [주말 모닝 학습] 90분 몰입 완주", "수학+영어+독서"),
         ("09:00 ~ 10:00", "🙏 인터넷 예배", "가족 인터넷 예배 드리기"),
         ("10:00 ~ 12:00", "🎮 게임 & 자유시간 1차 (120분)", "자유시간"),
-        ("13:00 ~ 15:30", "⚾ 야외활동 / 주말 외출", "야외활동"),
-        ("16:30 ~ 18:00", "🎮 게임 & 자유시간 2차 (90분)", "게임 마감"),
+        ("13:00 ~ 18:00", "⚾ [신체활동 & 외출] 야외 신체활동 및 자유시간", "야외활동 및 주말 외출"),
+        ("19:00 ~ 20:00", "🎲 [가족 시간] 보드게임 & 온 가족 대화", "가족 소통 및 이야기 나누기"),
         ("20:00 ~ 21:00", "📖 밤 몰입 독서 1시간", "차분한 독서 시간"),
         ("21:20 ~ 22:10", "🚿 샤워 및 취침", "월요일 준비 및 취침"),
     ],
@@ -557,11 +558,11 @@ if "checklist_weekend" not in st.session_state:
                 False,
             ),
             "wk2": (
-                "⚾ 아빠와 야구: 13:00~15:30 햇빛 쬐며 신체활동 다녀오기",
+                "⚾ 야외활동 및 외출: 13:00~18:00 햇빛 쬐며 신체활동 다녀오기",
                 False,
             ),
             "wk3": (
-                "🎮 게임 약속 준수: 3시간 쪼개기 규칙 (1.5시간 × 2회) 지키기",
+                "🎲 가족 시간: 19:00~20:00 온 가족 함께 보드게임 및 이야기 나누기",
                 False,
             ),
             "wk4": (
@@ -618,7 +619,7 @@ with h_col1:
         </div>
         <div style="font-size: 12px; color: #64748b; font-weight: 500;">
             <span style="background: #dbeafe; color: #1e40af; padding: 2px 6px; border-radius: 4px; font-weight: 700;">오늘: {today_str} ({today_name})</span>
-            &nbsp;수면 22:00 전 • 아침 최태성 한국사 • 저녁 70분 스퍼트
+            &nbsp;수면 22:00 전 • 주말 가족 소통 & 야외활동 • 저녁 70분 몰입 스퍼트
         </div>
         """,
         unsafe_allow_html=True,
@@ -712,10 +713,10 @@ with tab1:
             """
             <div class="metric-card-tw">
                 <span class="metric-title-tw">주말 야외/신체 활동</span>
-                <div class="metric-val-tw" style="color:#d97706;">2.5시간</div>
+                <div class="metric-val-tw" style="color:#d97706;">5.0시간</div>
                 <div class="metric-sub-tw" style="display:flex; justify-content:space-between;">
-                    <span>아빠와 야구 & 야외활동</span>
-                    <span>오후 13:00~</span>
+                    <span>야외 신체활동 & 주말 외출</span>
+                    <span>오후 13:00~18:00</span>
                 </div>
             </div>
             """,
@@ -727,10 +728,10 @@ with tab1:
             """
             <div class="metric-card-tw">
                 <span class="metric-title-tw">주말 게임 시간 관리</span>
-                <div class="metric-val-tw" style="color:#059669;">3시간</div>
+                <div class="metric-val-tw" style="color:#059669;">2시간</div>
                 <div class="metric-sub-tw" style="display:flex; justify-content:space-between;">
-                    <span>오전 1차 + 해질녘 2차</span>
-                    <span>1.5h × 2회 쪼개기</span>
+                    <span>오전 집중 자유시간 1차</span>
+                    <span>10:00~12:00 규칙</span>
                 </div>
             </div>
             """,
@@ -756,10 +757,10 @@ with tab1:
                     "항목": [
                         "수면 (8.5시간)",
                         "모닝학습 & 독서 (2.5시간)",
-                        "야외활동 & 게임 (5.5시간)",
-                        "식사 & 여유 (7.5시간)",
+                        "야외활동 & 외출 (5.0시간)",
+                        "가족시간 & 식사 (8.0시간)",
                     ],
-                    "시간": [8.5, 2.5, 5.5, 7.5],
+                    "시간": [8.5, 2.5, 5.0, 8.0],
                 })
             else:
                 df_pie = pd.DataFrame({
@@ -864,6 +865,7 @@ with tab1:
             )
             st.plotly_chart(fig_bar, use_container_width=True)
 
+    # 4단계 타임라인: 주말 시간(13~18시, 19~21시) 및 가족 시간 반영
     with st.container(border=True):
         st.markdown(
             f"""
@@ -872,63 +874,124 @@ with tab1:
             unsafe_allow_html=True,
         )
 
-        # [실시간 연동 로직] 선택된 요일의 학원 일정 동적 조합
+        t_cols = st.columns(4)
+
         if not is_weekend:
+            # 평일 타임라인
             sch_items = st.session_state.schedules.get(selected_day, [])
-            # 주요 학원/활동 요약 스트링 조합
             if sch_items:
                 sch_summary_list = [f"{item['time'].split('~')[0].strip()} {item['name']}" for item in sch_items]
                 sch_detail_txt = " ➡️ ".join(sch_summary_list)
             else:
                 sch_detail_txt = "등록된 학원 일정이 없습니다."
-        else:
-            sch_detail_txt = "주말 야외활동 & 모닝 학습 일과 진행"
 
-        t_cols = st.columns(4)
-        with t_cols[0]:
-            st.markdown(
-                """
-                <div class="tl-item-box">
-                    <div style="font-size:11px; font-weight:700; color:#2563eb;">🌅 06:30 ~ 08:30 [아침]</div>
-                    <div style="font-size:12px; font-weight:700; color:#0f172a; margin:3px 0;">기상 & 한국사 강의 시청</div>
-                    <div style="font-size:10px; color:#64748b;">할아버지 댁 이동(07:20) 후 아침 식사 ➡️ 08:22 등교</div>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-        with t_cols[1]:
-            st.markdown(
-                f"""
-                <div class="tl-item-box">
-                    <div style="font-size:11px; font-weight:700; color:#059669;">🏫 08:30 ~ 18:30 [{selected_day} 방과후]</div>
-                    <div style="font-size:12px; font-weight:700; color:#0f172a; margin:3px 0;">학교 수업 & 학원 동선</div>
-                    <div style="font-size:10px; color:#64748b; line-height:1.4;">{sch_detail_txt}</div>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-        with t_cols[2]:
-            st.markdown(
-                """
-                <div class="tl-item-box">
-                    <div style="font-size:11px; font-weight:700; color:#d97706;">🚘 18:30 ~ 20:10 [귀가&식사]</div>
-                    <div style="font-size:12px; font-weight:700; color:#0f172a; margin:3px 0;">부모님 픽업 & 저녁 식사</div>
-                    <div style="font-size:10px; color:#64748b;">18:40 픽업 ➡️ 19:15 집 도착 ➡️ 가족 저녁 식사</div>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-        with t_cols[3]:
-            st.markdown(
-                """
-                <div class="tl-item-box">
-                    <div style="font-size:11px; font-weight:700; color:#4f46e5;">🌙 20:10 ~ 22:10 [저녁&취침]</div>
-                    <div style="font-size:12px; font-weight:700; color:#0f172a; margin:3px 0;">70분 학습 & 22시 전 취침</div>
-                    <div style="font-size:10px; color:#64748b;">20:10 학습 ➡️ 21:20 샤워 ➡️ 22:00~22:10 취침</div>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
+            with t_cols[0]:
+                st.markdown(
+                    """
+                    <div class="tl-item-box">
+                        <div>
+                            <div style="font-size:11px; font-weight:700; color:#2563eb;">🌅 06:30 ~ 08:30 [아침]</div>
+                            <div style="font-size:12px; font-weight:700; color:#0f172a; margin:3px 0;">기상 & 한국사 강의 시청</div>
+                        </div>
+                        <div style="font-size:10px; color:#64748b;">할아버지 댁 이동(07:20) 후 아침 식사 ➡️ 08:22 등교</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+            with t_cols[1]:
+                st.markdown(
+                    f"""
+                    <div class="tl-item-box">
+                        <div>
+                            <div style="font-size:11px; font-weight:700; color:#059669;">🏫 08:30 ~ 18:30 [{selected_day} 방과후]</div>
+                            <div style="font-size:12px; font-weight:700; color:#0f172a; margin:3px 0;">학교 수업 & 학원 동선</div>
+                        </div>
+                        <div style="font-size:10px; color:#64748b; line-height:1.3;">{sch_detail_txt}</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+            with t_cols[2]:
+                st.markdown(
+                    """
+                    <div class="tl-item-box">
+                        <div>
+                            <div style="font-size:11px; font-weight:700; color:#d97706;">🚘 18:30 ~ 20:10 [귀가&식사]</div>
+                            <div style="font-size:12px; font-weight:700; color:#0f172a; margin:3px 0;">부모님 픽업 & 저녁 식사</div>
+                        </div>
+                        <div style="font-size:10px; color:#64748b;">18:40 픽업 ➡️ 19:15 집 도착 ➡️ 가족 저녁 식사</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+            with t_cols[3]:
+                st.markdown(
+                    """
+                    <div class="tl-item-box">
+                        <div>
+                            <div style="font-size:11px; font-weight:700; color:#4f46e5;">🌙 20:10 ~ 22:10 [저녁&취침]</div>
+                            <div style="font-size:12px; font-weight:700; color:#0f172a; margin:3px 0;">70분 학습 & 22시 전 취침</div>
+                        </div>
+                        <div style="font-size:10px; color:#64748b;">20:10 학습 ➡️ 21:20 샤워 ➡️ 22:00~22:10 취침</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+        else:
+            # 주말 전용 4가지 루틴 카드 (시간: 13~18시 / 19~21시 조정 및 가족 보드게임 반영)
+            with t_cols[0]:
+                st.markdown(
+                    """
+                    <div class="tl-item-box">
+                        <div>
+                            <div style="font-size:11px; font-weight:700; color:#2563eb;">📝 07:00 ~ 08:30 [주말 아침]</div>
+                            <div style="font-size:12px; font-weight:700; color:#0f172a; margin:3px 0;">아침 모닝 학습 (90분)</div>
+                        </div>
+                        <div style="font-size:10px; color:#64748b;">수학+영어+독서 집중 완주 후 즐거운 아침 식사</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+            with t_cols[1]:
+                st.markdown(
+                    """
+                    <div class="tl-item-box">
+                        <div>
+                            <div style="font-size:11px; font-weight:700; color:#059669;">🎮 10:00 ~ 12:00 [주말 오전]</div>
+                            <div style="font-size:12px; font-weight:700; color:#0f172a; margin:3px 0;">아침 게임 & 자유시간</div>
+                        </div>
+                        <div style="font-size:10px; color:#64748b;">학습 완주 보상! 규칙에 맞춘 즐거운 게임 시간</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+            with t_cols[2]:
+                st.markdown(
+                    """
+                    <div class="tl-item-box">
+                        <div>
+                            <div style="font-size:11px; font-weight:700; color:#d97706;">⚾ 13:00 ~ 18:00 [주말 오후]</div>
+                            <div style="font-size:12px; font-weight:700; color:#0f172a; margin:3px 0;">야외 신체활동 & 주말 외출</div>
+                        </div>
+                        <div style="font-size:10px; color:#64748b;">햇빛 쬐며 신체 발달! 야외 운동, 아빠와 야구 & 외출</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+            with t_cols[3]:
+                st.markdown(
+                    """
+                    <div class="tl-item-box">
+                        <div>
+                            <div style="font-size:11px; font-weight:700; color:#4f46e5;">🎲 19:00 ~ 21:00 [주말 저녁]</div>
+                            <div style="font-size:12px; font-weight:700; color:#0f172a; margin:3px 0;">가족 시간 & 밤 몰입 독서</div>
+                        </div>
+                        <div style="font-size:10px; color:#64748b;">19시 보드게임/가족 대화 ➡️ 20시 몰입 독서 1시간</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
         st.markdown("<div style='margin-bottom:4px;'></div>", unsafe_allow_html=True)
 
 # ==========================================
@@ -1098,7 +1161,7 @@ with tab4:
     st.markdown(
         """
         <div class="banner-blue">
-            ☀️ <b>주말 타임라인:</b> 알찬 아침 모닝 90분 공부 및 아빠와 야외 신체활동 중심 구성입니다.
+            ☀️ <b>주말 타임라인:</b> 알찬 아침 모닝 90분 공부, 오후 야외활동, 그리고 가족 소통 시간 중심 구성입니다.
         </div>
         """,
         unsafe_allow_html=True,
