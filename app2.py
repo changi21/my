@@ -355,7 +355,6 @@ DEFAULT_EVENING = {
     ],
 }
 
-# 주말 탭 토요일 / 일요일 상세 일과 (18시 저녁식사, 19시 가족시간 세분화 반영)
 DEFAULT_WEEKEND = {
     "토요일": [
         ("06:30 ~ 07:00", "기상 및 아침 뇌 깨우기", "6시 30분~7시 사이 기상"),
@@ -870,7 +869,7 @@ with tab1:
             )
             st.plotly_chart(fig_bar, use_container_width=True)
 
-    # 4단계 타임라인: 주말 4가지 핵심 구분 (7시~8시반 / 10시~12시 / 13시~18시 / 18시~21시)
+    # 4단계 타임라인: 1~2줄 고정 + 3줄 연동 반영
     with st.container(border=True):
         st.markdown(
             f"""
@@ -882,7 +881,7 @@ with tab1:
         t_cols = st.columns(4)
 
         if not is_weekend:
-            # 평일 타임라인
+            # 평일 타임라인 (3번째 줄: 요일별 학원 탭 연동)
             sch_items = st.session_state.schedules.get(selected_day, [])
             if sch_items:
                 sch_summary_list = [f"{item['time'].split('~')[0].strip()} {item['name']}" for item in sch_items]
@@ -935,7 +934,7 @@ with tab1:
                     <div class="tl-item-box">
                         <div>
                             <div style="font-size:11px; font-weight:700; color:#4f46e5;">🌙 20:10 ~ 22:10 [저녁&취침]</div>
-                            <div style="font-size:12px; font-weight:700; color:#0f172a; margin:3px 0;">70분 학습 & 22시 전 취침</div>
+                            <div style="font-size:12px; font-weight:700; color:#0f172a; margin:3px 0;">학습 & 22시 전 취침</div>
                         </div>
                         <div style="font-size:10px; color:#64748b;">20:10 학습 ➡️ 21:20 샤워 ➡️ 22:00~22:10 취침</div>
                     </div>
@@ -943,14 +942,14 @@ with tab1:
                     unsafe_allow_html=True,
                 )
         else:
-            # 주말 4단계 핵심 타임라인 (7:00~8:30 / 10:00~12:00 / 13:00~18:00 / 18:00~21:00)
+            # 주말 4단계 핵심 타임라인
             with t_cols[0]:
                 st.markdown(
                     """
                     <div class="tl-item-box">
                         <div>
                             <div style="font-size:11px; font-weight:700; color:#2563eb;">📝 07:00 ~ 08:30 [주말 아침]</div>
-                            <div style="font-size:12px; font-weight:700; color:#0f172a; margin:3px 0;">아침 모닝 학습 (90분)</div>
+                            <div style="font-size:12px; font-weight:700; color:#0f172a; margin:3px 0;">아침 모닝 학습</div>
                         </div>
                         <div style="font-size:10px; color:#64748b;">수학+영어+독서 집중 완주 후 즐거운 아침 식사</div>
                     </div>
@@ -976,7 +975,7 @@ with tab1:
                     <div class="tl-item-box">
                         <div>
                             <div style="font-size:11px; font-weight:700; color:#d97706;">⚾ 13:00 ~ 18:00 [주말 오후]</div>
-                            <div style="font-size:12px; font-weight:700; color:#0f172a; margin:3px 0;">신체활동 & 외출 (13~18시)</div>
+                            <div style="font-size:12px; font-weight:700; color:#0f172a; margin:3px 0;">신체활동 & 외출</div>
                         </div>
                         <div style="font-size:10px; color:#64748b;">13:00 야구/신체활동 ➡️ 15:30 자유시간 및 외출</div>
                     </div>
@@ -1000,7 +999,7 @@ with tab1:
         st.markdown("<div style='margin-bottom:4px;'></div>", unsafe_allow_html=True)
 
 # ==========================================
-# TAB 2: 요일별 학원
+# TAB 2: 요일별 학원 (일정 추가/삭제 기능 보강)
 # ==========================================
 with tab2:
     st.markdown(
@@ -1026,12 +1025,13 @@ with tab2:
 
     if edit_weekday:
         st.warning(
-            f"✏️ **{day_choice} 수정을 완료한 후 '수정 내용 저장' 버튼을"
-            " 누르세요.**"
+            f"✏️ **{day_choice} 항목 수정 및 추가/삭제를 완료한 후 '수정 내용 저장' 버튼을 누르세요.**"
         )
         new_items = []
+        to_delete = None
+
         for idx, item in enumerate(items):
-            c1, c2, c3 = st.columns([2, 3, 4])
+            c1, c2, c3, c4 = st.columns([2, 3, 4, 1.2])
             with c1:
                 t_val = st.text_input(
                     f"시간 #{idx+1}", item["time"], key=f"t_{day_choice}_{idx}"
@@ -1048,6 +1048,12 @@ with tab2:
                     item["detail"],
                     key=f"d_{day_choice}_{idx}",
                 )
+            with c4:
+                st.write("") # 간격 맞춤용
+                st.write("")
+                if st.button("🗑️ 삭제", key=f"del_sch_{day_choice}_{idx}"):
+                    to_delete = idx
+
             new_items.append({
                 "time": t_val,
                 "name": n_val,
@@ -1055,11 +1061,30 @@ with tab2:
                 "badge": item.get("badge", "일정"),
             })
 
-        if st.button(f"💾 {day_choice} 수정 내용 저장"):
+        # 항목 삭제 처리
+        if to_delete is not None:
+            new_items.pop(to_delete)
             st.session_state.schedules[day_choice] = new_items
-            save_sheet_data(schedules=st.session_state.schedules)
-            st.success("저장되었습니다! 대시보드 타임라인에 즉시 반영됩니다.")
             st.rerun()
+
+        st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
+        btn_col1, btn_col2 = st.columns([2, 5])
+        with btn_col1:
+            if st.button("➕ 학원 일정 추가"):
+                new_items.append({
+                    "time": "19:00 ~ 20:00",
+                    "name": "새 활동",
+                    "detail": "상세 내용 입력",
+                    "badge": "일정"
+                })
+                st.session_state.schedules[day_choice] = new_items
+                st.rerun()
+        with btn_col2:
+            if st.button(f"💾 {day_choice} 수정 내용 저장"):
+                st.session_state.schedules[day_choice] = new_items
+                save_sheet_data(schedules=st.session_state.schedules)
+                st.success("저장되었습니다! 대시보드 타임라인에 즉시 반영됩니다.")
+                st.rerun()
     else:
         with st.container(border=True):
             st.markdown(
@@ -1086,7 +1111,7 @@ with tab2:
                 )
 
 # ==========================================
-# TAB 3: 저녁 루틴
+# TAB 3: 저녁 루틴 (일정 추가/삭제 기능 보강)
 # ==========================================
 with tab3:
     st.markdown(
@@ -1112,10 +1137,12 @@ with tab3:
             f"✏️ **{plan_key} 루틴 내용을 수정 후 저장 버튼을 누르세요.**"
         )
         new_plan = []
+        to_del_eve = None
+
         for idx, (t, n, d) in enumerate(
             st.session_state.evening_plans[plan_key]
         ):
-            c1, c2, c3 = st.columns([2, 3, 4])
+            c1, c2, c3, c4 = st.columns([2, 3, 4, 1.2])
             with c1:
                 t_val = st.text_input(
                     f"시간 #{idx+1}", t, key=f"et_{plan_key}_{idx}"
@@ -1128,13 +1155,32 @@ with tab3:
                 d_val = st.text_input(
                     f"상세 #{idx+1}", d, key=f"ed_{plan_key}_{idx}"
                 )
+            with c4:
+                st.write("")
+                st.write("")
+                if st.button("🗑️ 삭제", key=f"del_eve_{plan_key}_{idx}"):
+                    to_del_eve = idx
+
             new_plan.append((t_val, n_val, d_val))
 
-        if st.button(f"💾 {plan_key} 수정 내용 저장"):
+        if to_del_eve is not None:
+            new_plan.pop(to_del_eve)
             st.session_state.evening_plans[plan_key] = new_plan
-            save_sheet_data(evening=st.session_state.evening_plans)
-            st.success("구글 시트에 성공적으로 저장되었습니다!")
             st.rerun()
+
+        st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
+        eb1, eb2 = st.columns([2, 5])
+        with eb1:
+            if st.button("➕ 저녁 루틴 추가"):
+                new_plan.append(("21:00 ~ 21:30", "새 저녁 일정", "상세 내용"))
+                st.session_state.evening_plans[plan_key] = new_plan
+                st.rerun()
+        with eb2:
+            if st.button(f"💾 {plan_key} 수정 내용 저장"):
+                st.session_state.evening_plans[plan_key] = new_plan
+                save_sheet_data(evening=st.session_state.evening_plans)
+                st.success("구글 시트에 성공적으로 저장되었습니다!")
+                st.rerun()
     else:
         with st.container(border=True):
             st.markdown(
@@ -1160,7 +1206,7 @@ with tab3:
                 )
 
 # ==========================================
-# TAB 4: 주말 일과
+# TAB 4: 주말 일과 (일정 추가/삭제 기능 보강)
 # ==========================================
 with tab4:
     st.markdown(
@@ -1183,14 +1229,15 @@ with tab4:
 
     if edit_weekend:
         st.warning(
-            f"✏️ **{wk_key} 수정을 완료한 후 '수정 내용 저장' 버튼을"
-            " 누르세요.**"
+            f"✏️ **{wk_key} 수정을 완료한 후 '수정 내용 저장' 버튼을 누르세요.**"
         )
         new_wk_plan = []
+        to_del_wk = None
+
         for idx, (t, n, d) in enumerate(
             st.session_state.weekend_plans[wk_key]
         ):
-            c1, c2, c3 = st.columns([2, 3, 4])
+            c1, c2, c3, c4 = st.columns([2, 3, 4, 1.2])
             with c1:
                 t_val = st.text_input(
                     f"시간 #{idx+1}", t, key=f"wt_{wk_key}_{idx}"
@@ -1203,13 +1250,32 @@ with tab4:
                 d_val = st.text_input(
                     f"비고 #{idx+1}", d, key=f"wd_{wk_key}_{idx}"
                 )
+            with c4:
+                st.write("")
+                st.write("")
+                if st.button("🗑️ 삭제", key=f"del_wk_{wk_key}_{idx}"):
+                    to_del_wk = idx
+
             new_wk_plan.append((t_val, n_val, d_val))
 
-        if st.button(f"💾 {wk_key} 수정 내용 저장"):
+        if to_del_wk is not None:
+            new_wk_plan.pop(to_del_wk)
             st.session_state.weekend_plans[wk_key] = new_wk_plan
-            save_sheet_data(weekend=st.session_state.weekend_plans)
-            st.success("저장되었습니다! 구글 시트 및 대시보드에 즉시 연동됩니다.")
             st.rerun()
+
+        st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
+        wb1, wb2 = st.columns([2, 5])
+        with wb1:
+            if st.button("➕ 주말 일정 추가"):
+                new_wk_plan.append(("18:00 ~ 19:00", "새 주말 활동", "상세 내용"))
+                st.session_state.weekend_plans[wk_key] = new_wk_plan
+                st.rerun()
+        with wb2:
+            if st.button(f"💾 {wk_key} 수정 내용 저장"):
+                st.session_state.weekend_plans[wk_key] = new_wk_plan
+                save_sheet_data(weekend=st.session_state.weekend_plans)
+                st.success("저장되었습니다! 구글 시트 및 대시보드에 즉시 연동됩니다.")
+                st.rerun()
     else:
         with st.container(border=True):
             st.markdown(
