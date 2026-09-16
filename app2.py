@@ -221,15 +221,6 @@ DEFAULT_EVENTS = [
     {"name": "", "date": ""},
 ]
 
-# 영감 넘치는 5가지 정식 명언 목록
-QUOTE_LIST = [
-    ("꾸준함이 너의 가장 강력한 무기야!", "오늘도 차근차근 해내는 네가 정말 자랑스러워."),
-    ("실수는 실패가 아니라 growth(성장)의 과정이야.", "어려운 문제도 포기하지 않고 도전하는 네가 영웅이야!"),
-    ("매일 1%씩 성장하면 1년 뒤엔 37배 발전해!", "오늘 70분 저녁 스퍼트도 멋지게 완수해보자."),
-    ("할 수 있다고 믿는 사람이 결국 해내는 법이야.", "너의 가슴속 꿈을 향해 힘차게 날아올라 봐!"),
-    ("지식은 쌓일수록 너를 자유롭게 만들어줄 거야.", "오늘 읽은 책 한 페이지가 멋진 미래를 만들어."),
-]
-
 
 def load_all_sheet_data():
     try:
@@ -312,6 +303,42 @@ def call_gemini_api(prompt):
         return "⏳ AI 응답 시간이 초과되었습니다. 잠시 후 버튼을 다시 눌러주세요!"
     except Exception as e:
         return f"통신 오류 발생: {e}"
+
+
+# AI 매일 실시간 명언 생성 함수
+def get_daily_ai_quote(today_str_val):
+    if "ai_quote_cache" not in st.session_state:
+        st.session_state.ai_quote_cache = {}
+
+    if today_str_val in st.session_state.ai_quote_cache:
+        return st.session_state.ai_quote_cache[today_str_val]
+
+    prompt = (
+        f"오늘 날짜는 {today_str_val}입니다. 초등 5학년 에릭 학생에게 용기와 동기를 부여하는 오늘의 멋진 명언을 1개 새롭게 만들어주세요.\n\n"
+        "[조건]\n"
+        "1. 짧고 강렬한 메인 명언 1줄 (20자~30자 내외)\n"
+        "2. 명언을 설명하는 따뜻한 응원 문장 1줄 (25자~40자 내외)\n"
+        "3. 다른 수식어나 서론 없이 아래 형식으로만 정확히 출력하세요.\n\n"
+        "[출력형식]\n"
+        "MAIN: (메인 명언 텍스트)\n"
+        "SUB: (응원 문장 텍스트)"
+    )
+
+    res = call_gemini_api(prompt)
+    main_txt, sub_txt = "꾸준함이 너의 가장 강력한 무기야!", "오늘도 차근차근 해내는 네가 정말 자랑스러워."
+
+    try:
+        for line in res.split("\n"):
+            if line.startswith("MAIN:"):
+                main_txt = line.replace("MAIN:", "").strip().strip('"')
+            elif line.startswith("SUB:"):
+                sub_txt = line.replace("SUB:", "").strip()
+    except Exception:
+        pass
+
+    result_tuple = (main_txt, sub_txt)
+    st.session_state.ai_quote_cache[today_str_val] = result_tuple
+    return result_tuple
 
 
 # 6. 세션 상태 초기화 & 구글 시트 전체 동기화
@@ -499,10 +526,11 @@ with tab1:
 
     with top_c2:
         with st.container(border=True):
-            day_seed = today_obj.year * 10000 + today_obj.month * 100 + today_obj.day
-            q_main, q_sub = QUOTE_LIST[day_seed % len(QUOTE_LIST)]
-
             st.markdown('<div style="font-size:11px; font-weight:700; color:#64748b;">✨ AI 매일 아침 추천 명언</div>', unsafe_allow_html=True)
+
+            with st.spinner("AI가 오늘의 새로운 명언을 작성하는 중..."):
+                q_main, q_sub = get_daily_ai_quote(today_str)
+
             st.markdown(
                 f"""
                 <div style="padding: 2px 0;">
