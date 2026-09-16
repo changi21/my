@@ -13,7 +13,7 @@ st.set_page_config(
     layout="wide",
 )
 
-# 2. Pretendard 폰트 + 바탕화면/큰박스 색상 완전 분리 + 높이 고정 (500px & 내부 Flex 밀착)
+# 2. Pretendard 폰트 + 바탕화면/큰박스 색상 완전 분리 + 좌우 박스 높이 강제 통일 CSS
 st.markdown(
     """
 <style>
@@ -45,16 +45,16 @@ st.markdown(
         margin-bottom: 18px !important;
     }
 
-    /* 3. 상단 D-Day & 명언 박스 높이 500px 강제 및 내부 레이아웃 하단 밀착 처리 */
-    .top-card-wrapper > div [data-testid="stColumn"] > div > div[data-testid="stVerticalBlockBorderWrapper"] {
-        height: 500px !important;
-        min-height: 500px !important;
-        max-height: 500px !important;
+    /* 3. 상단 D-Day & 명언 박스 높이 정확히 230px로 강제 통일 (CSS 무시 현상 완전 해결) */
+    .top-card-wrapper [data-testid="stColumn"] [data-testid="stVerticalBlockBorderWrapper"] {
+        height: 230px !important;
+        min-height: 230px !important;
         box-sizing: border-box !important;
-        padding: 20px !important;
+        padding: 18px !important;
     }
 
-    .top-card-wrapper [data-testid="stVerticalBlockBorderWrapper"] > div[data-testid="stVerticalBlock"] {
+    /* 박스 내부 요소 높이 100% 분배 및 양끝 정렬 */
+    .top-card-wrapper [data-testid="stColumn"] [data-testid="stVerticalBlockBorderWrapper"] > div[data-testid="stVerticalBlock"] {
         height: 100% !important;
         display: flex !important;
         flex-direction: column !important;
@@ -662,7 +662,7 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
 ])
 
 # ==========================================
-# TAB 1: 대시보드 (500px 고정 + 하단 밀착 Flex)
+# TAB 1: 대시보드 (높이 통일 정밀 적용)
 # ==========================================
 with tab1:
     st.markdown(
@@ -687,7 +687,7 @@ with tab1:
 
     st.markdown("<div style='margin-top: 6px;'></div>", unsafe_allow_html=True)
 
-    # top-card-wrapper 500px 높이 적용
+    # 상단 D-Day & 명언 카드를 담는 top-card-wrapper
     st.markdown('<div class="top-card-wrapper">', unsafe_allow_html=True)
     top_c1, top_c2 = st.columns([1, 1])
 
@@ -695,9 +695,7 @@ with tab1:
         with st.container(border=True):
             st.markdown(
                 """
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-size:11px; font-weight:700; color:#64748b;">🚩 다가오는 주요 일정 D-Day</span>
-                </div>
+                <div style="font-size:11px; font-weight:700; color:#64748b;">🚩 다가오는 주요 일정 D-Day</div>
                 """,
                 unsafe_allow_html=True,
             )
@@ -723,10 +721,10 @@ with tab1:
                 d_day_txt = "D-DAY 🎉" if closest_diff == 0 else f"D-{closest_diff}"
                 st.markdown(
                     f"""
-                    <div style="padding:6px 0;">
-                        <div style="font-size:26px; font-weight:900; color:#ef4444; line-height:1.1;">{d_day_txt}</div>
-                        <div style="font-size:14px; font-weight:800; color:#0f172a; margin-top:4px;">{closest_name}</div>
-                        <div style="font-size:11px; color:#64748b; margin-top:2px;">일정 날짜: {closest_date}</div>
+                    <div style="padding: 2px 0;">
+                        <div style="font-size:24px; font-weight:900; color:#ef4444; line-height:1.1;">{d_day_txt}</div>
+                        <div style="font-size:13px; font-weight:800; color:#0f172a; margin-top:2px;">{closest_name}</div>
+                        <div style="font-size:11px; color:#64748b; margin-top:1px;">일정 날짜: {closest_date}</div>
                     </div>
                     """,
                     unsafe_allow_html=True,
@@ -734,17 +732,16 @@ with tab1:
             else:
                 st.markdown(
                     """
-                    <div style="padding:6px 0; color:#94a3b8; font-size:11px;">
-                        등록된 D-Day 일정이 없거나 모두 지났습니다.<br>아래에서 새로 등록해 보세요!
+                    <div style="padding:2px 0; color:#94a3b8; font-size:11px;">
+                        등록된 D-Day 일정이 업습니다.
                     </div>
                     """,
                     unsafe_allow_html=True,
                 )
 
-            # D-Day 수정 모드 토글
+            # D-Day 수정 토글
             edit_dday = st.toggle("✏️ D-Day 일정 수정 (최대 5개)", key="tog_edit_dday")
             if edit_dday:
-                st.markdown("<div style='margin-top:6px;'></div>", unsafe_allow_html=True)
                 new_evt_list = []
                 for idx in range(5):
                     e_item = st.session_state.events[idx] if idx < len(st.session_state.events) else {"name": "", "date": ""}
@@ -758,7 +755,7 @@ with tab1:
                 if st.button("💾 D-Day 일정 저장", use_container_width=True):
                     st.session_state.events = new_evt_list
                     save_sheet_data(events=new_evt_list)
-                    st.success("D-Day 일정이 구글 시트에 저장되었습니다!")
+                    st.success("D-Day 일정이 저장되었습니다!")
                     st.rerun()
 
     with top_c2:
@@ -768,16 +765,14 @@ with tab1:
 
             st.markdown(
                 f"""
-                <div style="display:flex; flex-direction:column; justify-content:space-between; height:100%; box-sizing:border-box;">
-                    <div>
-                        <span style="font-size:11px; font-weight:700; color:#64748b;">✨ AI 매일 아침 추천 명언</span>
-                        <div style="font-size:14px; font-weight:800; color:#4f46e5; margin-top:8px; min-height:44px; line-height:1.4; display:flex; align-items:center;">
-                            "{q_main}"
-                        </div>
+                <div>
+                    <div style="font-size:11px; font-weight:700; color:#64748b;">✨ AI 매일 아침 추천 명언</div>
+                    <div style="font-size:14px; font-weight:800; color:#4f46e5; margin-top:8px; line-height:1.4;">
+                        "{q_main}"
                     </div>
-                    <div style="font-size:11px; color:#475569; background:#f8fafc; padding:8px 12px; border-radius:8px; border:1px solid #e2e8f0; margin-bottom: 12px; line-height:1.35;">
-                        💡 {q_sub}
-                    </div>
+                </div>
+                <div style="font-size:11px; color:#475569; background:#f8fafc; padding:8px 12px; border-radius:8px; border:1px solid #e2e8f0; line-height:1.35; margin-top: auto;">
+                    💡 {q_sub}
                 </div>
                 """,
                 unsafe_allow_html=True,
