@@ -652,7 +652,7 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
 ])
 
 # ==========================================
-# TAB 1: 대시보드 (스티커 현황판 상단 이동)
+# TAB 1: 대시보드 (스티커 현황판: 버튼 삭제 및 AI 탭 목표 연동)
 # ==========================================
 with tab1:
     st.markdown(
@@ -750,12 +750,11 @@ with tab1:
 
     st.markdown("<div style='margin-top: 12px;'></div>", unsafe_allow_html=True)
 
-    # 대시보드 기존 그래프 위치 ➡️ 30개 스티커 모음 현황판 (한줄 픽스 목표 바 포함)
+    # 대시보드 칭찬 스티커 달성 현황판 (버튼 삭제 + AI 탭 목표 불러오기 텍스트 표시)
     with st.container(border=True):
         current_cnt = len(st.session_state.stickers)
         pct_val = int(current_cnt / 30 * 100)
 
-        # 상단 헤더 & 한줄 픽스 목표 수정 영역
         st.markdown(
             f"""
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
@@ -768,33 +767,19 @@ with tab1:
             unsafe_allow_html=True,
         )
 
-        # 🎯 한줄 픽스 달성 보상 목표 설정 바
-        c_in_dash, c_btn_pin_dash, c_btn_rst_dash = st.columns([7.5, 0.8, 1.2], vertical_alignment="center")
-        with c_in_dash:
-            new_goal_dash = st.text_input(
-                "달성 보상 목표",
-                value=st.session_state.reward_goal,
-                key="input_reward_goal_dash",
-                label_visibility="collapsed",
-            )
-        with c_btn_pin_dash:
-            if st.button("📌 저장", key="btn_save_goal_dash", use_container_width=True):
-                st.session_state.reward_goal = new_goal_dash
-                save_sheet_data(reward_goal=new_goal_dash)
-                st.success("완료!")
-                st.rerun()
-        with c_btn_rst_dash:
-            if st.button("🔄 초기화", key="btn_rst_stk_dash", use_container_width=True):
-                st.session_state.stickers = []
-                st.session_state.last_sticker_date = ""
-                st.session_state.latest_draw_sticker = None
-                save_sheet_data(stickers_count=0)
-                st.toast("스티커가 0개로 초기화되었습니다!")
-                st.rerun()
+        # AI 탭에서 설정한 목표 텍스트 연동 표시 (저장/초기화 버튼 삭제)
+        goal_display = st.session_state.reward_goal if st.session_state.reward_goal else "설정된 목표가 없습니다."
+        st.markdown(
+            f"""
+            <div style="background-color: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 10px; padding: 10px 14px; margin-bottom: 12px; font-size: 13px; font-weight: 700; color: #334155; display: flex; align-items: center; gap: 8px;">
+                <span>🎯 달성 보상 목표 :</span>
+                <span style="color: #0f172a;">{goal_display}</span>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
-        st.markdown("<div style='margin-bottom: 10px;'></div>", unsafe_allow_html=True)
-
-        # 30개 스티커 모음판 요약
+        # 30개 스티커 모음판
         total_stickers = 30
         cols_per_row = 10
         for row_idx in range(0, total_stickers, cols_per_row):
@@ -1447,7 +1432,7 @@ with tab5:
             )
 
 # ==========================================
-# TAB 6: AI 코치 & 퀴즈 (2x2 이쁜 균형 구조)
+# TAB 6: AI 코치 & 퀴즈 (첫번째 사진 그대로 유지: 스티커 카운터 + 목표 설정 + 저장 + 초기화 포함)
 # ==========================================
 with tab6:
     st.markdown(
@@ -1625,7 +1610,7 @@ with tab6:
                     """
                     st.components.v1.html(tts_script, height=0)
 
-    # 2행: AI 스티커 뽑기 & 질의응답 (2x2 이쁜 대칭 배치)
+    # 2행: 첫번째 사진 그대로 유지를 위한 스티커 카운터 박스 (목표 설정 + 📌 저장 + 🔄 초기화 버튼 포함)
     row2_col1, row2_col2 = st.columns(2)
 
     with row2_col1:
@@ -1637,7 +1622,7 @@ with tab6:
                 f"""
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
                     <h3 style="margin:0; font-weight:800; color:#0f172a; font-size:15px;">
-                        🎨 AI 미션 달성 스티커 뽑기 <span style="color:#ec4899; font-weight:900; font-size:14px;">({current_cnt}/30개)</span>
+                        🎨 AI 미션 달성 칭찬 스티커 카운터 <span style="color:#ec4899; font-weight:900; font-size:14px;">({current_cnt}/30개, {pct_val}%)</span>
                     </h3>
                     <span style="font-size:10px; background:#fce7f3; color:#be185d; font-weight:700; padding:2px 6px; border-radius:4px;">하루 1장 제한</span>
                 </div>
@@ -1646,12 +1631,12 @@ with tab6:
             )
 
             st.markdown(
-                '<p style="font-size:11px; color:#64748b; margin-top:2px; margin-bottom:12px;">오늘 미션을 성공했을 때 스티커 카드를 뽑아 내 스티커북에 저장하세요!</p>',
+                '<p style="font-size:11px; color:#64748b; margin-top:2px; margin-bottom:12px;">오늘 미션을 성공했을 때 칭찬 스티커 카드를 생성하여 내 스티커북(30개판)에 저장합니다!</p>',
                 unsafe_allow_html=True,
             )
 
             if st.button(
-                "🎲 스티커 뽑기", key="btn_g_sticker", use_container_width=True
+                "🎲 스티커 그리기", key="btn_g_sticker", use_container_width=True
             ):
                 if st.session_state.last_sticker_date == today_str:
                     st.warning("⚠️ 오늘의 칭찬 스티커는 이미 획득하셨습니다!")
@@ -1675,13 +1660,46 @@ with tab6:
                 lstk = st.session_state.latest_draw_sticker
                 st.markdown(
                     f"""
-                    <div style="text-align:center; padding: 14px 12px; background: linear-gradient(135deg, #fef9c3, #fef08a); border: 1px solid #fde047; border-radius:12px; margin-top: 10px; margin-bottom: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
-                        <div style="font-size: 28px; line-height: 1.1;">{lstk['icon']}</div>
-                        <div style="font-size: 12px; font-weight: 800; color: #854d0e; margin-top: 4px;">"{lstk['msg']}"</div>
+                    <div style="text-align:center; padding: 18px 16px; background: linear-gradient(135deg, #fef9c3, #fef08a); border: 1px solid #fde047; border-radius:14px; margin-top: 10px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
+                        <div style="font-size: 32px; line-height: 1.1;">{lstk['icon']}</div>
+                        <div style="font-size: 13px; font-weight: 800; color: #854d0e; margin-top: 4px;">"{lstk['msg']}"</div>
                     </div>
                     """,
                     unsafe_allow_html=True,
                 )
+
+            st.markdown(
+                """
+                <div style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
+                    <span style="font-size: 12px; font-weight: 700; color: #334155; white-space: nowrap;">🎯 달성 보상 목표 :</span>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+            
+            # 첫번째 사진 동일 구성 (목표 입력 + 📌 저장 + 🔄 초기화)
+            c_in, c_btn_pin, c_btn_rst = st.columns([4.1, 0.45, 0.65], vertical_alignment="center")
+            with c_in:
+                new_goal_val = st.text_input(
+                    "보상 목표",
+                    value=st.session_state.reward_goal,
+                    key="input_reward_goal",
+                    label_visibility="collapsed",
+                )
+            with c_btn_pin:
+                if st.button("📌", key="btn_save_goal", use_container_width=True):
+                    st.session_state.reward_goal = new_goal_val
+                    save_sheet_data(reward_goal=new_goal_val)
+                    st.success("완료!")
+                    st.rerun()
+            with c_btn_rst:
+                if st.button("🔄 초기화", key="btn_g_sticker_reset_next_to_pin", use_container_width=True):
+                    st.session_state.stickers = []
+                    st.session_state.last_sticker_date = ""
+                    st.session_state.latest_draw_sticker = None
+                    save_sheet_data(stickers_count=0)
+                    st.toast("스티커가 0개로 초기화되었습니다!")
+                    st.rerun()
 
     with row2_col2:
         with st.container(border=True):
