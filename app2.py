@@ -654,7 +654,7 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
 ])
 
 # ==========================================
-# TAB 1: 대시보드 (좌우 높이 및 잘림 방지 CSS 보정 완료)
+# TAB 1: 대시보드 (우측 명언 흰색 박스 위치 업그레이드 보정)
 # ==========================================
 with tab1:
     st.markdown(
@@ -679,7 +679,7 @@ with tab1:
 
     st.markdown("<div style='margin-top: 6px;'></div>", unsafe_allow_html=True)
 
-    # 상단 2분할 영역: [D-Day 카드] + [AI 추천 명언 카드] (좌우 완전 균형 및 높이 동기화)
+    # 상단 2분할 영역: [D-Day 카드] + [AI 추천 명언 카드]
     top_c1, top_c2 = st.columns([1, 1])
 
     with top_c1:
@@ -759,14 +759,14 @@ with tab1:
 
             st.markdown(
                 f"""
-                <div style="display:flex; flex-direction:column; justify-content:space-between; height:100%; min-height:130px; box-sizing:border-box;">
+                <div style="display:flex; flex-direction:column; justify-content:space-between; min-height:115px; padding-bottom:4px; box-sizing:border-box;">
                     <div>
                         <span style="font-size:11px; font-weight:700; color:#64748b;">✨ AI 매일 아침 추천 명언</span>
-                        <div style="font-size:14px; font-weight:800; color:#4f46e5; margin-top:6px; line-height:1.35;">
+                        <div style="font-size:14px; font-weight:800; color:#4f46e5; margin-top:4px; line-height:1.35;">
                             "{q_main}"
                         </div>
                     </div>
-                    <div style="font-size:11px; color:#475569; background:#f8fafc; padding:6px 10px; border-radius:8px; border:1px solid #e2e8f0; margin-top:8px; line-height:1.3;">
+                    <div style="font-size:11px; color:#475569; background:#f8fafc; padding:6px 10px; border-radius:8px; border:1px solid #e2e8f0; margin-top:4px; line-height:1.3;">
                         💡 {q_sub}
                     </div>
                 </div>
