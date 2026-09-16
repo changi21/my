@@ -13,7 +13,7 @@ st.set_page_config(
     layout="wide",
 )
 
-# 2. Pretendard 폰트 + 바탕화면/큰박스 색상 완전 분리 + 좌우 박스 높이 강제 통일 CSS
+# 2. Pretendard 폰트 + 바탕화면/큰박스 색상 완전 분리 + 좌우 컬럼 높이 100% 동기화 CSS
 st.markdown(
     """
 <style>
@@ -45,16 +45,28 @@ st.markdown(
         margin-bottom: 18px !important;
     }
 
-    /* 3. 상단 D-Day & 명언 박스 높이 정확히 230px로 강제 통일 (CSS 무시 현상 완전 해결) */
-    .top-card-wrapper [data-testid="stColumn"] [data-testid="stVerticalBlockBorderWrapper"] {
-        height: 230px !important;
-        min-height: 230px !important;
-        box-sizing: border-box !important;
-        padding: 18px !important;
+    /* 3. 컬럼 내부 모든 테두리 박스 높이 100% 강제 맞춤 (좌우 높이 불일치 완벽 해결) */
+    [data-testid="stColumn"] {
+        display: flex !important;
+        flex-direction: column !important;
     }
 
-    /* 박스 내부 요소 높이 100% 분배 및 양끝 정렬 */
-    .top-card-wrapper [data-testid="stColumn"] [data-testid="stVerticalBlockBorderWrapper"] > div[data-testid="stVerticalBlock"] {
+    [data-testid="stColumn"] > div {
+        height: 100% !important;
+        flex: 1 !important;
+    }
+
+    [data-testid="stColumn"] > div > div[data-testid="stVerticalBlockBorderWrapper"] {
+        height: 100% !important;
+        min-height: 210px !important;
+        box-sizing: border-box !important;
+        padding: 18px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+    }
+
+    [data-testid="stColumn"] [data-testid="stVerticalBlockBorderWrapper"] > div[data-testid="stVerticalBlock"] {
         height: 100% !important;
         display: flex !important;
         flex-direction: column !important;
@@ -63,11 +75,6 @@ st.markdown(
 
     div[data-testid="stVerticalBlockBorderWrapper"] > div {
         background-color: #ffffff !important;
-    }
-
-    /* 열(Column) 높이 동일 맞춤 */
-    [data-testid="stColumn"] > div {
-        height: 100%;
     }
 
     .banner-blue {
@@ -662,7 +669,7 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
 ])
 
 # ==========================================
-# TAB 1: 대시보드 (높이 통일 정밀 적용)
+# TAB 1: 대시보드
 # ==========================================
 with tab1:
     st.markdown(
@@ -687,8 +694,7 @@ with tab1:
 
     st.markdown("<div style='margin-top: 6px;'></div>", unsafe_allow_html=True)
 
-    # 상단 D-Day & 명언 카드를 담는 top-card-wrapper
-    st.markdown('<div class="top-card-wrapper">', unsafe_allow_html=True)
+    # 상단 카드 2개 레이아웃
     top_c1, top_c2 = st.columns([1, 1])
 
     with top_c1:
@@ -700,7 +706,6 @@ with tab1:
                 unsafe_allow_html=True,
             )
 
-            # 가장 가까운 미래/오늘 D-Day 찾기
             valid_events = []
             for item in st.session_state.events:
                 name = item.get("name", "").strip()
@@ -733,13 +738,12 @@ with tab1:
                 st.markdown(
                     """
                     <div style="padding:2px 0; color:#94a3b8; font-size:11px;">
-                        등록된 D-Day 일정이 업습니다.
+                        등록된 D-Day 일정이 없습니다.
                     </div>
                     """,
                     unsafe_allow_html=True,
                 )
 
-            # D-Day 수정 토글
             edit_dday = st.toggle("✏️ D-Day 일정 수정 (최대 5개)", key="tog_edit_dday")
             if edit_dday:
                 new_evt_list = []
@@ -777,7 +781,6 @@ with tab1:
                 """,
                 unsafe_allow_html=True,
             )
-    st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown("<div style='margin-top: 12px;'></div>", unsafe_allow_html=True)
 
