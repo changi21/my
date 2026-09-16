@@ -6,11 +6,10 @@ import gspread
 from google.oauth2.service_account import Credentials
 
 # ==========================================
-# 1. 페이지 설정 및 기본 세션 상태 초기화
+# 1. 페이지 설정 및 세션 초기화
 # ==========================================
 st.set_page_config(page_title="에릭이의 습관 달력 & AI 루틴", page_icon="📅", layout="wide")
 
-# 세션 상태 초기화
 if "sticker_count" not in st.session_state:
     st.session_state.sticker_count = 0
 if "reward_goal" not in st.session_state:
@@ -25,21 +24,12 @@ if "cheer_cache" not in st.session_state:
 # ==========================================
 st.markdown("""
 <style>
-    /* 메인 컨테이너 카드 스타일 */
     .card-box {
         background-color: #f8f9fa;
         border-radius: 12px;
         padding: 20px;
         margin-bottom: 20px;
         border: 1px solid #e9ecef;
-    }
-    
-    /* 스티커 카운터 상단 배치용 flex 레이아웃 */
-    .sticker-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 10px;
     }
     .sticker-title {
         font-size: 1.15rem;
@@ -54,8 +44,6 @@ st.markdown("""
         font-size: 0.82rem;
         font-weight: bold;
     }
-    
-    /* 목표 라벨 및 간격 조절 */
     .goal-label {
         font-weight: bold;
         color: #343a40;
@@ -66,7 +54,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 3. Google Sheets 연동 설정 (데이터 저장/로드)
+# 3. Google Sheets 연동
 # ==========================================
 @st.cache_resource
 def init_gsheets():
@@ -77,12 +65,11 @@ def init_gsheets():
         client = gspread.authorize(creds)
         sheet = client.open_by_key(st.secrets["SPREADSHEET_KEY"]).sheet1
         return sheet
-    except Exception as e:
+    except Exception:
         return None
 
 sheet = init_gsheets()
 
-# 구글 시트에서 스티커 수량 읽어오기
 if sheet and "gsheets_loaded" not in st.session_state:
     try:
         val = sheet.acell("B1").value
@@ -95,7 +82,7 @@ if sheet and "gsheets_loaded" not in st.session_state:
         pass
 
 # ==========================================
-# 4. Gemini API 설정 및 안전 호출 (중복 방지)
+# 4. Gemini API 호출 (gemini-3.1-flash-lite)
 # ==========================================
 api_key = st.secrets.get("GEMINI_API_KEY", "")
 
@@ -120,18 +107,47 @@ def call_gemini_api(prompt):
         return f"통신 중 오류 발생: {str(e)}"
 
 # ==========================================
-# 5. UI 화면 구성을 위한 렌더링
+# 5. 메인 앱 화면 렌더링
 # ==========================================
 
 st.title("📅 에릭이의 하루 습관 & AI 루틴")
 
-# ------------------------------------------
-# [섹션] AI 미션 달성 칭찬 스티커 카운터
-# ------------------------------------------
+# --- 1. 주간 시간표 섹션 ---
+st.subheader("🎒 초등학교 5학년 주간 시간표")
+timetable_data = {
+    "교시 / 시간": ["1교시 (09:00~09:40)", "2교시 (09:50~10:30)", "3교시 (10:40~11:20)", "4교시 (11:30~12:10)", "점심시간 (12:10~13:00)", "5교시 (13:00~13:40)", "6교시 (13:50~14:30)"],
+    "월요일": ["국어", "수학", "사회", "과학", "🍱 점심식사", "체육", "영어"],
+    "화요일": ["수학", "국어", "음악", "미술", "🍱 점심식사", "미술", "자율"],
+    "수요일": ["국어", "사회", "과학", "수학", "🍱 점심식사", "동아리", "-"],
+    "목요일": ["영어", "수학", "국어", "체육", "🍱 점심식사", "사회", "도덕"],
+    "금요일": ["과학", "국어", "수학", "음악", "🍱 점심식사", "영어", "학급회의"]
+}
+st.table(timetable_data)
+
+# --- 2. 저녁 & 주말 루틴 체크리스트 ---
+st.divider()
+st.subheader("✅ 저녁 & 주말 루틴 체크리스트")
+
+c_routine1, c_routine2 = st.columns(2)
+with c_routine1:
+    st.write("🌙 **평일 저녁 루틴**")
+    st.checkbox("📚 학교 숙제 및 알림장 확인하기", key="chk_r1")
+    st.checkbox("🎒 내일 책가방 및 준비물 미리 챙기기", key="chk_r2")
+    st.checkbox("🪥 저녁 양치질 및 씻기", key="chk_r3")
+    st.checkbox("🛌 10시 전에 잠자리에 들기", key="chk_r4")
+
+with c_routine2:
+    st.write("☀️ **주말 루틴**")
+    st.checkbox("📖 주말 독서 30분 이상 하기", key="chk_r5")
+    st.checkbox("🧹 내 방 책상 및 정돈하기", key="chk_r6")
+    st.checkbox("🏃‍♂️ 야외 운동 또는 산책하기", key="chk_r7")
+    st.checkbox("🎨 나만의 자유 여가 시간 보내기", key="chk_r8")
+
+# --- 3. AI 칭찬 스티커 카운터 섹션 ---
+st.divider()
 with st.container():
     st.markdown('<div class="card-box">', unsafe_allow_html=True)
     
-    # 상단 제목 영역 & 우측 '하루 1장 제한' / '스티커 초기화' 배치
     col_title, col_top_btns = st.columns([3, 1])
     
     with col_title:
@@ -144,9 +160,8 @@ with st.container():
         st.caption("오늘 미션을 성공했을 때 칭찬 스티커 카드를 생성하여 내 스티커북(30개판)에 저장합니다!")
         
     with col_top_btns:
-        # 우측 상단 뱃지 및 초기화 버튼
         st.markdown('<div style="text-align: right;"><span class="sticker-badge">하루 1장 제한</span></div>', unsafe_allow_html=True)
-        st.write("") # 미세 간격 조정
+        st.write("")
         if st.button("🔄 스티커 초기화", key="reset_sticker_btn", use_container_width=True):
             st.session_state.sticker_count = 0
             if sheet:
@@ -159,7 +174,6 @@ with st.container():
 
     st.write("")
     
-    # 스티커 그리기 메인 버튼
     if st.button("🎲 스티커 그리러 가기", key="draw_sticker_main", use_container_width=True):
         if st.session_state.sticker_count < 30:
             st.session_state.sticker_count += 1
@@ -175,7 +189,6 @@ with st.container():
 
     st.write("")
     
-    # [수정사항] 달성 보상 목표 레이아웃 간격 밀착 조정 (1.2 : 3.8 : 0.6)
     c_label, c_input, c_save = st.columns([1.2, 3.8, 0.6], vertical_alignment="center")
     
     with c_label:
@@ -201,9 +214,7 @@ with st.container():
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ------------------------------------------
-# [섹션] AI 퀴즈 & 음성 응원 메시지 (중복 방지 적용)
-# ------------------------------------------
+# --- 4. AI 퀴즈 & 코칭 섹션 ---
 st.divider()
 st.subheader("💡 AI 에릭이 맞춤 코칭 & 퀴즈")
 
