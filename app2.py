@@ -999,7 +999,7 @@ with tab1:
         st.markdown("<div style='margin-bottom:4px;'></div>", unsafe_allow_html=True)
 
 # ==========================================
-# TAB 2: 요일별 학원 (일정 추가/삭제 기능 보강)
+# TAB 2: 요일별 학원
 # ==========================================
 with tab2:
     st.markdown(
@@ -1049,7 +1049,7 @@ with tab2:
                     key=f"d_{day_choice}_{idx}",
                 )
             with c4:
-                st.write("") # 간격 맞춤용
+                st.write("")
                 st.write("")
                 if st.button("🗑️ 삭제", key=f"del_sch_{day_choice}_{idx}"):
                     to_delete = idx
@@ -1061,7 +1061,6 @@ with tab2:
                 "badge": item.get("badge", "일정"),
             })
 
-        # 항목 삭제 처리
         if to_delete is not None:
             new_items.pop(to_delete)
             st.session_state.schedules[day_choice] = new_items
@@ -1111,7 +1110,7 @@ with tab2:
                 )
 
 # ==========================================
-# TAB 3: 저녁 루틴 (일정 추가/삭제 기능 보강)
+# TAB 3: 저녁 루틴
 # ==========================================
 with tab3:
     st.markdown(
@@ -1206,7 +1205,7 @@ with tab3:
                 )
 
 # ==========================================
-# TAB 4: 주말 일과 (일정 추가/삭제 기능 보강)
+# TAB 4: 주말 일과
 # ==========================================
 with tab4:
     st.markdown(
@@ -1315,8 +1314,7 @@ with tab5:
 
     if edit_chk:
         st.warning(
-            "✏️ **체크리스트 미션 문구를 자유롭게 수정한 뒤 저장 버튼을"
-            " 누르세요.**"
+            "✏️ **체크리스트 미션 문구를 자유롭게 수정한 뒤 저장 버튼을 누르세요.**"
         )
         col_ew, col_ewk = st.columns(2)
 
@@ -1496,7 +1494,7 @@ with tab5:
             )
 
 # ==========================================
-# TAB 6: AI 코치 & 퀴즈 (높이/가로라인 100% 동일 맞춤)
+# TAB 6: AI 코치 & 퀴즈 (1번 초등 5학년 퀴즈 & 2번 한능검 심화 성인 퀴즈 분리 반영)
 # ==========================================
 with tab6:
     st.markdown(
@@ -1518,17 +1516,18 @@ with tab6:
             st.markdown(
                 """
                 <div>
-                    <h3 style="margin-top:0; font-weight:800; color:#0f172a; font-size:15px;">🧠 초등 5학년 1분 AI 퀴즈 생성기</h3>
-                    <p style="font-size:11px; color:#64748b; margin-bottom:12px;">아침 시청 복습이나 저녁 공부 시작 전, 재미있는 1분 퀴즈로 뇌를 세워보세요!</p>
+                    <h3 style="margin-top:0; font-weight:800; color:#0f172a; font-size:15px;">🧠 AI 1분 퀴즈 생성기 (초등 5학년 / 한능검 심화)</h3>
+                    <p style="font-size:11px; color:#64748b; margin-bottom:12px;">아동용 맞춤 퀴즈 또는 실제 한능검 심화 성인 난이도 퀴즈를 무제한 생성합니다!</p>
                 </div>
                 """,
                 unsafe_allow_html=True,
             )
             
             subject = st.selectbox(
-                "과목 선택",
+                "과목 및 출제 유형 선택",
                 [
-                    "📜 한국사 퀴즈 (전 범위 다채로운 기출 유형)",
+                    "📜 [AI 무작위] 한국사 퀴즈 (초등 5학년 맞춤)",
+                    "🏛️ [실제 유형] 한국사능력검정시험 (한능검 심화/성인용)",
                     "🔬 초등 과학교과 (전 범위 탐구 유형)",
                     "🔤 초등 필수 영단어 & 표현",
                 ],
@@ -1539,17 +1538,40 @@ with tab6:
             if st.button("✨ 퀴즈 생성", key="btn_g_quiz", use_container_width=True):
                 st.session_state.quiz_click_count += 1
                 idx = st.session_state.quiz_click_count
-                with st.spinner("알맞은 퀴즈를 생성하는 중입니다..."):
-                    prompt = (
-                        f"당신은 친절한 AI 튜터입니다. '{subject}' 과목에 대해 초등"
-                        f" 5학년 수준의 {idx}번째 모의 문제 1개를 무작위 출제하세요."
-                        " 특정 시대나 단원에 치우치지 말고 전 범위에서 흥미로운"
-                        " 문제를 골라주세요.\n\n[조건]\n- 4지선다형 객관식 문제로"
-                        " 만드세요.\n- 💡 해설 부분은 '에릭 학생, 이 문제는 ~"
-                        " 때문이야!'처럼 눈높이에 맞춰 다정하고 쉽게 설명해"
-                        " 주세요.\n\n[출력 형식]\n[문제] ➡️ [보기 1,2,3,4] ➡️ 💡"
-                        " [친절한 해설] ➡️ 🔒 [정답]"
-                    )
+                
+                with st.spinner("알맞은 퀴즈를 출제하는 중입니다..."):
+                    if "한능검 심화" in subject:
+                        # 2번: 성인용 한능검 심화 프롬프트 (초등 학생 호칭/칭찬 구문 완전히 배제)
+                        prompt = (
+                            f"당신은 한국사능력검정시험(한능검) 출제위원입니다. 성인 수험생 수준에 맞춰 "
+                            f"실제 한능검 심화(1~3급) 난이도의 {idx}번째 한국사 문제 1개를 무작위 출제하세요.\n\n"
+                            "[출제 조건]\n"
+                            "- 사료 해석, 핵심 인물/사건, 역사적 제도 등 정통 한능검 심화 기출 스타일로 작성하세요.\n"
+                            "- 아이 대상 호칭('에릭 학생' 등)이나 친근한 존댓말 칭찬을 절대 사용하지 마세요.\n"
+                            "- 4지선다형 객관식 문제(1~4번)로 출제하세요.\n"
+                            "- 해설은 학술적이고 객관적인 시험용 해설 톤으로 명확하게 작성하세요.\n\n"
+                            "[출력 형식]\n"
+                            "[문제] (사료 또는 문제 텍스트)\n"
+                            "① 보기1\n"
+                            "② 보기2\n"
+                            "③ 보기3\n"
+                            "④ 보기4\n\n"
+                            "💡 [해설] (정석 학술 해설)\n"
+                            "🔒 [정답] (정답 번호)"
+                        )
+                    else:
+                        # 1번: 기존 초등 5학년 맞춤형 프롬프트
+                        prompt = (
+                            f"당신은 친절한 AI 튜터입니다. '{subject}' 과목에 대해 초등"
+                            f" 5학년 수준의 {idx}번째 모의 문제 1개를 무작위 출제하세요."
+                            " 특정 시대나 단원에 치우치지 말고 전 범위에서 흥미로운"
+                            " 문제를 골라주세요.\n\n[조건]\n- 4지선다형 객관식 문제로"
+                            " 만드세요.\n- 💡 해설 부분은 '에릭 학생, 이 문제는 ~"
+                            " 때문이야!'처럼 눈높이에 맞춰 다정하고 쉽게 설명해"
+                            " 주세요.\n\n[출력 형식]\n[문제] ➡️ [보기 1,2,3,4] ➡️ 💡"
+                            " [친절한 해설] ➡️ 🔒 [정답]"
+                        )
+                        
                     res_text = call_gemini_api(prompt)
                     st.success(f"회차 #{idx} 퀴즈 생성 완료!")
                     st.markdown(res_text)
@@ -1613,7 +1635,7 @@ with tab6:
                     """
                     st.components.v1.html(tts_script, height=0)
 
-    # 2행: 스티커 카운터 & 질의응답 (하단 높이 100% 수평 맞춤)
+    # 2행: 스티커 카운터 & 질의응답
     row2_col1, row2_col2 = st.columns(2)
 
     with row2_col1:
@@ -1621,7 +1643,6 @@ with tab6:
             current_cnt = len(st.session_state.stickers)
             pct_val = int(current_cnt / 30 * 100)
             
-            # 상단 제목 및 '하루 1장 제한' 뱃지
             st.markdown(
                 f"""
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
@@ -1634,7 +1655,6 @@ with tab6:
                 unsafe_allow_html=True,
             )
 
-            # 설명글
             st.markdown(
                 '<p style="font-size:11px; color:#64748b; margin-top:2px; margin-bottom:12px;">오늘 미션을 성공했을 때 칭찬 스티커 카드를 생성하여 내 스티커북(30개판)에 저장합니다!</p>',
                 unsafe_allow_html=True,
@@ -1673,7 +1693,6 @@ with tab6:
                     unsafe_allow_html=True,
                 )
 
-            # 🎯 달성 보상 목표: 입력창 넓게 확장 및 두 버튼 가로 폭 슬림하게 유지
             st.markdown(
                 """
                 <div style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
