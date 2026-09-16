@@ -227,7 +227,7 @@ def load_all_sheet_data():
         df = pd.read_csv(SHEET_CSV_URL)
         if not df.empty:
             row = df.iloc[0]
-            stk_cnt = int(row.get("stickers_count", 0))
+            stk_raw = row.get("stickers_count", None)
             goal = str(row.get("reward_goal", "아빠와 프로야구 직관 가기 & 갖고 싶던 선물!"))
 
             sch_raw = row.get("schedules_json", None)
@@ -235,6 +235,15 @@ def load_all_sheet_data():
             wk_raw = row.get("weekend_json", None)
             chk_raw = row.get("checklist_json", None)
             evt_raw = row.get("events_json", None)
+
+            # 스티커 데이터 파싱 (JSON 객체 리스트 지원)
+            stickers_list = []
+            if pd.notna(stk_raw) and stk_raw:
+                try:
+                    stickers_list = json.loads(stk_raw)
+                except Exception:
+                    cnt = int(stk_raw) if str(stk_raw).isdigit() else 0
+                    stickers_list = [{"icon": "🏆", "msg": "목표 완수!", "date": ""} for _ in range(cnt)]
 
             sch = json.loads(sch_raw) if pd.notna(sch_raw) and sch_raw else DEFAULT_SCHEDULES
             eve = json.loads(eve_raw) if pd.notna(eve_raw) and eve_raw else DEFAULT_EVENING
@@ -248,16 +257,16 @@ def load_all_sheet_data():
                 wk_chk = chk_data.get("weekend", None)
                 hist = chk_data.get("history", [])
 
-            return stk_cnt, goal, sch, eve, wk, w_chk, wk_chk, hist, evt
+            return stickers_list, goal, sch, eve, wk, w_chk, wk_chk, hist, evt
     except Exception:
         pass
-    return 0, "아빠와 프로야구 직관 가기 & 갖고 싶던 선물!", DEFAULT_SCHEDULES, DEFAULT_EVENING, DEFAULT_WEEKEND, None, None, [], DEFAULT_EVENTS
+    return [], "아빠와 프로야구 직관 가기 & 갖고 싶던 선물!", DEFAULT_SCHEDULES, DEFAULT_EVENING, DEFAULT_WEEKEND, None, None, [], DEFAULT_EVENTS
 
 
-def save_sheet_data(stickers_count=None, reward_goal=None, schedules=None, evening=None, weekend=None, checklist=None, events=None):
+def save_sheet_data(stickers_list=None, reward_goal=None, schedules=None, evening=None, weekend=None, checklist=None, events=None):
     params = {}
-    if stickers_count is not None:
-        params["stickers"] = stickers_count
+    if stickers_list is not None:
+        params["stickers"] = json.dumps(stickers_list, ensure_ascii=False)
     if reward_goal is not None:
         params["goal"] = reward_goal
     if schedules is not None:
@@ -338,7 +347,7 @@ def get_daily_ai_quote_cached(today_str_val):
 (init_stk, init_goal, init_sch, init_eve, init_wk, init_w_chk, init_wk_chk, init_hist, init_evt) = load_all_sheet_data()
 
 if "stickers" not in st.session_state:
-    st.session_state.stickers = [{"icon": "🏆", "msg": "목표 완수!", "date": ""} for _ in range(init_stk)]
+    st.session_state.stickers = init_stk
 if "reward_goal" not in st.session_state:
     st.session_state.reward_goal = init_goal
 if "schedules" not in st.session_state:
@@ -906,7 +915,6 @@ with tab6:
                 idx = st.session_state.quiz_click_count
                 with st.spinner("알맞은 퀴즈를 출제하는 중입니다..."):
                     if "한능검 4~6급 응용" in subject:
-                        # 1번: 한능검 기본(4~6급) 스타일을 5학년에 맞춰 쉽게 응용한 문제
                         prompt = (
                             f"당신은 초등 5학년 역사 전문 튜터입니다. 에릭 학생을 위해 한능검 기본(4~6급) 기출 스타일을 응용한 {idx}번째 한국사 문제 1개를 무작위 출제하세요.\n\n"
                             "[출제 조건]\n"
@@ -924,7 +932,6 @@ with tab6:
                             "🔒 [정답] (정답 번호)"
                         )
                     elif "한능검 심화" in subject:
-                        # 2번: 실제 성인 한능검 심화 스타일
                         prompt = (
                             f"당신은 한국사능력검정시험(한능검) 출제위원입니다. 성인 수험생 수준에 맞춰 실제 한능검 심화(1~3급) 난이도의 {idx}번째 한국사 문제 1개를 무작위 출제하세요.\n\n"
                             "[출제 조건]\n"
@@ -942,7 +949,6 @@ with tab6:
                             "🔒 [정답] (정답 번호)"
                         )
                     elif "영단어 & 표현" in subject:
-                        # 4번: 초등 영어 표현
                         prompt = (
                             f"당신은 초등 5학년 영어 튜터입니다. 초등 필수 영단어 및 일상 표현 관련 {idx}번째 객관식 문제를 1개 출제하세요.\n\n"
                             "[출제 조건]\n"
@@ -959,7 +965,6 @@ with tab6:
                             "🔒 [정답] (정답)"
                         )
                     else:
-                        # 3번: 초등 과학
                         prompt = (
                             f"당신은 친절한 AI 튜터입니다. '{subject}' 과목에 대해 초등 5학년 수준의 {idx}번째 모의 문제 1개를 무작위 출제하세요. 전 범위에서 흥미로운 문제를 골라주세요.\n\n"
                             "[조건]\n"
@@ -1005,8 +1010,15 @@ with tab6:
             st.markdown(f'<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;"><h3 style="margin:0; font-weight:800; color:#0f172a; font-size:15px;">🎨 AI 미션 달성 칭찬 스티커 카운터 <span style="color:#ec4899; font-weight:900; font-size:14px;">({current_cnt}/30개, {pct_val}%)</span></h3><span style="font-size:10px; background:#fce7f3; color:#be185d; font-weight:700; padding:2px 6px; border-radius:4px;">하루 1장 제한</span></div>', unsafe_allow_html=True)
             st.markdown('<p style="font-size:11px; color:#64748b; margin-top:2px; margin-bottom:12px;">오늘 미션을 성공했을 때 칭찬 스티커 카드를 생성하여 내 스티커북(30개판)에 저장합니다!</p>', unsafe_allow_html=True)
 
+            # ★ 스티커 중복 지급 방지 로직 (시트에 저장된 날짜 체크)
+            latest_date_in_list = ""
+            if st.session_state.stickers:
+                latest_date_in_list = st.session_state.stickers[-1].get("date", "")
+
+            is_already_drawn = (latest_date_in_list == today_str) or (st.session_state.last_sticker_date == today_str)
+
             if st.button("🎲 스티커 그리기", key="btn_g_sticker", use_container_width=True):
-                if st.session_state.last_sticker_date == today_str:
+                if is_already_drawn:
                     st.warning("⚠️ 오늘의 칭찬 스티커는 이미 획득하셨습니다!")
                 else:
                     rand_icon, rand_msg = random.choice(STICKER_ICONS), random.choice(STICKER_MSG)
@@ -1014,11 +1026,20 @@ with tab6:
                     st.session_state.stickers.append(sticker_item)
                     st.session_state.last_sticker_date = today_str
                     st.session_state.latest_draw_sticker = sticker_item
-                    save_sheet_data(stickers_count=len(st.session_state.stickers))
+                    
+                    # 스티커 목록 전체(날짜 데이터 포함)를 구글 시트에 즉시 영구 저장
+                    save_sheet_data(stickers_list=st.session_state.stickers)
                     st.balloons()
+                    st.rerun()
+
+            if is_already_drawn:
+                st.warning("⚠️ 오늘의 칭찬 스티커는 이미 획득하셨습니다!")
 
             if st.session_state.latest_draw_sticker:
                 lstk = st.session_state.latest_draw_sticker
+                st.markdown(f'<div style="text-align:center; padding: 18px 16px; background: linear-gradient(135deg, #fef9c3, #fef08a); border: 1px solid #fde047; border-radius:14px; margin-top: 10px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.03);"><div style="font-size: 32px; line-height: 1.1;">{lstk["icon"]}</div><div style="font-size: 13px; font-weight: 800; color: #854d0e; margin-top: 4px;">"{lstk["msg"]}"</div></div>', unsafe_allow_html=True)
+            elif is_already_drawn and st.session_state.stickers:
+                lstk = st.session_state.stickers[-1]
                 st.markdown(f'<div style="text-align:center; padding: 18px 16px; background: linear-gradient(135deg, #fef9c3, #fef08a); border: 1px solid #fde047; border-radius:14px; margin-top: 10px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.03);"><div style="font-size: 32px; line-height: 1.1;">{lstk["icon"]}</div><div style="font-size: 13px; font-weight: 800; color: #854d0e; margin-top: 4px;">"{lstk["msg"]}"</div></div>', unsafe_allow_html=True)
 
             st.markdown('<div style="display: flex; align-items: center; gap: 8px; margin-top: 10px;"><span style="font-size: 12px; font-weight: 700; color: #334155; white-space: nowrap;">🎯 달성 보상 목표 :</span></div>', unsafe_allow_html=True)
@@ -1034,7 +1055,7 @@ with tab6:
             with c_btn_rst:
                 if st.button("🔄 초기화", key="btn_g_sticker_reset_next_to_pin", use_container_width=True):
                     st.session_state.stickers, st.session_state.last_sticker_date, st.session_state.latest_draw_sticker = [], "", None
-                    save_sheet_data(stickers_count=0)
+                    save_sheet_data(stickers_list=[])
                     st.toast("스티커가 0개로 초기화되었습니다!")
                     st.rerun()
 
