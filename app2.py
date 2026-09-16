@@ -416,9 +416,14 @@ STICKER_MSG = [
     "차근차근 실력이 쌓이고 있어!", "약속을 지키는 네가 최고야!", "지치지 않고 완수한 스스로를 칭찬해!", "내일 더 멋지게 날아오르자!"
 ]
 
-# 7. 상단 헤더
+# 7. 상단 헤더 (한국 표준시 KST 기준 날짜 자동 갱신 패치 적용)
 days_kor = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"]
-today_obj = datetime.date.today()
+
+# Streamlit Cloud 서버 시차(UTC)를 한국 시간(KST = UTC+9)으로 강제 변환
+utc_now = datetime.datetime.now(datetime.timezone.utc)
+kst_now = utc_now + datetime.timedelta(hours=9)
+
+today_obj = kst_now.date()
 today_idx = today_obj.weekday()
 today_name = days_kor[today_idx]
 today_str = today_obj.strftime("%Y-%m-%d")
