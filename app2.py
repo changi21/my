@@ -124,25 +124,6 @@ st.markdown(
         border-radius: 10px;
         font-weight: 700;
     }
-    
-    /* [수정] 텍스트 전용 초슬림 초기화 버튼 스타일 (네모 박스 제거) */
-    .text-only-reset button {
-        background: none !important;
-        border: none !important;
-        box-shadow: none !important;
-        color: #94a3b8 !important;
-        font-size: 11px !important;
-        font-weight: 500 !important;
-        padding: 0px !important;
-        margin: 0px !important;
-        height: auto !important;
-        min-height: 0px !important;
-        text-decoration: underline !important;
-    }
-    .text-only-reset button:hover {
-        color: #ef4444 !important;
-        background: none !important;
-    }
 </style>
 """,
     unsafe_allow_html=True,
@@ -1507,25 +1488,11 @@ with tab6:
                 unsafe_allow_html=True,
             )
 
-            # [수정] 연한 설명글 오른쪽 끝에 네모 칸 없는 순수 텍스트 형태의 🔄 초기화 링크 배치
-            sub_col1, sub_col2 = st.columns([5, 1], vertical_alignment="center")
-            with sub_col1:
-                st.markdown(
-                    '<p style="font-size:11px; color:#64748b; margin:0;">오늘 미션을 성공했을 때 칭찬 스티커 카드를 생성하여 내 스티커북(30개판)에 저장합니다!</p>',
-                    unsafe_allow_html=True,
-                )
-            with sub_col2:
-                st.markdown('<div class="text-only-reset" style="text-align: right;">', unsafe_allow_html=True)
-                if st.button("🔄 초기화", key="btn_g_text_reset", use_container_width=False):
-                    st.session_state.stickers = []
-                    st.session_state.last_sticker_date = ""
-                    st.session_state.latest_draw_sticker = None
-                    save_sheet_data(stickers_count=0)
-                    st.toast("스티커가 0개로 초기화되었습니다!")
-                    st.rerun()
-                st.markdown('</div>', unsafe_allow_html=True)
-
-            st.write("")
+            # 설명글만 슬림하게 출력 (우측 버튼 요소 제거로 세로 뚱뚱해짐 완전 해결)
+            st.markdown(
+                '<p style="font-size:11px; color:#64748b; margin-top:2px; margin-bottom:12px;">오늘 미션을 성공했을 때 칭찬 스티커 카드를 생성하여 내 스티커북(30개판)에 저장합니다!</p>',
+                unsafe_allow_html=True,
+            )
 
             if st.button(
                 "🎲 스티커 그리기", key="btn_g_sticker", use_container_width=True
@@ -1560,7 +1527,7 @@ with tab6:
                     unsafe_allow_html=True,
                 )
 
-            # 🎯 달성 보상 목표 라벨과 입력창 밀착 유지
+            # [핵심 변경점] 🎯 달성 보상 목표 입력창 옆에 [📌 저장] 및 [🔄 초기화] 버튼 나란히 배치
             st.markdown(
                 """
                 <div style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
@@ -1570,7 +1537,7 @@ with tab6:
                 unsafe_allow_html=True,
             )
             
-            c_in, c_btn = st.columns([4, 1], vertical_alignment="center")
+            c_in, c_btn_pin, c_btn_rst = st.columns([3.2, 0.9, 1.1], vertical_alignment="center")
             with c_in:
                 new_goal_val = st.text_input(
                     "보상 목표",
@@ -1578,11 +1545,19 @@ with tab6:
                     key="input_reward_goal",
                     label_visibility="collapsed",
                 )
-            with c_btn:
+            with c_btn_pin:
                 if st.button("📌", key="btn_save_goal", use_container_width=True):
                     st.session_state.reward_goal = new_goal_val
                     save_sheet_data(reward_goal=new_goal_val)
                     st.success("완료!")
+                    st.rerun()
+            with c_btn_rst:
+                if st.button("🔄 초기화", key="btn_g_sticker_reset_next_to_pin", use_container_width=True):
+                    st.session_state.stickers = []
+                    st.session_state.last_sticker_date = ""
+                    st.session_state.latest_draw_sticker = None
+                    save_sheet_data(stickers_count=0)
+                    st.toast("스티커가 0개로 초기화되었습니다!")
                     st.rerun()
 
     with row2_col2:
