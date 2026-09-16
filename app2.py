@@ -124,6 +124,17 @@ st.markdown(
         border-radius: 10px;
         font-weight: 700;
     }
+    
+    /* 소형 초기화 버튼 전용 스타일 */
+    .mini-reset-btn button {
+        padding: 2px 8px !important;
+        font-size: 11px !important;
+        height: 24px !important;
+        color: #64748b !important;
+        background-color: #f1f5f9 !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 6px !important;
+    }
 </style>
 """,
     unsafe_allow_html=True,
@@ -470,7 +481,6 @@ def call_gemini_api(prompt):
     if not api_key:
         return "Secrets에 GEMINI_API_KEY가 설정되어 있지 않습니다."
 
-    # [수정 1] gemini-3.6-flash에서 gemini-3.1-flash-lite로 변경
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key={api_key}"
     headers = {"Content-Type": "application/json"}
     payload = {"contents": [{"parts": [{"text": prompt}]}]}
@@ -586,36 +596,9 @@ if "latest_draw_sticker" not in st.session_state:
     st.session_state.latest_draw_sticker = None
 
 STICKER_ICONS = [
-    "🏆",
-    "⭐",
-    "🥇",
-    "🎯",
-    "🚀",
-    "👑",
-    "🔥",
-    "💎",
-    "🎨",
-    "⚾",
-    "🥋",
-    "📖",
-    "🧠",
-    "⚡",
-    "🌟",
-    "🦁",
-    "🐯",
-    "🦄",
-    "🦅",
-    "🥊",
-    "🎮",
-    "🧩",
-    "💡",
-    "🎓",
-    "🍀",
-    "🌈",
-    "🎖️",
-    "🎗️",
-    "🏅",
-    "✨",
+    "🏆", "⭐", "🥇", "🎯", "🚀", "👑", "🔥", "💎", "🎨", "⚾",
+    "🥋", "📖", "🧠", "⚡", "🌟", "🦁", "🐯", "🦄", "🦅", "🥊",
+    "🎮", "🧩", "💡", "🎓", "🍀", "🌈", "🎖️", "🎗️", "🏅", "✨",
 ]
 STICKER_MSG = [
     "오늘도 목표 완수! 정말 대단해!",
@@ -692,9 +675,7 @@ with tab1:
 
     is_weekend = selected_day in ["토요일", "일요일"]
 
-    st.markdown(
-        "<div style='margin-top: 6px;'></div>", unsafe_allow_html=True
-    )
+    st.markdown("<div style='margin-top: 6px;'></div>", unsafe_allow_html=True)
     m_col1, m_col2, m_col3, m_col4 = st.columns(4)
 
     with m_col1:
@@ -767,9 +748,7 @@ with tab1:
             unsafe_allow_html=True,
         )
 
-    st.markdown(
-        "<div style='margin-top: 12px;'></div>", unsafe_allow_html=True
-    )
+    st.markdown("<div style='margin-top: 12px;'></div>", unsafe_allow_html=True)
 
     c1, c2 = st.columns(2)
 
@@ -949,9 +928,7 @@ with tab1:
                 """,
                 unsafe_allow_html=True,
             )
-        st.markdown(
-            "<div style='margin-bottom:4px;'></div>", unsafe_allow_html=True
-        )
+        st.markdown("<div style='margin-bottom:4px;'></div>", unsafe_allow_html=True)
 
 # ==========================================
 # TAB 2: 요일별 학원
@@ -1509,36 +1486,38 @@ with tab6:
             current_cnt = len(st.session_state.stickers)
             pct_val = int(current_cnt / 30 * 100)
             
-            # [수정 2] 우측 상단 '하루 1장 제한' 뱃지 옆에 '🔄 스티커 초기화' 버튼 추가
-            head_c1, head_c2 = st.columns([2.5, 1.5])
-            with head_c1:
-                st.markdown(
-                    f"""
+            # 상단 제목 및 '하루 1장 제한' 뱃지
+            st.markdown(
+                f"""
+                <div style="display:flex; justify-content:space-between; align-items:center;">
                     <h3 style="margin:0; font-weight:800; color:#0f172a; font-size:15px;">
                         🎨 AI 미션 달성 칭찬 스티커 카운터 <span style="color:#ec4899; font-weight:900; font-size:14px;">({current_cnt}/30개, {pct_val}%)</span>
                     </h3>
-                    """,
-                    unsafe_allow_html=True,
-                )
-            with head_c2:
-                btn_reset_col1, btn_reset_col2 = st.columns([1, 1])
-                with btn_reset_col1:
-                    st.markdown('<span style="font-size:10px; background:#fce7f3; color:#be185d; font-weight:700; padding:4px 6px; border-radius:4px; display:inline-block; margin-top:2px;">하루 1장 제한</span>', unsafe_allow_html=True)
-                with btn_reset_col2:
-                    if st.button("🔄 초기화", key="btn_g_sticker_reset", use_container_width=True):
-                        st.session_state.stickers = []
-                        st.session_state.last_sticker_date = ""
-                        st.session_state.latest_draw_sticker = None
-                        save_sheet_data(stickers_count=0)
-                        st.toast("스티커가 0개로 초기화되었습니다!")
-                        st.rerun()
-
-            st.markdown(
-                """
-                <p style="font-size:11px; color:#64748b; margin-top:4px; margin-bottom:12px;">오늘 미션을 성공했을 때 칭찬 스티커 카드를 생성하여 내 스티커북(30개판)에 저장합니다!</p>
+                    <span style="font-size:10px; background:#fce7f3; color:#be185d; font-weight:700; padding:2px 6px; border-radius:4px;">하루 1장 제한</span>
+                </div>
                 """,
                 unsafe_allow_html=True,
             )
+
+            # [디테일 수정 1] 연한 설명문 글자 크기(11px) 라인 끝에 소형 초기화 버튼 배치
+            sub_col1, sub_col2 = st.columns([4, 1], vertical_alignment="center")
+            with sub_col1:
+                st.markdown(
+                    '<p style="font-size:11px; color:#64748b; margin:0;">오늘 미션을 성공했을 때 칭찬 스티커 카드를 생성하여 내 스티커북(30개판)에 저장합니다!</p>',
+                    unsafe_allow_html=True,
+                )
+            with sub_col2:
+                st.markdown('<div class="mini-reset-btn">', unsafe_allow_html=True)
+                if st.button("🔄 초기화", key="btn_g_sticker_reset_mini", use_container_width=True):
+                    st.session_state.stickers = []
+                    st.session_state.last_sticker_date = ""
+                    st.session_state.latest_draw_sticker = None
+                    save_sheet_data(stickers_count=0)
+                    st.toast("스티커가 0개로 초기화되었습니다!")
+                    st.rerun()
+                st.markdown('</div>', unsafe_allow_html=True)
+
+            st.write("")
 
             if st.button(
                 "🎲 스티커 그리기", key="btn_g_sticker", use_container_width=True
@@ -1573,13 +1552,17 @@ with tab6:
                     unsafe_allow_html=True,
                 )
 
-            # [수정 3] 🎯 달성 보상 목표 입력 부분 레이아웃 밀착 보완 (1.3 : 2.7 : 0.8)
-            c_label, c_in, c_btn = st.columns([1.3, 2.7, 0.8], vertical_alignment="center")
-            with c_label:
-                st.markdown(
-                    "<div style='font-size:12px; font-weight:700; color:#334155; line-height:38px; white-space:nowrap;'>🎯 달성 보상 목표 :</div>",
-                    unsafe_allow_html=True,
-                )
+            # [디테일 수정 2] 🎯 달성 보상 목표 라벨과 입력창을 밀착 레이아웃으로 변경
+            st.markdown(
+                """
+                <div style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
+                    <span style="font-size: 12px; font-weight: 700; color: #334155; white-space: nowrap;">🎯 달성 보상 목표 :</span>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+            
+            c_in, c_btn = st.columns([4, 1], vertical_alignment="center")
             with c_in:
                 new_goal_val = st.text_input(
                     "보상 목표",
