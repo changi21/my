@@ -720,7 +720,7 @@ with tab1:
                     unsafe_allow_html=True,
                 )
 
-            # 5줄: 하단 토글 요소 (font-size: 12px)
+            # 5줄: 하단 토글 요소
             edit_dday = st.toggle("✏️ D-Day 일정 수정 (최대 5개)", key="tog_edit_dday")
             if edit_dday:
                 new_evt_list = []
@@ -764,12 +764,13 @@ with tab1:
                 unsafe_allow_html=True,
             )
 
-            # 5줄: 하단 텍스트 (흰색 팁 박스 제거 후 12px 1:1 대칭 배치)
+            # 5줄: 하단 텍스트 + 토글 스위치 높이 대칭용 12px 빈 줄 추가
             st.markdown(
                 f"""
                 <div style="font-size:12px; font-weight:700; color:#475569; padding: 4px 0 2px 0; display:flex; align-items:center;">
                     💡 {q_sub}
                 </div>
+                <div style="font-size:12px; line-height:1.2; opacity:0;">&nbsp;</div>
                 """,
                 unsafe_allow_html=True,
             )
