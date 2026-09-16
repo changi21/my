@@ -654,7 +654,7 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
 ])
 
 # ==========================================
-# TAB 1: 대시보드 (D-Day 최우선 1개 + AI 아침 명언 상단 배치)
+# TAB 1: 대시보드 (좌우 높이 및 잘림 방지 CSS 보정 완료)
 # ==========================================
 with tab1:
     st.markdown(
@@ -679,7 +679,7 @@ with tab1:
 
     st.markdown("<div style='margin-top: 6px;'></div>", unsafe_allow_html=True)
 
-    # 상단 2분할 영역: [D-Day 가장 가까운 1개 카드] + [AI 매일 아침 추천 명언]
+    # 상단 2분할 영역: [D-Day 카드] + [AI 추천 명언 카드] (좌우 완전 균형 및 높이 동기화)
     top_c1, top_c2 = st.columns([1, 1])
 
     with top_c1:
@@ -707,17 +707,17 @@ with tab1:
                     except ValueError:
                         pass
 
-            valid_events.sort(key=lambda x: x[0])  # 남은 날짜 오름차순 정렬
+            valid_events.sort(key=lambda x: x[0])
 
             if valid_events:
                 closest_diff, closest_name, closest_date = valid_events[0]
                 d_day_txt = "D-DAY 🎉" if closest_diff == 0 else f"D-{closest_diff}"
                 st.markdown(
                     f"""
-                    <div style="padding:4px 0;">
-                        <div style="font-size:24px; font-weight:900; color:#ef4444; line-height:1.1;">{d_day_txt}</div>
-                        <div style="font-size:15px; font-weight:800; color:#0f172a; margin-top:4px;">{closest_name}</div>
-                        <div style="font-size:11px; color:#64748b; margin-top:2px;">일정 날짜: {closest_date}</div>
+                    <div style="padding:2px 0;">
+                        <div style="font-size:22px; font-weight:900; color:#ef4444; line-height:1.1;">{d_day_txt}</div>
+                        <div style="font-size:14px; font-weight:800; color:#0f172a; margin-top:3px;">{closest_name}</div>
+                        <div style="font-size:11px; color:#64748b; margin-top:1px;">일정 날짜: {closest_date}</div>
                     </div>
                     """,
                     unsafe_allow_html=True,
@@ -725,17 +725,17 @@ with tab1:
             else:
                 st.markdown(
                     """
-                    <div style="padding:10px 0; color:#94a3b8; font-size:12px;">
-                        등록된 D-Day 일정이 없거나 모두 지났습니다.<br>아래 '✏️ D-Day 일정 수정'에서 새로 등록해 보세요!
+                    <div style="padding:6px 0; color:#94a3b8; font-size:11px;">
+                        등록된 D-Day 일정이 없거나 모두 지났습니다.<br>아래에서 새로 등록해 보세요!
                     </div>
                     """,
                     unsafe_allow_html=True,
                 )
 
-            # D-Day 수정 모드 토글 (최대 5개 입력)
+            # D-Day 수정 모드 토글
             edit_dday = st.toggle("✏️ D-Day 일정 수정 (최대 5개)", key="tog_edit_dday")
             if edit_dday:
-                st.markdown("<div style='margin-top:8px;'></div>", unsafe_allow_html=True)
+                st.markdown("<div style='margin-top:6px;'></div>", unsafe_allow_html=True)
                 new_evt_list = []
                 for idx in range(5):
                     e_item = st.session_state.events[idx] if idx < len(st.session_state.events) else {"name": "", "date": ""}
@@ -754,20 +754,19 @@ with tab1:
 
     with top_c2:
         with st.container(border=True):
-            # 매일 날짜 기준으로 명언 고정 변경
             day_seed = today_obj.year * 10000 + today_obj.month * 100 + today_obj.day
             q_main, q_sub = QUOTE_LIST[day_seed % len(QUOTE_LIST)]
 
             st.markdown(
                 f"""
-                <div style="display:flex; flex-direction:column; justify-content:space-between; height:100%; min-height:120px;">
+                <div style="display:flex; flex-direction:column; justify-content:space-between; height:100%; min-height:130px; box-sizing:border-box;">
                     <div>
                         <span style="font-size:11px; font-weight:700; color:#64748b;">✨ AI 매일 아침 추천 명언</span>
-                        <div style="font-size:15px; font-weight:800; color:#4f46e5; margin-top:8px; line-height:1.4;">
+                        <div style="font-size:14px; font-weight:800; color:#4f46e5; margin-top:6px; line-height:1.35;">
                             "{q_main}"
                         </div>
                     </div>
-                    <div style="font-size:12px; color:#475569; background:#f8fafc; padding:8px 12px; border-radius:8px; border:1px solid #e2e8f0; margin-top:10px;">
+                    <div style="font-size:11px; color:#475569; background:#f8fafc; padding:6px 10px; border-radius:8px; border:1px solid #e2e8f0; margin-top:8px; line-height:1.3;">
                         💡 {q_sub}
                     </div>
                 </div>
@@ -777,7 +776,7 @@ with tab1:
 
     st.markdown("<div style='margin-top: 12px;'></div>", unsafe_allow_html=True)
 
-    # 대시보드 칭찬 스티커 달성 현황판 (버튼 삭제 + AI 탭 목표 불러오기 텍스트 표시)
+    # 대시보드 칭찬 스티커 달성 현황판
     with st.container(border=True):
         current_cnt = len(st.session_state.stickers)
         pct_val = int(current_cnt / 30 * 100)
@@ -794,7 +793,6 @@ with tab1:
             unsafe_allow_html=True,
         )
 
-        # AI 탭에서 설정한 목표 텍스트 연동 표시
         goal_display = st.session_state.reward_goal if st.session_state.reward_goal else "설정된 목표가 없습니다."
         st.markdown(
             f"""
@@ -806,7 +804,6 @@ with tab1:
             unsafe_allow_html=True,
         )
 
-        # 30개 스티커 모음판
         total_stickers = 30
         cols_per_row = 10
         for row_idx in range(0, total_stickers, cols_per_row):
