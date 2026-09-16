@@ -13,7 +13,7 @@ st.set_page_config(
     layout="wide",
 )
 
-# 2. Pretendard 폰트 + 바탕화면/큰박스 색상 완전 분리 + 높이 고정 CSS (300px 적용)
+# 2. Pretendard 폰트 + 바탕화면/큰박스 색상 완전 분리 + 높이 고정 CSS (350px 적용)
 st.markdown(
     """
 <style>
@@ -45,14 +45,14 @@ st.markdown(
         margin-bottom: 18px !important;
     }
 
-    /* 3. 상단 D-Day & 명언 박스 높이 고정 (300px) 및 수정모드 유연화 */
+    /* 3. 상단 D-Day & 명언 박스 높이 여유롭게 고정 (350px) */
     .top-card-wrapper > div [data-testid="stColumn"] > div > div[data-testid="stVerticalBlockBorderWrapper"] {
-        min-height: 300px !important;
+        min-height: 350px !important;
         box-sizing: border-box !important;
         display: flex !important;
         flex-direction: column !important;
         justify-content: space-between !important;
-        padding: 18px 18px 18px 18px !important;
+        padding: 20px 20px 20px 20px !important;
     }
 
     div[data-testid="stVerticalBlockBorderWrapper"] > div {
@@ -656,7 +656,7 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
 ])
 
 # ==========================================
-# TAB 1: 대시보드 (최적 높이 300px + 하단 여백 12px)
+# TAB 1: 대시보드 (여유로운 350px 고정 높이 적용)
 # ==========================================
 with tab1:
     st.markdown(
@@ -681,7 +681,7 @@ with tab1:
 
     st.markdown("<div style='margin-top: 6px;'></div>", unsafe_allow_html=True)
 
-    # top-card-wrapper 클래스로 감싸서 균형 잡힌 300px 높이 확보
+    # top-card-wrapper 350px 높이 확보
     st.markdown('<div class="top-card-wrapper">', unsafe_allow_html=True)
     top_c1, top_c2 = st.columns([1, 1])
 
@@ -717,7 +717,7 @@ with tab1:
                 d_day_txt = "D-DAY 🎉" if closest_diff == 0 else f"D-{closest_diff}"
                 st.markdown(
                     f"""
-                    <div style="padding:4px 0;">
+                    <div style="padding:6px 0;">
                         <div style="font-size:26px; font-weight:900; color:#ef4444; line-height:1.1;">{d_day_txt}</div>
                         <div style="font-size:14px; font-weight:800; color:#0f172a; margin-top:4px;">{closest_name}</div>
                         <div style="font-size:11px; color:#64748b; margin-top:2px;">일정 날짜: {closest_date}</div>
@@ -728,7 +728,7 @@ with tab1:
             else:
                 st.markdown(
                     """
-                    <div style="padding:4px 0; color:#94a3b8; font-size:11px;">
+                    <div style="padding:6px 0; color:#94a3b8; font-size:11px;">
                         등록된 D-Day 일정이 없거나 모두 지났습니다.<br>아래에서 새로 등록해 보세요!
                     </div>
                     """,
