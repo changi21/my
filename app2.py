@@ -13,7 +13,7 @@ st.set_page_config(
     layout="wide",
 )
 
-# 2. Pretendard 폰트 + 바탕화면/큰박스 색상 완전 분리 + 좌우 컬럼 높이 100% 동기화 CSS
+# 2. Pretendard 폰트 + 바탕화면/네모 박스 기본 스타일 CSS
 st.markdown(
     """
 <style>
@@ -43,34 +43,6 @@ st.markdown(
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
         padding: 16px !important;
         margin-bottom: 18px !important;
-    }
-
-    /* 3. 컬럼 내부 모든 테두리 박스 높이 100% 강제 맞춤 (좌우 높이 불일치 완벽 해결) */
-    [data-testid="stColumn"] {
-        display: flex !important;
-        flex-direction: column !important;
-    }
-
-    [data-testid="stColumn"] > div {
-        height: 100% !important;
-        flex: 1 !important;
-    }
-
-    [data-testid="stColumn"] > div > div[data-testid="stVerticalBlockBorderWrapper"] {
-        height: 100% !important;
-        min-height: 210px !important;
-        box-sizing: border-box !important;
-        padding: 18px !important;
-        display: flex !important;
-        flex-direction: column !important;
-        justify-content: space-between !important;
-    }
-
-    [data-testid="stColumn"] [data-testid="stVerticalBlockBorderWrapper"] > div[data-testid="stVerticalBlock"] {
-        height: 100% !important;
-        display: flex !important;
-        flex-direction: column !important;
-        justify-content: space-between !important;
     }
 
     div[data-testid="stVerticalBlockBorderWrapper"] > div {
@@ -669,7 +641,7 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
 ])
 
 # ==========================================
-# TAB 1: 대시보드
+# TAB 1: 대시보드 (1:1 완전 대칭형 구성)
 # ==========================================
 with tab1:
     st.markdown(
@@ -694,11 +666,12 @@ with tab1:
 
     st.markdown("<div style='margin-top: 6px;'></div>", unsafe_allow_html=True)
 
-    # 상단 카드 2개 레이아웃
+    # 상단 1:1 대칭 카드 2개 레이아웃
     top_c1, top_c2 = st.columns([1, 1])
 
     with top_c1:
         with st.container(border=True):
+            # 1줄: 소제목 (font-size: 11px)
             st.markdown(
                 """
                 <div style="font-size:11px; font-weight:700; color:#64748b;">🚩 다가오는 주요 일정 D-Day</div>
@@ -721,6 +694,7 @@ with tab1:
 
             valid_events.sort(key=lambda x: x[0])
 
+            # 2~4줄: 메인 내용 (font-size: 24px 강조 + 2줄 세부내용)
             if valid_events:
                 closest_diff, closest_name, closest_date = valid_events[0]
                 d_day_txt = "D-DAY 🎉" if closest_diff == 0 else f"D-{closest_diff}"
@@ -738,12 +712,15 @@ with tab1:
                 st.markdown(
                     """
                     <div style="padding:2px 0; color:#94a3b8; font-size:11px;">
-                        등록된 D-Day 일정이 없습니다.
+                        <div style="font-size:24px; font-weight:900; color:#cbd5e1; line-height:1.1;">-</div>
+                        <div style="font-size:13px; font-weight:800; color:#94a3b8; margin-top:2px;">등록된 D-Day가 없습니다.</div>
+                        <div style="font-size:11px; color:#cbd5e1; margin-top:1px;">새 일정을 등록해 보세요.</div>
                     </div>
                     """,
                     unsafe_allow_html=True,
                 )
 
+            # 5줄: 하단 토글 요소 (font-size: 12px)
             edit_dday = st.toggle("✏️ D-Day 일정 수정 (최대 5개)", key="tog_edit_dday")
             if edit_dday:
                 new_evt_list = []
@@ -767,15 +744,30 @@ with tab1:
             day_seed = today_obj.year * 10000 + today_obj.month * 100 + today_obj.day
             q_main, q_sub = QUOTE_LIST[day_seed % len(QUOTE_LIST)]
 
+            # 1줄: 소제목 (font-size: 11px)
+            st.markdown(
+                """
+                <div style="font-size:11px; font-weight:700; color:#64748b;">✨ AI 매일 아침 추천 명언</div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+            # 2~4줄: 메인 내용 (font-size: 24px 강조 + 2줄 세부내용 1:1 대응)
             st.markdown(
                 f"""
-                <div>
-                    <div style="font-size:11px; font-weight:700; color:#64748b;">✨ AI 매일 아침 추천 명언</div>
-                    <div style="font-size:14px; font-weight:800; color:#4f46e5; margin-top:8px; line-height:1.4;">
-                        "{q_main}"
-                    </div>
+                <div style="padding: 2px 0;">
+                    <div style="font-size:24px; font-weight:900; color:#4f46e5; line-height:1.1;">"{q_main}"</div>
+                    <div style="font-size:13px; font-weight:800; color:#0f172a; margin-top:2px; opacity:0;">&nbsp;</div>
+                    <div style="font-size:11px; color:#64748b; margin-top:1px; opacity:0;">&nbsp;</div>
                 </div>
-                <div style="font-size:11px; color:#475569; background:#f8fafc; padding:8px 12px; border-radius:8px; border:1px solid #e2e8f0; line-height:1.35; margin-top: auto;">
+                """,
+                unsafe_allow_html=True,
+            )
+
+            # 5줄: 하단 텍스트 (흰색 팁 박스 제거 후 12px 1:1 대칭 배치)
+            st.markdown(
+                f"""
+                <div style="font-size:12px; font-weight:700; color:#475569; padding: 4px 0 2px 0; display:flex; align-items:center;">
                     💡 {q_sub}
                 </div>
                 """,
