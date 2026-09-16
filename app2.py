@@ -41,7 +41,7 @@ st.markdown(
         border: 1.5px solid #cbd5e1 !important;
         border-radius: 16px !important;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
-        padding: 20px 20px 24px 20px !important;
+        padding: 20px 20px 20px 20px !important;
         margin-bottom: 18px !important;
     }
 
@@ -654,7 +654,7 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
 ])
 
 # ==========================================
-# TAB 1: 대시보드 (우측 명언 흰색 박스 위치 업그레이드 보정)
+# TAB 1: 대시보드 (좌우 높이 및 2줄 명언 대비 라인 재조정 완벽 적용)
 # ==========================================
 with tab1:
     st.markdown(
@@ -679,7 +679,7 @@ with tab1:
 
     st.markdown("<div style='margin-top: 6px;'></div>", unsafe_allow_html=True)
 
-    # 상단 2분할 영역: [D-Day 카드] + [AI 추천 명언 카드]
+    # 상단 2분할 영역: [D-Day 카드] + [AI 추천 명언 카드] (상단 라인 완벽 동기화)
     top_c1, top_c2 = st.columns([1, 1])
 
     with top_c1:
@@ -714,7 +714,7 @@ with tab1:
                 d_day_txt = "D-DAY 🎉" if closest_diff == 0 else f"D-{closest_diff}"
                 st.markdown(
                     f"""
-                    <div style="padding:2px 0;">
+                    <div style="padding:2px 0; min-height:68px;">
                         <div style="font-size:22px; font-weight:900; color:#ef4444; line-height:1.1;">{d_day_txt}</div>
                         <div style="font-size:14px; font-weight:800; color:#0f172a; margin-top:3px;">{closest_name}</div>
                         <div style="font-size:11px; color:#64748b; margin-top:1px;">일정 날짜: {closest_date}</div>
@@ -725,7 +725,7 @@ with tab1:
             else:
                 st.markdown(
                     """
-                    <div style="padding:6px 0; color:#94a3b8; font-size:11px;">
+                    <div style="padding:6px 0; color:#94a3b8; font-size:11px; min-height:68px;">
                         등록된 D-Day 일정이 없거나 모두 지났습니다.<br>아래에서 새로 등록해 보세요!
                     </div>
                     """,
@@ -759,14 +759,14 @@ with tab1:
 
             st.markdown(
                 f"""
-                <div style="display:flex; flex-direction:column; justify-content:space-between; min-height:115px; padding-bottom:4px; box-sizing:border-box;">
+                <div style="display:flex; flex-direction:column; justify-content:space-between; height:100%;">
                     <div>
                         <span style="font-size:11px; font-weight:700; color:#64748b;">✨ AI 매일 아침 추천 명언</span>
-                        <div style="font-size:14px; font-weight:800; color:#4f46e5; margin-top:4px; line-height:1.35;">
+                        <div style="font-size:14px; font-weight:800; color:#4f46e5; margin-top:4px; min-height:42px; line-height:1.35; display:flex; align-items:center;">
                             "{q_main}"
                         </div>
                     </div>
-                    <div style="font-size:11px; color:#475569; background:#f8fafc; padding:6px 10px; border-radius:8px; border:1px solid #e2e8f0; margin-top:4px; line-height:1.3;">
+                    <div style="font-size:11px; color:#475569; background:#f8fafc; padding:6px 10px; border-radius:8px; border:1px solid #e2e8f0; margin-bottom:2px; line-height:1.3;">
                         💡 {q_sub}
                     </div>
                 </div>
