@@ -347,12 +347,11 @@ DEFAULT_EVENTS = [
     {"name": "", "date": ""},
 ]
 
+# 테스트용 2배 길이의 긴 명언 리스트
 QUOTE_LIST = [
-    ("꾸준함이 너의 가장 강력한 무기야!", "오늘도 차근차근 해내는 네가 정말 자랑스러워."),
-    ("실수는 실패가 아니라 growth(성장)의 과정이야.", "어려운 문제도 포기하지 않고 도전하는 네가 영웅이야!"),
-    ("매일 1%씩 성장하면 1년 뒤엔 37배 발전해!", "오늘 70분 저녁 스퍼트도 멋지게 완수해보자."),
-    ("할 수 있다고 믿는 사람이 결국 해내는 법이야.", "너의 가슴속 꿈을 향해 힘차게 날아올라 봐!"),
-    ("지식은 쌓일수록 너를 자유롭게 만들어줄 거야.", "오늘 읽은 책 한 페이지가 멋진 미래를 만들어."),
+    ("실수는 실패가 아니라 매일 스스로 더욱 크게 성장해 나가는 아주 소중하고 가치 있는 배움의 과정이야!", "어려운 문제도 끝까지 포기하지 않고 용기 있게 도전하는 네가 바로 진정한 우리들의 영웅이야!"),
+    ("매일매일 조금씩 꾸준하게 1%씩 성실하게 노력하다 보면 1년 뒤에는 지금보다 37배나 훨씬 위대하게 발전해 있을 거야!", "오늘 예정된 70분 저녁 몰입 스퍼트도 스스로 힘차고 멋지게 완수해 보자."),
+    ("지식과 좋은 습관은 매일 쌓일수록 너를 더욱 넓고 자유로운 세상으로 안내해 주는 든든한 날개가 될 거야.", "오늘 읽은 책 한 페이지와 깊은 생각이 너의 멋진 미래를 만들어."),
 ]
 
 
@@ -752,19 +751,17 @@ with tab1:
                 unsafe_allow_html=True,
             )
 
-            # 2~4줄: 메인 내용 (font-size: 24px 강조 + 2줄 세부내용 1:1 대응)
+            # 2~4줄: 메인 내용 (긴 명언 테스트용 24px + 자연스러운 줄바꿈)
             st.markdown(
                 f"""
                 <div style="padding: 2px 0;">
-                    <div style="font-size:24px; font-weight:900; color:#4f46e5; line-height:1.1;">"{q_main}"</div>
-                    <div style="font-size:13px; font-weight:800; color:#0f172a; margin-top:2px; opacity:0;">&nbsp;</div>
-                    <div style="font-size:11px; color:#64748b; margin-top:1px; opacity:0;">&nbsp;</div>
+                    <div style="font-size:24px; font-weight:900; color:#4f46e5; line-height:1.2;">"{q_main}"</div>
                 </div>
                 """,
                 unsafe_allow_html=True,
             )
 
-            # 5줄: 하단 텍스트 + 토글 스위치 높이 대칭용 12px 빈 줄 추가
+            # 5줄: 하단 텍스트 + 높이 대칭용 빈줄
             st.markdown(
                 f"""
                 <div style="font-size:12px; font-weight:700; color:#475569; padding: 4px 0 2px 0; display:flex; align-items:center;">
