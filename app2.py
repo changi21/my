@@ -72,36 +72,6 @@ st.markdown(
         line-height: 1.5;
     }
 
-    .metric-card-tw {
-        background-color: #f8fafc;
-        border: 1px solid #cbd5e1;
-        border-radius: 16px;
-        padding: 14px 16px;
-        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.02);
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
-    .metric-title-tw {
-        font-size: 11px;
-        font-weight: 700;
-        color: #64748b;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-    }
-    .metric-val-tw {
-        font-size: 24px;
-        font-weight: 900;
-        line-height: 1.1;
-        margin-top: 4px;
-        margin-bottom: 4px;
-    }
-    .metric-sub-tw {
-        font-size: 11px;
-        color: #64748b;
-    }
-
     .banner-ai-grad {
         background: linear-gradient(to right, #4f46e5, #7c3aed, #ec4899);
         border-radius: 16px;
@@ -382,6 +352,22 @@ DEFAULT_WEEKEND = {
     ],
 }
 
+DEFAULT_EVENTS = [
+    {"name": "⚾ 아빠와 프로야구 직관", "date": "2026-09-26"},
+    {"name": "🎂 에릭 생일", "date": "2026-10-15"},
+    {"name": "🏕️ 가족 주말 캠핑", "date": "2026-10-03"},
+    {"name": "", "date": ""},
+    {"name": "", "date": ""},
+]
+
+QUOTE_LIST = [
+    ("꾸준함이 너의 가장 강력한 무기야!", "오늘도 차근차근 해내는 네가 정말 자랑스러워."),
+    ("실수는 실패가 아니라 growth(성장)의 과정이야.", "어려운 문제도 포기하지 않고 도전하는 네가 영웅이야!"),
+    ("매일 1%씩 성장하면 1년 뒤엔 37배 발전해!", "오늘 70분 저녁 스퍼트도 멋지게 완수해보자."),
+    ("할 수 있다고 믿는 사람이 결국 해내는 법이야.", "너의 가슴속 꿈을 향해 힘차게 날아올라 봐!"),
+    ("지식은 쌓일수록 너를 자유롭게 만들어줄 거야.", "오늘 읽은 책 한 페이지가 멋진 미래를 만들어."),
+]
+
 
 def load_all_sheet_data():
     try:
@@ -400,6 +386,7 @@ def load_all_sheet_data():
             eve_raw = row.get("evening_json", None)
             wk_raw = row.get("weekend_json", None)
             chk_raw = row.get("checklist_json", None)
+            evt_raw = row.get("events_json", None)
 
             sch = (
                 json.loads(sch_raw)
@@ -417,6 +404,12 @@ def load_all_sheet_data():
                 else DEFAULT_WEEKEND
             )
 
+            evt = (
+                json.loads(evt_raw)
+                if pd.notna(evt_raw) and evt_raw
+                else DEFAULT_EVENTS
+            )
+
             w_chk, wk_chk, hist = None, None, []
             if pd.notna(chk_raw) and chk_raw:
                 chk_data = json.loads(chk_raw)
@@ -424,7 +417,7 @@ def load_all_sheet_data():
                 wk_chk = chk_data.get("weekend", None)
                 hist = chk_data.get("history", [])
 
-            return stk_cnt, goal, sch, eve, wk, w_chk, wk_chk, hist
+            return stk_cnt, goal, sch, eve, wk, w_chk, wk_chk, hist, evt
     except Exception:
         pass
     return (
@@ -436,6 +429,7 @@ def load_all_sheet_data():
         None,
         None,
         [],
+        DEFAULT_EVENTS,
     )
 
 
@@ -446,6 +440,7 @@ def save_sheet_data(
     evening=None,
     weekend=None,
     checklist=None,
+    events=None,
 ):
     params = {}
     if stickers_count is not None:
@@ -460,6 +455,8 @@ def save_sheet_data(
         params["weekend"] = json.dumps(weekend, ensure_ascii=False)
     if checklist is not None:
         params["checklist"] = json.dumps(checklist, ensure_ascii=False)
+    if events is not None:
+        params["events"] = json.dumps(events, ensure_ascii=False)
 
     try:
         requests.get(WEB_APP_URL, params=params, timeout=5)
@@ -508,6 +505,7 @@ def call_gemini_api(prompt):
     init_w_chk,
     init_wk_chk,
     init_hist,
+    init_evt,
 ) = load_all_sheet_data()
 
 if "stickers" not in st.session_state:
@@ -529,6 +527,9 @@ if "weekend_plans" not in st.session_state:
 
 if "history_log" not in st.session_state:
     st.session_state.history_log = init_hist
+
+if "events" not in st.session_state:
+    st.session_state.events = init_evt
 
 if "checklist_weekday" not in st.session_state:
     st.session_state.checklist_weekday = init_w_chk if init_w_chk else {
@@ -615,9 +616,10 @@ STICKER_MSG = [
 
 # 7. 상단 헤더
 days_kor = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"]
-today_idx = datetime.date.today().weekday()
+today_obj = datetime.date.today()
+today_idx = today_obj.weekday()
 today_name = days_kor[today_idx]
-today_str = datetime.date.today().strftime("%Y-%m-%d")
+today_str = today_obj.strftime("%Y-%m-%d")
 
 h_col1, h_col2 = st.columns([8, 1])
 with h_col1:
@@ -652,7 +654,7 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
 ])
 
 # ==========================================
-# TAB 1: 대시보드 (스티커 현황판: 버튼 삭제 및 AI 탭 목표 연동)
+# TAB 1: 대시보드 (D-Day 최우선 1개 + AI 아침 명언 상단 배치)
 # ==========================================
 with tab1:
     st.markdown(
@@ -676,77 +678,102 @@ with tab1:
     is_weekend = selected_day in ["토요일", "일요일"]
 
     st.markdown("<div style='margin-top: 6px;'></div>", unsafe_allow_html=True)
-    m_col1, m_col2, m_col3, m_col4 = st.columns(4)
 
-    with m_col1:
-        st.markdown(
-            """
-            <div class="metric-card-tw">
-                <span class="metric-title-tw">권장 수면 시간</span>
-                <div class="metric-val-tw" style="color:#4f46e5;">8.5시간</div>
-                <div class="metric-sub-tw" style="display:flex; justify-content:space-between;">
-                    <span>21:20 샤워 ➡️ 22:00 취침</span>
-                    <span>22:00~06:30</span>
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+    # 상단 2분할 영역: [D-Day 가장 가까운 1개 카드] + [AI 매일 아침 추천 명언]
+    top_c1, top_c2 = st.columns([1, 1])
 
-    with m_col2:
-        val_txt = "90분" if is_weekend else "70분"
-        sub_txt = (
-            "수학+영어+독서 완주"
-            if is_weekend
-            else "수학30분+영어15분+국어15분"
-        )
-        time_txt = "07:00~08:30" if is_weekend else "20:10~21:20"
-        title_txt = (
-            "주말 모닝 집중 학습" if is_weekend else "평일 저녁 집중 학습"
-        )
-        st.markdown(
-            f"""
-            <div class="metric-card-tw">
-                <span class="metric-title-tw">{title_txt}</span>
-                <div class="metric-val-tw" style="color:#2563eb;">{val_txt}</div>
-                <div class="metric-sub-tw" style="display:flex; justify-content:space-between;">
-                    <span>{sub_txt}</span>
-                    <span>{time_txt}</span>
+    with top_c1:
+        with st.container(border=True):
+            st.markdown(
+                """
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                    <span style="font-size:11px; font-weight:700; color:#64748b;">🚩 다가오는 주요 일정 D-Day</span>
                 </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+                """,
+                unsafe_allow_html=True,
+            )
 
-    with m_col3:
-        st.markdown(
-            """
-            <div class="metric-card-tw">
-                <span class="metric-title-tw">주말 야외/신체 활동</span>
-                <div class="metric-val-tw" style="color:#d97706;">5.0시간</div>
-                <div class="metric-sub-tw" style="display:flex; justify-content:space-between;">
-                    <span>야외 신체활동 & 주말 외출</span>
-                    <span>오후 13:00~18:00</span>
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+            # 가장 가까운 미래/오늘 D-Day 찾기
+            valid_events = []
+            for item in st.session_state.events:
+                name = item.get("name", "").strip()
+                d_str = item.get("date", "").strip()
+                if name and d_str:
+                    try:
+                        t_date = datetime.datetime.strptime(d_str, "%Y-%m-%d").date()
+                        diff = (t_date - today_obj).days
+                        if diff >= 0:
+                            valid_events.append((diff, name, d_str))
+                    except ValueError:
+                        pass
 
-    with m_col4:
-        st.markdown(
-            """
-            <div class="metric-card-tw">
-                <span class="metric-title-tw">주말 게임 시간 관리</span>
-                <div class="metric-val-tw" style="color:#059669;">2시간</div>
-                <div class="metric-sub-tw" style="display:flex; justify-content:space-between;">
-                    <span>오전 집중 자유시간 1차</span>
-                    <span>10:00~12:00 규칙</span>
+            valid_events.sort(key=lambda x: x[0])  # 남은 날짜 오름차순 정렬
+
+            if valid_events:
+                closest_diff, closest_name, closest_date = valid_events[0]
+                d_day_txt = "D-DAY 🎉" if closest_diff == 0 else f"D-{closest_diff}"
+                st.markdown(
+                    f"""
+                    <div style="padding:4px 0;">
+                        <div style="font-size:24px; font-weight:900; color:#ef4444; line-height:1.1;">{d_day_txt}</div>
+                        <div style="font-size:15px; font-weight:800; color:#0f172a; margin-top:4px;">{closest_name}</div>
+                        <div style="font-size:11px; color:#64748b; margin-top:2px;">일정 날짜: {closest_date}</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+            else:
+                st.markdown(
+                    """
+                    <div style="padding:10px 0; color:#94a3b8; font-size:12px;">
+                        등록된 D-Day 일정이 없거나 모두 지났습니다.<br>아래 '✏️ D-Day 일정 수정'에서 새로 등록해 보세요!
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
+            # D-Day 수정 모드 토글 (최대 5개 입력)
+            edit_dday = st.toggle("✏️ D-Day 일정 수정 (최대 5개)", key="tog_edit_dday")
+            if edit_dday:
+                st.markdown("<div style='margin-top:8px;'></div>", unsafe_allow_html=True)
+                new_evt_list = []
+                for idx in range(5):
+                    e_item = st.session_state.events[idx] if idx < len(st.session_state.events) else {"name": "", "date": ""}
+                    col_n, col_d = st.columns([2, 1.2])
+                    with col_n:
+                        e_name = st.text_input(f"일정 #{idx+1} 이름", value=e_item.get("name", ""), key=f"evt_name_{idx}")
+                    with col_d:
+                        e_date = st.text_input(f"날짜(YYYY-MM-DD)", value=e_item.get("date", ""), key=f"evt_date_{idx}")
+                    new_evt_list.append({"name": e_name, "date": e_date})
+
+                if st.button("💾 D-Day 일정 저장", use_container_width=True):
+                    st.session_state.events = new_evt_list
+                    save_sheet_data(events=new_evt_list)
+                    st.success("D-Day 일정이 구글 시트에 저장되었습니다!")
+                    st.rerun()
+
+    with top_c2:
+        with st.container(border=True):
+            # 매일 날짜 기준으로 명언 고정 변경
+            day_seed = today_obj.year * 10000 + today_obj.month * 100 + today_obj.day
+            q_main, q_sub = QUOTE_LIST[day_seed % len(QUOTE_LIST)]
+
+            st.markdown(
+                f"""
+                <div style="display:flex; flex-direction:column; justify-content:space-between; height:100%; min-height:120px;">
+                    <div>
+                        <span style="font-size:11px; font-weight:700; color:#64748b;">✨ AI 매일 아침 추천 명언</span>
+                        <div style="font-size:15px; font-weight:800; color:#4f46e5; margin-top:8px; line-height:1.4;">
+                            "{q_main}"
+                        </div>
+                    </div>
+                    <div style="font-size:12px; color:#475569; background:#f8fafc; padding:8px 12px; border-radius:8px; border:1px solid #e2e8f0; margin-top:10px;">
+                        💡 {q_sub}
+                    </div>
                 </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+                """,
+                unsafe_allow_html=True,
+            )
 
     st.markdown("<div style='margin-top: 12px;'></div>", unsafe_allow_html=True)
 
@@ -767,7 +794,7 @@ with tab1:
             unsafe_allow_html=True,
         )
 
-        # AI 탭에서 설정한 목표 텍스트 연동 표시 (저장/초기화 버튼 삭제)
+        # AI 탭에서 설정한 목표 텍스트 연동 표시
         goal_display = st.session_state.reward_goal if st.session_state.reward_goal else "설정된 목표가 없습니다."
         st.markdown(
             f"""
@@ -1432,7 +1459,7 @@ with tab5:
             )
 
 # ==========================================
-# TAB 6: AI 코치 & 퀴즈 (첫번째 사진 그대로 유지: 스티커 카운터 + 목표 설정 + 저장 + 초기화 포함)
+# TAB 6: AI 코치 & 퀴즈 (첫번째 사진 유지)
 # ==========================================
 with tab6:
     st.markdown(
@@ -1610,7 +1637,7 @@ with tab6:
                     """
                     st.components.v1.html(tts_script, height=0)
 
-    # 2행: 첫번째 사진 그대로 유지를 위한 스티커 카운터 박스 (목표 설정 + 📌 저장 + 🔄 초기화 버튼 포함)
+    # 2행: 스티커 카운터 박스 (목표 설정 + 📌 저장 + 🔄 초기화 버튼 포함)
     row2_col1, row2_col2 = st.columns(2)
 
     with row2_col1:
@@ -1677,7 +1704,6 @@ with tab6:
                 unsafe_allow_html=True,
             )
             
-            # 첫번째 사진 동일 구성 (목표 입력 + 📌 저장 + 🔄 초기화)
             c_in, c_btn_pin, c_btn_rst = st.columns([4.1, 0.45, 0.65], vertical_alignment="center")
             with c_in:
                 new_goal_val = st.text_input(
