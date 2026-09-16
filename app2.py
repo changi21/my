@@ -35,7 +35,7 @@ st.markdown(
         max-width: 1180px;
     }
 
-    /* 2. 큰 네모 박스 */
+    /* 2. 일반 큰 네모 박스 설정 */
     div[data-testid="stVerticalBlockBorderWrapper"] {
         background-color: #ffffff !important;
         border: 1.5px solid #cbd5e1 !important;
@@ -45,15 +45,16 @@ st.markdown(
         margin-bottom: 18px !important;
     }
 
-    /* 상단 D-Day & 명언 박스 높이 완벽 통일 (145px 고정) */
+    /* 3. 상단 D-Day & 명언 박스 높이 완벽 고정 (라인 및 여백 불일치 근본 해결) */
     .top-card-wrapper [data-testid="stVerticalBlockBorderWrapper"] {
-        height: 145px !important;
-        min-height: 145px !important;
-        max-height: 145px !important;
+        height: 165px !important;
+        min-height: 165px !important;
+        max-height: 165px !important;
         box-sizing: border-box !important;
         display: flex !important;
         flex-direction: column !important;
         justify-content: space-between !important;
+        padding: 16px 16px 18px 16px !important;
     }
 
     div[data-testid="stVerticalBlockBorderWrapper"] > div {
@@ -658,7 +659,7 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
 ])
 
 # ==========================================
-# TAB 1: 대시보드 (고정 높이 및 여백 수정)
+# TAB 1: 대시보드 (165px 고정 높이 완벽 정렬)
 # ==========================================
 with tab1:
     st.markdown(
@@ -683,7 +684,7 @@ with tab1:
 
     st.markdown("<div style='margin-top: 6px;'></div>", unsafe_allow_html=True)
 
-    # top-card-wrapper 클래스로 감싸서 CSS에서 145px 높이 완전 고정 적용
+    # top-card-wrapper 클래스로 감싸서 CSS 165px 높이 완벽 고정
     st.markdown('<div class="top-card-wrapper">', unsafe_allow_html=True)
     top_c1, top_c2 = st.columns([1, 1])
 
@@ -764,14 +765,14 @@ with tab1:
 
             st.markdown(
                 f"""
-                <div style="display:flex; flex-direction:column; justify-content:space-between; height:100%;">
+                <div style="display:flex; flex-direction:column; justify-content:space-between; height:100%; box-sizing:border-box;">
                     <div>
                         <span style="font-size:11px; font-weight:700; color:#64748b;">✨ AI 매일 아침 추천 명언</span>
-                        <div style="font-size:13px; font-weight:800; color:#4f46e5; margin-top:3px; line-height:1.3;">
+                        <div style="font-size:13px; font-weight:800; color:#4f46e5; margin-top:4px; min-height:38px; line-height:1.35; display:flex; align-items:center;">
                             "{q_main}"
                         </div>
                     </div>
-                    <div style="font-size:11px; color:#475569; background:#f8fafc; padding:5px 8px; border-radius:8px; border:1px solid #e2e8f0; margin-bottom: 4px; line-height:1.25;">
+                    <div style="font-size:11px; color:#475569; background:#f8fafc; padding:6px 10px; border-radius:8px; border:1px solid #e2e8f0; margin-bottom: 6px; line-height:1.25;">
                         💡 {q_sub}
                     </div>
                 </div>
