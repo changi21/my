@@ -1488,7 +1488,7 @@ with tab6:
                 unsafe_allow_html=True,
             )
 
-            # 설명글만 슬림하게 출력 (우측 버튼 요소 제거로 세로 뚱뚱해짐 완전 해결)
+            # 설명글
             st.markdown(
                 '<p style="font-size:11px; color:#64748b; margin-top:2px; margin-bottom:12px;">오늘 미션을 성공했을 때 칭찬 스티커 카드를 생성하여 내 스티커북(30개판)에 저장합니다!</p>',
                 unsafe_allow_html=True,
@@ -1527,7 +1527,7 @@ with tab6:
                     unsafe_allow_html=True,
                 )
 
-            # [핵심 변경점] 🎯 달성 보상 목표 입력창 옆에 [📌 저장] 및 [🔄 초기화] 버튼 나란히 배치
+            # 🎯 달성 보상 목표: 입력창 넓게 확장 및 두 버튼 가로 폭 반으로 축소
             st.markdown(
                 """
                 <div style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
@@ -1537,7 +1537,7 @@ with tab6:
                 unsafe_allow_html=True,
             )
             
-            c_in, c_btn_pin, c_btn_rst = st.columns([3.2, 0.9, 1.1], vertical_alignment="center")
+            c_in, c_btn_pin, c_btn_rst = st.columns([4.1, 0.45, 0.65], vertical_alignment="center")
             with c_in:
                 new_goal_val = st.text_input(
                     "보상 목표",
