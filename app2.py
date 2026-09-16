@@ -13,7 +13,7 @@ st.set_page_config(
     layout="wide",
 )
 
-# 2. Pretendard 폰트 + 바탕화면/큰박스 색상 완전 분리 + 높이 고정 CSS (350px 적용)
+# 2. Pretendard 폰트 + 바탕화면/큰박스 색상 완전 분리 + 높이 고정 (500px & 내부 Flex 밀착)
 st.markdown(
     """
 <style>
@@ -45,14 +45,20 @@ st.markdown(
         margin-bottom: 18px !important;
     }
 
-    /* 3. 상단 D-Day & 명언 박스 높이 여유롭게 고정 (350px) */
+    /* 3. 상단 D-Day & 명언 박스 높이 500px 강제 및 내부 레이아웃 하단 밀착 처리 */
     .top-card-wrapper > div [data-testid="stColumn"] > div > div[data-testid="stVerticalBlockBorderWrapper"] {
-        min-height: 350px !important;
+        height: 500px !important;
+        min-height: 500px !important;
+        max-height: 500px !important;
         box-sizing: border-box !important;
+        padding: 20px !important;
+    }
+
+    .top-card-wrapper [data-testid="stVerticalBlockBorderWrapper"] > div[data-testid="stVerticalBlock"] {
+        height: 100% !important;
         display: flex !important;
         flex-direction: column !important;
         justify-content: space-between !important;
-        padding: 20px 20px 20px 20px !important;
     }
 
     div[data-testid="stVerticalBlockBorderWrapper"] > div {
@@ -656,7 +662,7 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
 ])
 
 # ==========================================
-# TAB 1: 대시보드 (여유로운 350px 고정 높이 적용)
+# TAB 1: 대시보드 (500px 고정 + 하단 밀착 Flex)
 # ==========================================
 with tab1:
     st.markdown(
@@ -681,7 +687,7 @@ with tab1:
 
     st.markdown("<div style='margin-top: 6px;'></div>", unsafe_allow_html=True)
 
-    # top-card-wrapper 350px 높이 확보
+    # top-card-wrapper 500px 높이 적용
     st.markdown('<div class="top-card-wrapper">', unsafe_allow_html=True)
     top_c1, top_c2 = st.columns([1, 1])
 
