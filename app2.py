@@ -6,14 +6,14 @@ import pandas as pd
 import requests
 import streamlit as st
 
-# 1. 페이지 기본 설정
+# 1. 페이지 기본 설정 (바로가기 생성 시 표시될 기본 이름 및 아이콘 설정)
 st.set_page_config(
     page_title="초등 5학년 주간 일정 & 저녁/주말 루틴",
     page_icon="📅",
     layout="wide",
 )
 
-# 2. Pretendard 폰트 + 바탕화면/네모 박스 기본 스타일 CSS
+# 2. Pretendard 폰트 + 태블릿 터치/데스크톱 모드 레이어 블로킹 완벽 해결 CSS
 st.markdown(
     """
 <style>
@@ -35,7 +35,7 @@ st.markdown(
         max-width: 1180px;
     }
 
-    /* 2. 일반 큰 네모 박스 설정 */
+    /* 2. 일반 큰 네모 박스 설정 (터치 신호 통과 지정) */
     div[data-testid="stVerticalBlockBorderWrapper"] {
         background-color: #ffffff !important;
         border: 1.5px solid #cbd5e1 !important;
@@ -43,10 +43,33 @@ st.markdown(
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
         padding: 16px !important;
         margin-bottom: 18px !important;
+        position: relative !important;
+        pointer-events: auto !important;
     }
 
     div[data-testid="stVerticalBlockBorderWrapper"] > div {
         background-color: #ffffff !important;
+    }
+
+    /* ★ [태블릿 터치/데스크톱 모드 패치] 체크박스 및 버튼 클릭 레이어를 최상단(z-index: 999)으로 강제 승격 */
+    div[data-testid="stCheckbox"], .stCheckbox {
+        position: relative !important;
+        z-index: 999 !important;
+        pointer-events: auto !important;
+        cursor: pointer !important;
+    }
+
+    div[data-testid="stCheckbox"] label, .stCheckbox label {
+        cursor: pointer !important;
+        pointer-events: auto !important;
+    }
+
+    .stButton, .stButton > button {
+        position: relative !important;
+        z-index: 999 !important;
+        pointer-events: auto !important;
+        border-radius: 10px;
+        font-weight: 700;
     }
 
     .banner-blue {
@@ -80,11 +103,6 @@ st.markdown(
         flex-direction: column;
         justify-content: space-between;
         margin-bottom: 4px;
-    }
-
-    .stButton>button {
-        border-radius: 10px;
-        font-weight: 700;
     }
 </style>
 """,
@@ -132,7 +150,7 @@ SHEET_ID = "1x5A3X2lGb5SFpHE5qspuetmdOsWMiP_mfnWY0ZqD6rc"
 SHEET_CSV_URL = (
     f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sheet=data"
 )
-WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxrG7rYb5WXHcXkbd20QsiWywCNM7GWbW7KVll2n88gP15kHVsCfAdF_Tcr7Uhc53eqRw/exec"
+WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxrG7rYb5WXHkbd20QsiWywCNM7GWbW7KVll2n88gP15kHVsCfAdF_Tcr7Uhc53eqRw/exec"
 
 DEFAULT_SCHEDULES = {
     "월요일": [
@@ -236,7 +254,6 @@ def load_all_sheet_data():
             chk_raw = row.get("checklist_json", None)
             evt_raw = row.get("events_json", None)
 
-            # 스티커 데이터 파싱 (JSON 객체 리스트 지원)
             stickers_list = []
             if pd.notna(stk_raw) and stk_raw:
                 try:
@@ -314,7 +331,7 @@ def call_gemini_api(prompt):
         return f"통신 오류 발생: {e}"
 
 
-# 5. 1일 1회 AI 명언 캐싱 함수 (하루 1회만 API 호출 후 24시간 메모리 유지)
+# 5. 1일 1회 AI 명언 캐싱 함수
 @st.cache_data(ttl=86400)
 def get_daily_ai_quote_cached(today_str_val):
     prompt = (
@@ -389,6 +406,8 @@ if "last_quiz_text" not in st.session_state:
     st.session_state.last_quiz_text = ""
 if "last_quiz_subject" not in st.session_state:
     st.session_state.last_quiz_subject = ""
+if "clean_en_text" not in st.session_state:
+    st.session_state.clean_en_text = ""
 
 STICKER_ICONS = ["🏆", "⭐", "🥇", "🎯", "🚀", "👑", "🔥", "💎", "🎨", "⚾", "🥋", "📖", "🧠", "⚡", "🌟", "🦁", "🐯", "🦄", "🦅", "🥊", "🎮", "🧩", "💡", "🎓", "🍀", "🌈", "🎖️", "🎗️", "🏅", "✨"]
 STICKER_MSG = [
@@ -461,7 +480,6 @@ with tab1:
     is_weekend = selected_day in ["토요일", "일요일"]
     st.markdown("<div style='margin-top: 6px;'></div>", unsafe_allow_html=True)
 
-    # 상단 1:1 대칭 카드 2개 레이아웃
     top_c1, top_c2 = st.columns([1, 1])
 
     with top_c1:
@@ -529,8 +547,6 @@ with tab1:
     with top_c2:
         with st.container(border=True):
             st.markdown('<div style="font-size:11px; font-weight:700; color:#64748b;">✨ AI 매일 아침 추천 명언</div>', unsafe_allow_html=True)
-
-            # 오늘 날짜 기준 하루 1회 캐싱 함수 호출
             q_main, q_sub = get_daily_ai_quote_cached(today_str)
 
             st.markdown(
@@ -555,7 +571,6 @@ with tab1:
 
     st.markdown("<div style='margin-top: 12px;'></div>", unsafe_allow_html=True)
 
-    # 칭찬 스티커 달성 현황판
     with st.container(border=True):
         current_cnt = len(st.session_state.stickers)
         pct_val = int(current_cnt / 30 * 100)
@@ -612,7 +627,6 @@ with tab1:
                                 unsafe_allow_html=True,
                             )
 
-    # 4단계 핵심 타임라인
     with st.container(border=True):
         st.markdown(f'<h3 style="margin:0; font-size:15px; font-weight:800; color:#0f172a; margin-bottom:12px;">⚡ {selected_day} 핵심 타임라인 한눈에 보기</h3>', unsafe_allow_html=True)
         t_cols = st.columns(4)
@@ -797,7 +811,7 @@ with tab4:
             if st.button(f"💾 {wk_key} 수정 내용 저장"):
                 st.session_state.weekend_plans[wk_key] = new_wk_plan
                 save_sheet_data(weekend=st.session_state.weekend_plans)
-                st.success("저장되었습니다! 구글 시트 및 대시보드에 즉시 연동됩니다.")
+                st.success("저장되었습니다! 구글 시트 및 대시보드에 즉시 반영됩니다.")
                 st.rerun()
     else:
         with st.container(border=True):
@@ -898,12 +912,12 @@ with tab6:
     row1_col1, row1_col2 = st.columns(2)
     with row1_col1:
         with st.container(border=True):
-            st.markdown('<div><h3 style="margin-top:0; font-weight:800; color:#0f172a; font-size:15px;">🧠 AI 1분 퀴즈 생성기</h3><p style="font-size:11px; color:#64748b; margin-bottom:12px;">한능검 기본 기출 스타일 응용 문제부터 성인용 한능검 심화 문제까지 맞춤형 퀴즈를 제공합니다!</p></div>', unsafe_allow_html=True)
+            st.markdown('<div><h3 style="margin-top:0; font-weight:800; color:#0f172a; font-size:15px;">🧠 AI 1분 퀴즈 생성기</h3><p style="font-size:11px; color:#64748b; margin-bottom:12px;">한능검 1~3급 심화 기출 기반 문제부터 초등 과학교과 및 필수 영어 퀴즈까지 맞춤 제공합니다!</p></div>', unsafe_allow_html=True)
             subject = st.selectbox(
                 "과목 및 출제 유형 선택",
                 [
-                    "📜 [한능검 4~6급 응용] 한국사 퀴즈 (초등 5학년 맞춤)",
-                    "🏛️ [실제 기출] 한국사능력검정시험 (한능검 심화/성인용)",
+                    "📜 [한능검 1~3급 심화 기반] 한국사 퀴즈 (중등/초등고학년 눈높이 해설)",
+                    "🏛️ [성인 수험용 정통] 한국사능력검정시험 (한능검 심화 전문)",
                     "🔬 초등 과학교과 (전 범위 탐구 유형)",
                     "🔤 초등 필수 영단어 & 표현 (영어 발음 듣기 지원)",
                 ],
@@ -914,24 +928,24 @@ with tab6:
                 st.session_state.quiz_click_count += 1
                 idx = st.session_state.quiz_click_count
                 with st.spinner("알맞은 퀴즈를 출제하는 중입니다..."):
-                    if "한능검 4~6급 응용" in subject:
+                    if "한능검 1~3급 심화 기반" in subject:
                         prompt = (
-                            f"당신은 초등 5학년 역사 전문 튜터입니다. 에릭 학생을 위해 한능검 기본(4~6급) 기출 스타일을 응용한 {idx}번째 한국사 문제 1개를 무작위 출제하세요.\n\n"
+                            f"당신은 역사 전문 튜터입니다. 한국사능력검정시험(한능검) 1~3급 심화 수준의 핵심 내용 및 유형을 기반으로 {idx}번째 한국사 문제를 출제하세요.\n\n"
                             "[출제 조건]\n"
-                            "- 실제 한능검 시험처럼 인물의 말, 가상의 일기, 당시 역사적 장면 묘사글을 [지문]으로 먼저 제시하세요.\n"
-                            "- 너무 복잡한 연도나 어려운 한자어는 빼되, 지문을 읽고 인물/사건을 추론할 수 있는 알맞은 재미있는 난이도로 만드세요.\n"
+                            "- ★시대 다양성 무작위 보장: 삼국시대(고구려/백제/신라), 통일신라/발해, 고려시대, 조선 전기, 조선 후기, 근현대사 중 '매회 완전히 다른 시대'를 무작위로 하나 선택하여 출제하세요.\n"
+                            "- 인물의 말, 가상의 일기, 사료/신문 기사, 역사 사건 묘사글을 [지문]으로 먼저 제시하세요.\n"
                             "- 4지선다형 객관식 문제(①~④)로 출제하세요.\n"
-                            "- 💡 해설은 '에릭 학생, 이 지문에서 ~라는 힌트가 있지? 그래서 정답은 ~이야!'처럼 다정하게 설명해 주세요.\n\n"
+                            "- ★눈높이 해설: 문제는 한능검 심화 수준의 뼈대를 가지되, 💡 해설 영역은 '에릭 학생! 이 지문의 힌트는 ~야. 그래서 정답은 ~이란다'처럼 중등/초등 고학년 눈높이에 맞게 매우 다정하고 친절하게 설명해 주세요.\n\n"
                             "[출력 형식]\n"
                             "[문제] (지문 및 문제 내용)\n"
                             "① 보기1\n"
                             "② 보기2\n"
                             "③ 보기3\n"
                             "④ 보기4\n\n"
-                            "💡 [친절한 해설] (다정한 튜터 해설)\n"
+                            "💡 [친절한 해설] (다정한 튜터 눈높이 해설)\n"
                             "🔒 [정답] (정답 번호)"
                         )
-                    elif "한능검 심화" in subject:
+                    elif "성인 수험용 정통" in subject:
                         prompt = (
                             f"당신은 한국사능력검정시험(한능검) 출제위원입니다. 성인 수험생 수준에 맞춰 실제 한능검 심화(1~3급) 난이도의 {idx}번째 한국사 문제 1개를 무작위 출제하세요.\n\n"
                             "[출제 조건]\n"
@@ -977,16 +991,33 @@ with tab6:
                     res_text = call_gemini_api(prompt)
                     st.session_state.last_quiz_text = res_text
                     st.session_state.last_quiz_subject = subject
+                    
+                    # ★ [영어 TTS 파싱 개선] 빈칸(____) 영역을 2초간 쉬어가는 쉼표(, , , , ) 구문으로 치환
+                    if "영단어 & 표현" in subject:
+                        quiz_main_txt = res_text.split("💡")[0]
+                        formatted_text = re.sub(r"_{2,}", ", , , , ", quiz_main_txt)
+                        st.session_state.clean_en_text = formatted_text.replace("\n", ", ").replace('"', "'")
+                    else:
+                        st.session_state.clean_en_text = ""
+
                     st.toast(f"회차 #{idx} 퀴즈 생성 완료!")
 
             if st.session_state.last_quiz_text:
                 st.markdown(st.session_state.last_quiz_text)
-                if "영단어 & 표현" in st.session_state.last_quiz_subject:
-                    raw_txt = st.session_state.last_quiz_text.split("💡")[0]
-                    english_words = re.findall(r"[a-zA-Z]+", raw_txt)
-                    clean_en_text = " ".join(english_words)
-                    if clean_en_text and st.button("🔊 영어 문제 발음 듣기", key="btn_eng_tts"):
-                        st.components.v1.html(f'<script>window.speechSynthesis.cancel(); var msg = new SpeechSynthesisUtterance("{clean_en_text}"); msg.lang = "en-US"; msg.rate = 0.9; window.speechSynthesis.speak(msg);</script>', height=0)
+                if "영단어 & 표현" in st.session_state.last_quiz_subject and st.session_state.clean_en_text:
+                    if st.button("🔊 영어 문제 발음 다시 듣기", key="btn_eng_tts"):
+                        st.components.v1.html(
+                            f"""
+                            <script>
+                                window.speechSynthesis.cancel();
+                                var msg = new SpeechSynthesisUtterance("{st.session_state.clean_en_text}");
+                                msg.lang = "en-US";
+                                msg.rate = 0.8; // 아이가 편안하게 들을 수 있도록 속도 0.8 설정
+                                window.speechSynthesis.speak(msg);
+                            </script>
+                            """,
+                            height=0
+                        )
 
     with row1_col2:
         with st.container(border=True):
@@ -1000,7 +1031,36 @@ with tab6:
                     st.balloons()
                     st.info(f"💬 **AI 멘토의 응원:**\n\n{msg_text}")
                     clean_text = msg_text.replace("\n", " ").replace('"', "'")
-                    st.components.v1.html(f'<script>window.speechSynthesis.cancel(); var msg = new SpeechSynthesisUtterance("{clean_text}"); msg.lang = "ko-KR"; msg.rate = 1.0; msg.pitch = 1.05; window.speechSynthesis.speak(msg);</script>', height=0)
+                    st.components.v1.html(
+                        f"""
+                        <script>
+                            window.speechSynthesis.cancel();
+                            var msg = new SpeechSynthesisUtterance("{clean_text}");
+                            msg.lang = "ko-KR";
+                            msg.rate = 1.0;
+                            msg.pitch = 1.05;
+                            
+                            // ★ 삼성 인터넷 등 브라우저 환경에서 한국어(ko) 보이스 검색 후 강제 지정하여 외국인 억양 현상 차단
+                            var voices = window.speechSynthesis.getVoices();
+                            var korVoice = voices.find(function(v) {{
+                                return v.lang.includes("ko") || v.lang.includes("KO");
+                            }});
+                            if(korVoice) {{ msg.voice = korVoice; }}
+                            
+                            window.speechSynthesis.speak(msg);
+                            
+                            window.speechSynthesis.onvoiceschanged = function() {{
+                                var voicesAsync = window.speechSynthesis.getVoices();
+                                var korVoiceAsync = voicesAsync.find(function(v) {{
+                                    return v.lang.includes("ko") || v.lang.includes("KO");
+                                }});
+                                if(korVoiceAsync) {{ msg.voice = korVoiceAsync; }}
+                                window.speechSynthesis.speak(msg);
+                            }};
+                        </script>
+                        """,
+                        height=0,
+                    )
 
     row2_col1, row2_col2 = st.columns(2)
     with row2_col1:
@@ -1010,7 +1070,6 @@ with tab6:
             st.markdown(f'<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;"><h3 style="margin:0; font-weight:800; color:#0f172a; font-size:15px;">🎨 AI 미션 달성 칭찬 스티커 카운터 <span style="color:#ec4899; font-weight:900; font-size:14px;">({current_cnt}/30개, {pct_val}%)</span></h3><span style="font-size:10px; background:#fce7f3; color:#be185d; font-weight:700; padding:2px 6px; border-radius:4px;">하루 1장 제한</span></div>', unsafe_allow_html=True)
             st.markdown('<p style="font-size:11px; color:#64748b; margin-top:2px; margin-bottom:12px;">오늘 미션을 성공했을 때 칭찬 스티커 카드를 생성하여 내 스티커북(30개판)에 저장합니다!</p>', unsafe_allow_html=True)
 
-            # ★ 스티커 중복 지급 방지 로직 (시트에 저장된 날짜 체크)
             latest_date_in_list = ""
             if st.session_state.stickers:
                 latest_date_in_list = st.session_state.stickers[-1].get("date", "")
@@ -1026,8 +1085,6 @@ with tab6:
                     st.session_state.stickers.append(sticker_item)
                     st.session_state.last_sticker_date = today_str
                     st.session_state.latest_draw_sticker = sticker_item
-                    
-                    # 스티커 목록 전체(날짜 데이터 포함)를 구글 시트에 즉시 영구 저장
                     save_sheet_data(stickers_list=st.session_state.stickers)
                     st.balloons()
                     st.rerun()
