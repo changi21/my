@@ -3,3 +3,5 @@ requests
 pandas
 plotly
 google-genai
+gspread
+google-auth
