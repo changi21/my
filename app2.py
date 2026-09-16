@@ -45,11 +45,11 @@ st.markdown(
         margin-bottom: 18px !important;
     }
 
-    /* 3. 상단 D-Day & 명언 박스 높이 완벽 고정 (라인 및 여백 불일치 근본 해결) */
+    /* 3. 상단 D-Day & 명언 박스 높이 고정 (250px) 및 내부 정렬 */
     .top-card-wrapper [data-testid="stVerticalBlockBorderWrapper"] {
-        height: 165px !important;
-        min-height: 165px !important;
-        max-height: 165px !important;
+        height: 250px !important;
+        min-height: 250px !important;
+        max-height: 250px !important;
         box-sizing: border-box !important;
         display: flex !important;
         flex-direction: column !important;
@@ -659,7 +659,7 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
 ])
 
 # ==========================================
-# TAB 1: 대시보드 (165px 고정 높이 완벽 정렬)
+# TAB 1: 대시보드 (250px 고정 높이 적용)
 # ==========================================
 with tab1:
     st.markdown(
@@ -684,7 +684,7 @@ with tab1:
 
     st.markdown("<div style='margin-top: 6px;'></div>", unsafe_allow_html=True)
 
-    # top-card-wrapper 클래스로 감싸서 CSS 165px 높이 완벽 고정
+    # top-card-wrapper 클래스로 감싸서 CSS 250px 높이 고정
     st.markdown('<div class="top-card-wrapper">', unsafe_allow_html=True)
     top_c1, top_c2 = st.columns([1, 1])
 
@@ -772,7 +772,7 @@ with tab1:
                             "{q_main}"
                         </div>
                     </div>
-                    <div style="font-size:11px; color:#475569; background:#f8fafc; padding:6px 10px; border-radius:8px; border:1px solid #e2e8f0; margin-bottom: 6px; line-height:1.25;">
+                    <div style="font-size:11px; color:#475569; background:#f8fafc; padding:6px 10px; border-radius:8px; border:1px solid #e2e8f0; margin-bottom: 12px; line-height:1.25;">
                         💡 {q_sub}
                     </div>
                 </div>
