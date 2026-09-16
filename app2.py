@@ -125,15 +125,23 @@ st.markdown(
         font-weight: 700;
     }
     
-    /* 소형 초기화 버튼 전용 스타일 */
-    .mini-reset-btn button {
-        padding: 2px 8px !important;
+    /* [수정] 텍스트 전용 초슬림 초기화 버튼 스타일 (네모 박스 제거) */
+    .text-only-reset button {
+        background: none !important;
+        border: none !important;
+        box-shadow: none !important;
+        color: #94a3b8 !important;
         font-size: 11px !important;
-        height: 24px !important;
-        color: #64748b !important;
-        background-color: #f1f5f9 !important;
-        border: 1px solid #cbd5e1 !important;
-        border-radius: 6px !important;
+        font-weight: 500 !important;
+        padding: 0px !important;
+        margin: 0px !important;
+        height: auto !important;
+        min-height: 0px !important;
+        text-decoration: underline !important;
+    }
+    .text-only-reset button:hover {
+        color: #ef4444 !important;
+        background: none !important;
     }
 </style>
 """,
@@ -1489,7 +1497,7 @@ with tab6:
             # 상단 제목 및 '하루 1장 제한' 뱃지
             st.markdown(
                 f"""
-                <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
                     <h3 style="margin:0; font-weight:800; color:#0f172a; font-size:15px;">
                         🎨 AI 미션 달성 칭찬 스티커 카운터 <span style="color:#ec4899; font-weight:900; font-size:14px;">({current_cnt}/30개, {pct_val}%)</span>
                     </h3>
@@ -1499,16 +1507,16 @@ with tab6:
                 unsafe_allow_html=True,
             )
 
-            # [디테일 수정 1] 연한 설명문 글자 크기(11px) 라인 끝에 소형 초기화 버튼 배치
-            sub_col1, sub_col2 = st.columns([4, 1], vertical_alignment="center")
+            # [수정] 연한 설명글 오른쪽 끝에 네모 칸 없는 순수 텍스트 형태의 🔄 초기화 링크 배치
+            sub_col1, sub_col2 = st.columns([5, 1], vertical_alignment="center")
             with sub_col1:
                 st.markdown(
                     '<p style="font-size:11px; color:#64748b; margin:0;">오늘 미션을 성공했을 때 칭찬 스티커 카드를 생성하여 내 스티커북(30개판)에 저장합니다!</p>',
                     unsafe_allow_html=True,
                 )
             with sub_col2:
-                st.markdown('<div class="mini-reset-btn">', unsafe_allow_html=True)
-                if st.button("🔄 초기화", key="btn_g_sticker_reset_mini", use_container_width=True):
+                st.markdown('<div class="text-only-reset" style="text-align: right;">', unsafe_allow_html=True)
+                if st.button("🔄 초기화", key="btn_g_text_reset", use_container_width=False):
                     st.session_state.stickers = []
                     st.session_state.last_sticker_date = ""
                     st.session_state.latest_draw_sticker = None
@@ -1552,7 +1560,7 @@ with tab6:
                     unsafe_allow_html=True,
                 )
 
-            # [디테일 수정 2] 🎯 달성 보상 목표 라벨과 입력창을 밀착 레이아웃으로 변경
+            # 🎯 달성 보상 목표 라벨과 입력창 밀착 유지
             st.markdown(
                 """
                 <div style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
