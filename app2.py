@@ -13,7 +13,7 @@ st.set_page_config(
     layout="wide",
 )
 
-# 2. Pretendard 폰트 + 바탕화면/큰박스 색상 완전 분리 + 높이 고정 CSS
+# 2. Pretendard 폰트 + 바탕화면/큰박스 색상 완전 분리 + 높이 고정 CSS (300px 적용)
 st.markdown(
     """
 <style>
@@ -45,24 +45,21 @@ st.markdown(
         margin-bottom: 18px !important;
     }
 
-    /* 3. 상단 D-Day & 명언 박스 높이 고정 (250px) 및 내부 정렬 */
-    .top-card-wrapper [data-testid="stVerticalBlockBorderWrapper"] {
-        height: 250px !important;
-        min-height: 250px !important;
-        max-height: 250px !important;
+    /* 3. 상단 D-Day & 명언 박스 높이 고정 (300px) 및 수정모드 유연화 */
+    .top-card-wrapper > div [data-testid="stColumn"] > div > div[data-testid="stVerticalBlockBorderWrapper"] {
+        min-height: 300px !important;
         box-sizing: border-box !important;
         display: flex !important;
         flex-direction: column !important;
         justify-content: space-between !important;
-        padding: 16px 16px 18px 16px !important;
+        padding: 18px 18px 18px 18px !important;
     }
 
     div[data-testid="stVerticalBlockBorderWrapper"] > div {
         background-color: #ffffff !important;
-        height: 100% !important;
     }
 
-    /* 열(Column) 높이 100% 동일 맞춤 */
+    /* 열(Column) 높이 동일 맞춤 */
     [data-testid="stColumn"] > div {
         height: 100%;
     }
@@ -659,7 +656,7 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
 ])
 
 # ==========================================
-# TAB 1: 대시보드 (250px 고정 높이 적용)
+# TAB 1: 대시보드 (최적 높이 300px + 하단 여백 12px)
 # ==========================================
 with tab1:
     st.markdown(
@@ -684,7 +681,7 @@ with tab1:
 
     st.markdown("<div style='margin-top: 6px;'></div>", unsafe_allow_html=True)
 
-    # top-card-wrapper 클래스로 감싸서 CSS 250px 높이 고정
+    # top-card-wrapper 클래스로 감싸서 균형 잡힌 300px 높이 확보
     st.markdown('<div class="top-card-wrapper">', unsafe_allow_html=True)
     top_c1, top_c2 = st.columns([1, 1])
 
@@ -720,10 +717,10 @@ with tab1:
                 d_day_txt = "D-DAY 🎉" if closest_diff == 0 else f"D-{closest_diff}"
                 st.markdown(
                     f"""
-                    <div style="padding:2px 0;">
-                        <div style="font-size:22px; font-weight:900; color:#ef4444; line-height:1.1;">{d_day_txt}</div>
-                        <div style="font-size:13px; font-weight:800; color:#0f172a; margin-top:2px;">{closest_name}</div>
-                        <div style="font-size:11px; color:#64748b; margin-top:1px;">일정 날짜: {closest_date}</div>
+                    <div style="padding:4px 0;">
+                        <div style="font-size:26px; font-weight:900; color:#ef4444; line-height:1.1;">{d_day_txt}</div>
+                        <div style="font-size:14px; font-weight:800; color:#0f172a; margin-top:4px;">{closest_name}</div>
+                        <div style="font-size:11px; color:#64748b; margin-top:2px;">일정 날짜: {closest_date}</div>
                     </div>
                     """,
                     unsafe_allow_html=True,
@@ -768,11 +765,11 @@ with tab1:
                 <div style="display:flex; flex-direction:column; justify-content:space-between; height:100%; box-sizing:border-box;">
                     <div>
                         <span style="font-size:11px; font-weight:700; color:#64748b;">✨ AI 매일 아침 추천 명언</span>
-                        <div style="font-size:13px; font-weight:800; color:#4f46e5; margin-top:4px; min-height:38px; line-height:1.35; display:flex; align-items:center;">
+                        <div style="font-size:14px; font-weight:800; color:#4f46e5; margin-top:8px; min-height:44px; line-height:1.4; display:flex; align-items:center;">
                             "{q_main}"
                         </div>
                     </div>
-                    <div style="font-size:11px; color:#475569; background:#f8fafc; padding:6px 10px; border-radius:8px; border:1px solid #e2e8f0; margin-bottom: 12px; line-height:1.25;">
+                    <div style="font-size:11px; color:#475569; background:#f8fafc; padding:8px 12px; border-radius:8px; border:1px solid #e2e8f0; margin-bottom: 12px; line-height:1.35;">
                         💡 {q_sub}
                     </div>
                 </div>
