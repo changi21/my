@@ -305,14 +305,9 @@ def call_gemini_api(prompt):
         return f"통신 오류 발생: {e}"
 
 
-# AI 매일 실시간 명언 생성 함수
-def get_daily_ai_quote(today_str_val):
-    if "ai_quote_cache" not in st.session_state:
-        st.session_state.ai_quote_cache = {}
-
-    if today_str_val in st.session_state.ai_quote_cache:
-        return st.session_state.ai_quote_cache[today_str_val]
-
+# 5. 1일 1회 AI 명언 캐싱 함수 (하루 1회만 API 호출 후 캐시 유지)
+@st.cache_data(ttl=86400)
+def get_daily_ai_quote_cached(today_str_val):
     prompt = (
         f"오늘 날짜는 {today_str_val}입니다. 초등 5학년 에릭 학생에게 용기와 동기를 부여하는 오늘의 멋진 명언을 1개 새롭게 만들어주세요.\n\n"
         "[조건]\n"
@@ -336,9 +331,7 @@ def get_daily_ai_quote(today_str_val):
     except Exception:
         pass
 
-    result_tuple = (main_txt, sub_txt)
-    st.session_state.ai_quote_cache[today_str_val] = result_tuple
-    return result_tuple
+    return main_txt, sub_txt
 
 
 # 6. 세션 상태 초기화 & 구글 시트 전체 동기화
@@ -528,8 +521,8 @@ with tab1:
         with st.container(border=True):
             st.markdown('<div style="font-size:11px; font-weight:700; color:#64748b;">✨ AI 매일 아침 추천 명언</div>', unsafe_allow_html=True)
 
-            with st.spinner("AI가 오늘의 새로운 명언을 작성하는 중..."):
-                q_main, q_sub = get_daily_ai_quote(today_str)
+            # 오늘 날짜 기준 하루 1회 캐싱 함수 호출
+            q_main, q_sub = get_daily_ai_quote_cached(today_str)
 
             st.markdown(
                 f"""
