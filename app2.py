@@ -1,6 +1,7 @@
 import datetime
 import json
 import random
+import re
 import pandas as pd
 import plotly.express as px
 import requests
@@ -588,6 +589,12 @@ if "last_sticker_date" not in st.session_state:
 
 if "latest_draw_sticker" not in st.session_state:
     st.session_state.latest_draw_sticker = None
+
+if "last_quiz_text" not in st.session_state:
+    st.session_state.last_quiz_text = ""
+
+if "last_quiz_subject" not in st.session_state:
+    st.session_state.last_quiz_subject = ""
 
 STICKER_ICONS = [
     "🏆", "⭐", "🥇", "🎯", "🚀", "👑", "🔥", "💎", "🎨", "⚾",
@@ -1494,7 +1501,7 @@ with tab5:
             )
 
 # ==========================================
-# TAB 6: AI 코치 & 퀴즈 (1번 초등 5학년 퀴즈 & 2번 한능검 심화 성인 퀴즈 분리 반영)
+# TAB 6: AI 코치 & 퀴즈 (영어 퀴즈 순수 발음 음성 재생 기능 탑재)
 # ==========================================
 with tab6:
     st.markdown(
@@ -1516,7 +1523,7 @@ with tab6:
             st.markdown(
                 """
                 <div>
-                    <h3 style="margin-top:0; font-weight:800; color:#0f172a; font-size:15px;">🧠 AI 1분 퀴즈 생성기 (초등 5학년 / 한능검 심화)</h3>
+                    <h3 style="margin-top:0; font-weight:800; color:#0f172a; font-size:15px;">🧠 AI 1분 퀴즈 생성기</h3>
                     <p style="font-size:11px; color:#64748b; margin-bottom:12px;">아동용 맞춤 퀴즈 또는 실제 한능검 심화 성인 난이도 퀴즈를 무제한 생성합니다!</p>
                 </div>
                 """,
@@ -1529,7 +1536,7 @@ with tab6:
                     "📜 [AI 무작위] 한국사 퀴즈 (초등 5학년 맞춤)",
                     "🏛️ [실제 유형] 한국사능력검정시험 (한능검 심화/성인용)",
                     "🔬 초등 과학교과 (전 범위 탐구 유형)",
-                    "🔤 초등 필수 영단어 & 표현",
+                    "🔤 초등 필수 영단어 & 표현 (영어 발음 듣기 지원)",
                 ],
                 key="grid_subject",
                 label_visibility="visible",
@@ -1541,7 +1548,6 @@ with tab6:
                 
                 with st.spinner("알맞은 퀴즈를 출제하는 중입니다..."):
                     if "한능검 심화" in subject:
-                        # 2번: 성인용 한능검 심화 프롬프트 (초등 학생 호칭/칭찬 구문 완전히 배제)
                         prompt = (
                             f"당신은 한국사능력검정시험(한능검) 출제위원입니다. 성인 수험생 수준에 맞춰 "
                             f"실제 한능검 심화(1~3급) 난이도의 {idx}번째 한국사 문제 1개를 무작위 출제하세요.\n\n"
@@ -1559,8 +1565,23 @@ with tab6:
                             "💡 [해설] (정석 학술 해설)\n"
                             "🔒 [정답] (정답 번호)"
                         )
+                    elif "영단어 & 표현" in subject:
+                        prompt = (
+                            f"당신은 초등 5학년 영어 튜터입니다. 초등 필수 영단어 및 일상 표현 관련 {idx}번째 객관식 문제를 1개 출제하세요.\n\n"
+                            "[출제 조건]\n"
+                            "- 4지선다형 객관식 문제로 작성하세요.\n"
+                            "- 한글 발음 표기나 발음 기호는 절대 넣지 마세요.\n"
+                            "- 해설은 다정하게 '에릭 학생~' 톤으로 설명해 주세요.\n\n"
+                            "[출력 형식]\n"
+                            "[문제] (영단어/문장 관련 문제)\n"
+                            "① 보기1\n"
+                            "② 보기2\n"
+                            "③ 보기3\n"
+                            "④ 보기4\n\n"
+                            "💡 [해설] (다정한 튜터 해설)\n"
+                            "🔒 [정답] (정답)"
+                        )
                     else:
-                        # 1번: 기존 초등 5학년 맞춤형 프롬프트
                         prompt = (
                             f"당신은 친절한 AI 튜터입니다. '{subject}' 과목에 대해 초등"
                             f" 5학년 수준의 {idx}번째 모의 문제 1개를 무작위 출제하세요."
@@ -1573,8 +1594,32 @@ with tab6:
                         )
                         
                     res_text = call_gemini_api(prompt)
-                    st.success(f"회차 #{idx} 퀴즈 생성 완료!")
-                    st.markdown(res_text)
+                    st.session_state.last_quiz_text = res_text
+                    st.session_state.last_quiz_subject = subject
+                    st.toast(f"회차 #{idx} 퀴즈 생성 완료!")
+
+            # 퀴즈 결과 출력 및 영어 발음 듣기 버튼
+            if st.session_state.last_quiz_text:
+                st.markdown(st.session_state.last_quiz_text)
+
+                if "영단어 & 표현" in st.session_state.last_quiz_subject:
+                    # 영어 알파벳 텍스트만 추출하여 순수 원어 발음 재생
+                    raw_txt = st.session_state.last_quiz_text.split("💡")[0]
+                    english_words = re.findall(r"[a-zA-Z]+", raw_txt)
+                    clean_en_text = " ".join(english_words)
+
+                    if clean_en_text:
+                        if st.button("🔊 영어 문제 발음 듣기", key="btn_eng_tts"):
+                            tts_eng_script = f"""
+                            <script>
+                                window.speechSynthesis.cancel();
+                                var msg = new SpeechSynthesisUtterance("{clean_en_text}");
+                                msg.lang = 'en-US';
+                                msg.rate = 0.9;
+                                window.speechSynthesis.speak(msg);
+                            </script>
+                            """
+                            st.components.v1.html(tts_eng_script, height=0)
 
     with row1_col2:
         with st.container(border=True):
