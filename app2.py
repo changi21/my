@@ -401,8 +401,10 @@ if "last_quiz_text" not in st.session_state:
     st.session_state.last_quiz_text = ""
 if "last_quiz_subject" not in st.session_state:
     st.session_state.last_quiz_subject = ""
-if "clean_en_text" not in st.session_state:
-    st.session_state.clean_en_text = ""
+if "clean_en_text_part1" not in st.session_state:
+    st.session_state.clean_en_text_part1 = ""
+if "clean_en_text_part2" not in st.session_state:
+    st.session_state.clean_en_text_part2 = ""
 
 STICKER_ICONS = ["🏆", "⭐", "🥇", "🎯", "🚀", "👑", "🔥", "💎", "🎨", "⚾", "🥋", "📖", "🧠", "⚡", "🌟", "🦁", "🐯", "🦄", "🦅", "🥊", "🎮", "🧩", "💡", "🎓", "🍀", "🌈", "🎖️", "🎗️", "🏅", "✨"]
 STICKER_MSG = [
@@ -411,7 +413,7 @@ STICKER_MSG = [
     "차근차근 실력이 쌓이고 있어!", "약속을 지키는 네가 최고야!", "지치지 않고 완수한 스스로를 칭찬해!", "내일 더 멋지게 날아오르자!"
 ]
 
-# 7. 상단 헤더 (KST 기준 날짜 자동 갱신 적용)
+# 7. 상단 헤더
 days_kor = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"]
 
 utc_now = datetime.datetime.now(datetime.timezone.utc)
@@ -933,10 +935,15 @@ with tab6:
                             "[출제 조건]\n"
                             "- ★시대 다양성 무작위 보장: 삼국시대(고구려/백제/신라), 통일신라/발해, 고려시대, 조선 전기, 조선 후기, 근현대사 중 '매회 완전히 다른 시대'를 무작위로 하나 선택하여 출제하세요.\n"
                             "- 인물의 말, 가상의 일기, 사료/신문 기사, 역사 사건 묘사글을 [지문]으로 먼저 제시하세요.\n"
-                            "- 4지선다형 객관식 문제(①~④)로 출제하세요.\n"
+                            "- ★보기 줄바꿈 필수: 4지선다형 객관식 보기(①~④)는 붙여 쓰지 말고 반드시 아래와 같이 한 줄에 하나씩 줄바꿈(\\n)하여 작성하세요.\n"
+                            "  ① 보기1\n"
+                            "  ② 보기2\n"
+                            "  ③ 보기3\n"
+                            "  ④ 보기4\n"
                             "- ★눈높이 해설: 문제는 한능검 심화 수준의 뼈대를 가지되, 💡 해설 영역은 '에릭 학생! 이 지문의 힌트는 ~야. 그래서 정답은 ~이란다'처럼 중등/초등 고학년 눈높이에 맞게 매우 다정하고 친절하게 설명해 주세요.\n\n"
                             "[출력 형식]\n"
-                            "[문제] (지문 및 문제 내용)\n"
+                            "[문제]\n"
+                            "(지문 및 문제 내용)\n\n"
                             "① 보기1\n"
                             "② 보기2\n"
                             "③ 보기3\n"
@@ -950,10 +957,11 @@ with tab6:
                             "[출제 조건]\n"
                             "- 사료 해석, 핵심 인물/사건, 역사적 제도 등 정통 한능검 심화 기출 스타일로 작성하세요.\n"
                             "- 아이 대상 호칭('에릭 학생' 등)이나 친근한 존댓말 칭찬을 절대 사용하지 마세요.\n"
-                            "- 4지선다형 객관식 문제(1~4번)로 출제하세요.\n"
+                            "- ★보기 줄바꿈 필수: 4지선다형 객관식 보기(①~④)는 반드시 한 줄에 하나씩 줄바꿈(\\n)하여 작성하세요.\n"
                             "- 해설은 학술적이고 객관적인 시험용 해설 톤으로 명확하게 작성하세요.\n\n"
                             "[출력 형식]\n"
-                            "[문제] (사료 또는 문제 텍스트)\n"
+                            "[문제]\n"
+                            "(사료 또는 문제 텍스트)\n\n"
                             "① 보기1\n"
                             "② 보기2\n"
                             "③ 보기3\n"
@@ -965,11 +973,12 @@ with tab6:
                         prompt = (
                             f"당신은 초등 5학년 영어 튜터입니다. 초등 필수 영단어 및 일상 표현 관련 {idx}번째 객관식 문제를 1개 출제하세요.\n\n"
                             "[출제 조건]\n"
-                            "- 4지선다형 객관식 문제로 작성하세요.\n"
+                            "- 4지선다형 객관식 보기는 반드시 한 줄에 하나씩 줄바꿈(\\n)하여 작성하세요.\n"
                             "- 한글 발음 표기나 발음 기호는 절대 넣지 마세요.\n"
                             "- 해설은 다정하게 '에릭 학생~' 톤으로 설명해 주세요.\n\n"
                             "[출력 형식]\n"
-                            "[문제] (영단어/문장 관련 문제)\n"
+                            "[문제]\n"
+                            "(영단어/문장 관련 문제)\n\n"
                             "① 보기1\n"
                             "② 보기2\n"
                             "③ 보기3\n"
@@ -981,34 +990,35 @@ with tab6:
                         prompt = (
                             f"당신은 친절한 AI 튜터입니다. '{subject}' 과목에 대해 초등 5학년 수준의 {idx}번째 모의 문제 1개를 무작위 출제하세요. 전 범위에서 흥미로운 문제를 골라주세요.\n\n"
                             "[조건]\n"
-                            "- 4지선다형 객관식 문제로 만드세요.\n"
+                            "- 4지선다형 객관식 보기는 반드시 한 줄에 하나씩 줄바꿈(\\n)하여 만드세요.\n"
                             "- 💡 해설 부분은 '에릭 학생, 이 문제는 ~ 때문이야!'처럼 눈높이에 맞춰 다정하고 쉽게 설명해 주세요.\n\n"
                             "[출력 형식]\n"
-                            "[문제] ➡️ [보기 1,2,3,4] ➡️ 💡 [친절한 해설] ➡️ 🔒 [정답]"
+                            "[문제] ➡️ [보기 1,2,3,4 줄바꿈] ➡️ 💡 [친절한 해설] ➡️ 🔒 [정답]"
                         )
 
                     res_text = call_gemini_api(prompt)
                     st.session_state.last_quiz_text = res_text
                     st.session_state.last_quiz_subject = subject
                     
-                    # ★ [수정 2] 영어 퀴즈 순수 영문 지문만 추출 + 빈칸 4초 일시정지(, , , , , , , , ) 적용
+                    # ★ [영어 TTS 파싱] 빈칸 앞/뒤 문장을 분리하여 JS setTimeout 기반 강제 4초(4000ms) 일시정지 제어
                     if "영단어 & 표현" in subject:
                         quiz_main_txt = res_text.split("💡")[0].split("①")[0]
-                        # 한글 텍스트 및 [문제] 문구 완벽 제거 (순수 영어 문장만 남김)
                         en_lines = [line.strip() for line in quiz_main_txt.split("\n") if re.search(r'[a-zA-Z]', line)]
                         pure_en_text = " ".join(en_lines)
-                        # 빈칸(____)을 쉼표 8개로 변경해 약 4초간 일시정지 효과 유도
-                        formatted_text = re.sub(r"_{2,}", ", , , , , , , , ", pure_en_text)
-                        st.session_state.clean_en_text = formatted_text.replace('"', "'")
+                        
+                        # 빈칸(____) 기준으로 전반부/후반부 문장 분리
+                        parts = re.split(r"_{2,}", pure_en_text)
+                        st.session_state.clean_en_text_part1 = parts[0].replace('"', "'").strip() if len(parts) > 0 else ""
+                        st.session_state.clean_en_text_part2 = parts[1].replace('"', "'").strip() if len(parts) > 1 else ""
                     else:
-                        st.session_state.clean_en_text = ""
+                        st.session_state.clean_en_text_part1 = ""
+                        st.session_state.clean_en_text_part2 = ""
 
                     st.toast(f"회차 #{idx} 퀴즈 생성 완료!")
 
             if st.session_state.last_quiz_text:
                 st.markdown(st.session_state.last_quiz_text)
-                if "영단어 & 표현" in st.session_state.last_quiz_subject and st.session_state.clean_en_text:
-                    # ★ [수정 3] 다시 듣기 버튼 무한 클릭 보장 로직 (HTML key 매번 갱신)
+                if "영단어 & 표현" in st.session_state.last_quiz_subject and st.session_state.clean_en_text_part1:
                     if "tts_count" not in st.session_state:
                         st.session_state.tts_count = 0
                         
@@ -1019,10 +1029,27 @@ with tab6:
                             <script>
                                 (function() {{
                                     window.speechSynthesis.cancel();
-                                    var msg = new SpeechSynthesisUtterance("{st.session_state.clean_en_text}");
-                                    msg.lang = "en-US";
-                                    msg.rate = 0.8;
-                                    window.speechSynthesis.speak(msg);
+                                    
+                                    var p1 = "{st.session_state.clean_en_text_part1}";
+                                    var p2 = "{st.session_state.clean_en_text_part2}";
+                                    
+                                    var msg1 = new SpeechSynthesisUtterance(p1);
+                                    msg1.lang = "en-US";
+                                    msg1.rate = 0.8;
+                                    
+                                    msg1.onend = function() {{
+                                        if (p2 !== "") {{
+                                            // ★ 4초(4000ms) 동안 완벽하게 음성 재생을 멈춘 후 뒷문장 출력
+                                            setTimeout(function() {{
+                                                var msg2 = new SpeechSynthesisUtterance(p2);
+                                                msg2.lang = "en-US";
+                                                msg2.rate = 0.8;
+                                                window.speechSynthesis.speak(msg2);
+                                            }}, 4000);
+                                        }}
+                                    }};
+                                    
+                                    window.speechSynthesis.speak(msg1);
                                 }})();
                             </script>
                             <!-- {st.session_state.tts_count} -->
@@ -1043,7 +1070,6 @@ with tab6:
                     st.info(f"💬 **AI 멘토의 응원:**\n\n{msg_text}")
                     clean_text = msg_text.replace("\n", " ").replace('"', "'")
                     
-                    # ★ [수정 1] 2번씩 재생되던 현상 방지: 중복 이벤트 제거 및 단일 1회 지정 출력
                     st.components.v1.html(
                         f"""
                         <script>
