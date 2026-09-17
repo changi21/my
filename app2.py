@@ -262,17 +262,18 @@ def load_all_sheet_data():
             wk = json.loads(wk_raw) if pd.notna(wk_raw) and wk_raw else DEFAULT_WEEKEND
             evt = json.loads(evt_raw) if pd.notna(evt_raw) and evt_raw else DEFAULT_EVENTS
 
-            w_chk, wk_chk, hist = None, None, []
+            w_chk, wk_chk, hist, last_date = None, None, [], ""
             if pd.notna(chk_raw) and chk_raw:
                 chk_data = json.loads(chk_raw)
                 w_chk = chk_data.get("weekday", None)
                 wk_chk = chk_data.get("weekend", None)
                 hist = chk_data.get("history", [])
+                last_date = chk_data.get("last_date", "")
 
-            return stickers_list, goal, sch, eve, wk, w_chk, wk_chk, hist, evt
+            return stickers_list, goal, sch, eve, wk, w_chk, wk_chk, hist, evt, last_date
     except Exception:
         pass
-    return [], "아빠와 프로야구 직관 가기 & 갖고 싶던 선물!", DEFAULT_SCHEDULES, DEFAULT_EVENING, DEFAULT_WEEKEND, None, None, [], DEFAULT_EVENTS
+    return [], "아빠와 프로야구 직관 가기 & 갖고 싶던 선물!", DEFAULT_SCHEDULES, DEFAULT_EVENING, DEFAULT_WEEKEND, None, None, [], DEFAULT_EVENTS, ""
 
 
 def save_sheet_data(stickers_list=None, reward_goal=None, schedules=None, evening=None, weekend=None, checklist=None, events=None):
@@ -355,8 +356,18 @@ def get_daily_ai_quote_cached(today_str_val):
     return main_txt, sub_txt
 
 
-# 6. 세션 상태 초기화 & 구글 시트 전체 동기화
-(init_stk, init_goal, init_sch, init_eve, init_wk, init_w_chk, init_wk_chk, init_hist, init_evt) = load_all_sheet_data()
+# 6. 상단 시간 계산 (KST 기준)
+days_kor = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"]
+utc_now = datetime.datetime.now(datetime.timezone.utc)
+kst_now = utc_now + datetime.timedelta(hours=9)
+
+today_obj = kst_now.date()
+today_idx = today_obj.weekday()
+today_name = days_kor[today_idx]
+today_str = today_obj.strftime("%Y-%m-%d")
+
+# 7. 세션 상태 초기화 & 구글 시트 데이터 로드
+(init_stk, init_goal, init_sch, init_eve, init_wk, init_w_chk, init_wk_chk, init_hist, init_evt, init_last_date) = load_all_sheet_data()
 
 if "stickers" not in st.session_state:
     st.session_state.stickers = init_stk
@@ -373,23 +384,35 @@ if "history_log" not in st.session_state:
 if "events" not in st.session_state:
     st.session_state.events = init_evt
 
+# ★ [날짜 변경 시 자동 체크 초기화 패치]
+# 불러온 마지막 저장 날짜가 오늘 날짜와 다르면 체크 상태를 False로 리셋
+should_reset = (init_last_date != today_str)
+
 if "checklist_weekday" not in st.session_state:
-    st.session_state.checklist_weekday = init_w_chk if init_w_chk else {
+    raw_w = init_w_chk if init_w_chk else {
         "w1": ("🌅 아침 뇌 깨우기: 06:50 최태성 한국사 시청 또는 스트레칭", False),
         "w2": ("🏫 학원 미션: 학원 수강 및 안전한 이동 (도보/차량)", False),
         "w3": ("⚡ 70분 몰입 학습: 수학(30분)+영어(15분)+국어 어휘(15분) 완수", False),
         "w4": ("🎒 내일 준비: 21:10 책상 정돈 및 책가방 미리 챙기기", False),
         "w5": ("🛌 취침 골든타임: 21:20 샤워 ➡️ 22:00~22:10 소등 및 눕기", False),
     }
+    if should_reset:
+        st.session_state.checklist_weekday = {k: (txt, False) for k, (txt, _) in raw_w.items()}
+    else:
+        st.session_state.checklist_weekday = raw_w
 
 if "checklist_weekend" not in st.session_state:
-    st.session_state.checklist_weekend = init_wk_chk if init_wk_chk else {
+    raw_wk = init_wk_chk if init_wk_chk else {
         "wk1": ("📝 주말 모닝 공부: 기상 직후 90분 학습 (수학+영어+독서) 완수", False),
         "wk2": ("⚾ 야외활동 및 외출: 13:00~18:00 햇빛 쬐며 신체활동 다녀오기", False),
         "wk3": ("🎲 가족 시간: 19:00~20:00 온 가족 함께 보드게임 및 이야기 나누기", False),
         "wk4": ("📖 밤 몰입 독서: 20:00~21:00 부모님 운동 시간 동안 1시간 독서", False),
         "wk5": ("🌙 주말 취침 리듬 유지: 22:00~22:10 이전에 제자리에 눕기", False),
     }
+    if should_reset:
+        st.session_state.checklist_weekend = {k: (txt, False) for k, (txt, _) in raw_wk.items()}
+    else:
+        st.session_state.checklist_weekend = raw_wk
 
 if "quiz_click_count" not in st.session_state:
     st.session_state.quiz_click_count = 0
@@ -413,17 +436,7 @@ STICKER_MSG = [
     "차근차근 실력이 쌓이고 있어!", "약속을 지키는 네가 최고야!", "지치지 않고 완수한 스스로를 칭찬해!", "내일 더 멋지게 날아오르자!"
 ]
 
-# 7. 상단 헤더
-days_kor = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"]
-
-utc_now = datetime.datetime.now(datetime.timezone.utc)
-kst_now = utc_now + datetime.timedelta(hours=9)
-
-today_obj = kst_now.date()
-today_idx = today_obj.weekday()
-today_name = days_kor[today_idx]
-today_str = today_obj.strftime("%Y-%m-%d")
-
+# 8. 상단 헤더
 h_col1, h_col2 = st.columns([8, 1])
 with h_col1:
     st.markdown(
@@ -446,7 +459,7 @@ with h_col2:
 
 st.markdown("<div style='margin-bottom: 10px;'></div>", unsafe_allow_html=True)
 
-# 8. 메인 탭 구성
+# 9. 메인 탭 구성
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "📊 대시보드",
     "🎒 요일별 학원",
@@ -832,7 +845,7 @@ with tab4:
                 )
 
 # ==========================================
-# TAB 5: 체크 & 기록
+# TAB 5: 체크 & 기록 (날짜 변경 자동 초기화 로직 보완)
 # ==========================================
 with tab5:
     st.markdown('<div class="banner-blue">✅ <b>스마트 일일 루틴 체크리스트:</b> 체크 상태 변경 시 구글 시트에 즉시 반영되며, 최근 7일 동안의 누적 실천 기록이 자동 보관됩니다.</div>', unsafe_allow_html=True)
@@ -851,7 +864,7 @@ with tab5:
         if st.button("💾 체크리스트 문구 저장"):
             st.session_state.checklist_weekday = new_w_chk
             st.session_state.checklist_weekend = new_wk_chk
-            chk_payload = {"weekday": new_w_chk, "weekend": new_wk_chk, "history": st.session_state.history_log}
+            chk_payload = {"weekday": new_w_chk, "weekend": new_wk_chk, "history": st.session_state.history_log, "last_date": today_str}
             save_sheet_data(checklist=chk_payload)
             st.success("체크리스트 문구가 구글 시트에 저장되었습니다!")
             st.rerun()
@@ -869,7 +882,7 @@ with tab5:
                         hist = [h for h in st.session_state.history_log if h.get("date") != today_m]
                         hist.insert(0, {"date": today_m, "count": w_cnt, "total": 5})
                         st.session_state.history_log = hist[:7]
-                        save_sheet_data(checklist={"weekday": st.session_state.checklist_weekday, "weekend": st.session_state.checklist_weekend, "history": st.session_state.history_log})
+                        save_sheet_data(checklist={"weekday": st.session_state.checklist_weekday, "weekend": st.session_state.checklist_weekend, "history": st.session_state.history_log, "last_date": today_str})
 
         with col_wk:
             with st.container(border=True):
@@ -883,7 +896,7 @@ with tab5:
                         hist = [h for h in st.session_state.history_log if h.get("date") != today_m]
                         hist.insert(0, {"date": today_m, "count": wk_cnt, "total": 5})
                         st.session_state.history_log = hist[:7]
-                        save_sheet_data(checklist={"weekday": st.session_state.checklist_weekday, "weekend": st.session_state.checklist_weekend, "history": st.session_state.history_log})
+                        save_sheet_data(checklist={"weekday": st.session_state.checklist_weekday, "weekend": st.session_state.checklist_weekend, "history": st.session_state.history_log, "last_date": today_str})
 
         with st.container(border=True):
             st.markdown('<div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #cbd5e1; padding-bottom:8px; margin-bottom:14px;"><h3 style="margin:0; font-size:15px; font-weight:800; color:#0f172a;">📈 최근 7일 실천 기록 (누적 달성 로그)</h3><span style="font-size:11px; color:#64748b;">구글 시트에 자동 영구 보관됩니다</span></div>', unsafe_allow_html=True)
@@ -1000,13 +1013,11 @@ with tab6:
                     st.session_state.last_quiz_text = res_text
                     st.session_state.last_quiz_subject = subject
                     
-                    # ★ [영어 TTS 파싱] 빈칸 앞/뒤 문장을 분리하여 JS setTimeout 기반 강제 4초(4000ms) 일시정지 제어
                     if "영단어 & 표현" in subject:
                         quiz_main_txt = res_text.split("💡")[0].split("①")[0]
                         en_lines = [line.strip() for line in quiz_main_txt.split("\n") if re.search(r'[a-zA-Z]', line)]
                         pure_en_text = " ".join(en_lines)
                         
-                        # 빈칸(____) 기준으로 전반부/후반부 문장 분리
                         parts = re.split(r"_{2,}", pure_en_text)
                         st.session_state.clean_en_text_part1 = parts[0].replace('"', "'").strip() if len(parts) > 0 else ""
                         st.session_state.clean_en_text_part2 = parts[1].replace('"', "'").strip() if len(parts) > 1 else ""
@@ -1039,7 +1050,6 @@ with tab6:
                                     
                                     msg1.onend = function() {{
                                         if (p2 !== "") {{
-                                            // ★ 4초(4000ms) 동안 완벽하게 음성 재생을 멈춘 후 뒷문장 출력
                                             setTimeout(function() {{
                                                 var msg2 = new SpeechSynthesisUtterance(p2);
                                                 msg2.lang = "en-US";
