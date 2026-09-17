@@ -2,6 +2,7 @@ import datetime
 import json
 import random
 import re
+import time
 import pandas as pd
 import requests
 import streamlit as st
@@ -144,8 +145,12 @@ if not st.session_state.authenticated:
 
 # 4. 구글 시트 연동 설정
 SHEET_ID = "1x5A3X2lGb5SFpHE5qspuetmdOsWMiP_mfnWY0ZqD6rc"
-SHEET_CSV_URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sheet=data"
-WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxrG7rYb5WXHkbd20QsiWywCNM7GWbW7KVll2n88gP15kHVsCfAdF_Tcr7Uhc53eqRw/exec"
+
+def get_sheet_url():
+    return f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sheet=data&nocache={int(time.time())}"
+
+# ★ 새로 배포된 구글 앱스 스크립트 웹 앱 URL 반영
+WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxrG7rYb5WXHcXkbd20QsiWywCNM7GWbW7KVll2n88gP15kHVsCfAdF_Tcr7Uhc53eqRw/exec"
 
 DEFAULT_SCHEDULES = {
     "월요일": [
@@ -237,7 +242,8 @@ DEFAULT_EVENTS = [
 
 def load_all_sheet_data():
     try:
-        df = pd.read_csv(SHEET_CSV_URL)
+        url = get_sheet_url()
+        df = pd.read_csv(url)
         if not df.empty:
             row = df.iloc[0]
             stk_raw = row.get("stickers_count", None)
@@ -294,9 +300,9 @@ def save_sheet_data(stickers_list=None, reward_goal=None, schedules=None, evenin
         params["events"] = json.dumps(events, ensure_ascii=False)
 
     try:
-        requests.get(WEB_APP_URL, params=params, timeout=5)
-    except Exception:
-        pass
+        requests.get(WEB_APP_URL, params=params, timeout=10, allow_redirects=True)
+    except Exception as e:
+        print(f"시트 저장 실패: {e}")
 
 
 api_key = st.secrets.get("GEMINI_API_KEY", "")
@@ -384,8 +390,7 @@ if "history_log" not in st.session_state:
 if "events" not in st.session_state:
     st.session_state.events = init_evt
 
-# ★ [날짜 변경 시 자동 체크 초기화 패치]
-# 불러온 마지막 저장 날짜가 오늘 날짜와 다르면 체크 상태를 False로 리셋
+# 날짜 변경 시 자동 체크 초기화
 should_reset = (init_last_date != today_str)
 
 if "checklist_weekday" not in st.session_state:
@@ -437,7 +442,7 @@ STICKER_MSG = [
 ]
 
 # 8. 상단 헤더
-h_col1, h_col2 = st.columns([8, 1])
+h_col1, h_col2, h_col3 = st.columns([6.5, 2, 1])
 with h_col1:
     st.markdown(
         f"""
@@ -453,6 +458,20 @@ with h_col1:
         unsafe_allow_html=True,
     )
 with h_col2:
+    if st.button("🔄 데이터 불러오기", use_container_width=True):
+        stk_list, r_goal, sch_d, eve_d, wk_d, w_chk, wk_chk, h_log, e_log, l_date = load_all_sheet_data()
+        st.session_state.stickers = stk_list
+        st.session_state.reward_goal = r_goal
+        st.session_state.schedules = sch_d
+        st.session_state.evening_plans = eve_d
+        st.session_state.weekend_plans = wk_d
+        if w_chk: st.session_state.checklist_weekday = w_chk
+        if wk_chk: st.session_state.checklist_weekend = wk_chk
+        st.session_state.history_log = h_log
+        st.session_state.events = e_log
+        st.toast("구글 시트의 최신 데이터를 가져왔습니다!")
+        st.rerun()
+with h_col3:
     if st.button("🔒 잠금"):
         st.session_state.authenticated = False
         st.rerun()
@@ -845,7 +864,7 @@ with tab4:
                 )
 
 # ==========================================
-# TAB 5: 체크 & 기록 (날짜 변경 자동 초기화 로직 보완)
+# TAB 5: 체크 & 기록
 # ==========================================
 with tab5:
     st.markdown('<div class="banner-blue">✅ <b>스마트 일일 루틴 체크리스트:</b> 체크 상태 변경 시 구글 시트에 즉시 반영되며, 최근 7일 동안의 누적 실천 기록이 자동 보관됩니다.</div>', unsafe_allow_html=True)
